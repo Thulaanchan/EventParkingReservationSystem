@@ -1,0 +1,94 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.csproj.user
+*.vcxproj.user
+
+# .NET build output
+**/bin/
+**/obj/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+
+# Tests / coverage
+TestResults/
+**/TestResults/
+coverage/
+**/coverage/
+*.trx
+
+# Angular / Node
+**/node_modules/
+**/dist/
+**/.angular/
+**/.cache/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+*.secrets.json
+
+# Certificates / keys
+*.pfx
+*.p12
+*.cer
+*.key
+*.pem
+
+# Database / backup files
+*.bak
+*.backup
+*.mdf
+*.ldf
+
+# Logs
+logs/
+Logs/
+*.log
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDEs
+.idea/
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.orig
+
+# Publish output
+publish/
+**/publish/
+
+# Keep .gitkeep files tracked
