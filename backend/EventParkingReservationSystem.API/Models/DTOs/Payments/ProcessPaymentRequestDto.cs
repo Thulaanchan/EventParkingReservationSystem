@@ -20,10 +20,16 @@ namespace EventParkingReservationSystem.API.Models.DTOs.Payments
         [MaxLength(19)]
         public string? TestCardNumber { get; set; }
 
-        [MaxLength(5)]
+        [RegularExpression(
+            @"^(0[1-9]|1[0-2])\/\d{2}$",
+            ErrorMessage = "Expiry must use MM/YY format."
+        )]
         public string? Expiry { get; set; }
 
-        [MaxLength(3)]
+        [RegularExpression(
+            @"^\d{3}$",
+            ErrorMessage = "CVV must contain exactly 3 digits."
+        )]
         public string? TestCvv { get; set; }
     }
 }

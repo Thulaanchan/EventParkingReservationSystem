@@ -49,7 +49,6 @@
     <Folder Include="Data\Configurations\Events\" />
     <Folder Include="Data\Configurations\Notifications\" />
     <Folder Include="Data\Configurations\Parking\" />
-    <Folder Include="Data\Configurations\Payments\" />
     <Folder Include="Data\Configurations\Seats\" />
     <Folder Include="Data\Configurations\Venues\" />
     <Folder Include="Data\Context\" />
@@ -123,7 +122,6 @@
     <Folder Include="Validators\Customers\" />
     <Folder Include="Validators\Events\" />
     <Folder Include="Validators\Parking\" />
-    <Folder Include="Validators\Payments\" />
     <Folder Include="Validators\Seats\" />
     <Folder Include="Validators\Venues\" />
   </ItemGroup>
