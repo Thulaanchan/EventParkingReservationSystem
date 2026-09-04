@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -19,111 +19,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="BackgroundServices\BookingExpiry\" />
-    <Folder Include="Common\Constants\" />
-    <Folder Include="Common\Exceptions\" />
-    <Folder Include="Common\Models\" />
-    <Folder Include="Common\Pagination\" />
-    <Folder Include="Common\Responses\" />
-    <Folder Include="Configurations\Authentication\" />
-    <Folder Include="Configurations\Email\" />
-    <Folder Include="Configurations\JWT\" />
-    <Folder Include="Configurations\Swagger\" />
-    <Folder Include="Controllers\Auth\" />
-    <Folder Include="Controllers\Bookings\" />
-    <Folder Include="Controllers\Categories\" />
-    <Folder Include="Controllers\Customers\" />
-    <Folder Include="Controllers\Dashboards\" />
-    <Folder Include="Controllers\Events\" />
-    <Folder Include="Controllers\Notifications\" />
-    <Folder Include="Controllers\Parking\" />
-    <Folder Include="Controllers\Payments\" />
-    <Folder Include="Controllers\Seats\" />
-    <Folder Include="Controllers\Venues\" />
-    <Folder Include="Data\Configurations\Bookings\" />
-    <Folder Include="Data\Configurations\Categories\" />
-    <Folder Include="Data\Configurations\Customers\" />
-    <Folder Include="Data\Configurations\Events\" />
-    <Folder Include="Data\Configurations\Notifications\" />
-    <Folder Include="Data\Configurations\Parking\" />
-    <Folder Include="Data\Configurations\Seats\" />
-    <Folder Include="Data\Configurations\Venues\" />
-    <Folder Include="Data\Context\" />
-    <Folder Include="Data\Migrations\" />
-    <Folder Include="Data\Seed\Categories\" />
-    <Folder Include="Data\Seed\Customers\" />
-    <Folder Include="Data\Seed\Events\" />
-    <Folder Include="Data\Seed\Parking\" />
-    <Folder Include="Data\Seed\Seats\" />
-    <Folder Include="Data\Seed\Venues\" />
-    <Folder Include="Enums\Authentication\" />
-    <Folder Include="Enums\Notifications\" />
-    <Folder Include="Enums\Parking\" />
-    <Folder Include="Enums\Seats\" />
-    <Folder Include="Extensions\Application\" />
-    <Folder Include="Extensions\Services\" />
-    <Folder Include="Filters\" />
-    <Folder Include="Helpers\Authentication\" />
-    <Folder Include="Helpers\Bookings\" />
-    <Folder Include="Helpers\DateTime\" />
-    <Folder Include="Helpers\Payments\" />
-    <Folder Include="Interfaces\Repositories\Bookings\" />
-    <Folder Include="Interfaces\Repositories\Categories\" />
-    <Folder Include="Interfaces\Repositories\Customers\" />
-    <Folder Include="Interfaces\Repositories\Dashboards\" />
-    <Folder Include="Interfaces\Repositories\Events\" />
-    <Folder Include="Interfaces\Repositories\Notifications\" />
-    <Folder Include="Interfaces\Repositories\Parking\" />
-    <Folder Include="Interfaces\Repositories\Seats\" />
-    <Folder Include="Interfaces\Repositories\Venues\" />
-    <Folder Include="Interfaces\Services\Auth\" />
-    <Folder Include="Interfaces\Services\Bookings\" />
-    <Folder Include="Interfaces\Services\Categories\" />
-    <Folder Include="Interfaces\Services\Customers\" />
-    <Folder Include="Interfaces\Services\Dashboards\" />
-    <Folder Include="Interfaces\Services\Email\" />
-    <Folder Include="Interfaces\Services\Events\" />
-    <Folder Include="Interfaces\Services\Notifications\" />
-    <Folder Include="Interfaces\Services\Parking\" />
-    <Folder Include="Interfaces\Services\Seats\" />
-    <Folder Include="Interfaces\Services\Venues\" />
-    <Folder Include="Mappings\Bookings\" />
-    <Folder Include="Mappings\Categories\" />
-    <Folder Include="Mappings\Customers\" />
-    <Folder Include="Mappings\Events\" />
-    <Folder Include="Mappings\Notifications\" />
-    <Folder Include="Mappings\Parking\" />
-    <Folder Include="Mappings\Payments\" />
-    <Folder Include="Mappings\Seats\" />
-    <Folder Include="Mappings\Venues\" />
-    <Folder Include="Middleware\ExceptionHandling\" />
-    <Folder Include="Middleware\RequestLogging\" />
-    <Folder Include="Models\DTOs\Auth\" />
-    <Folder Include="Models\DTOs\Bookings\" />
-    <Folder Include="Models\DTOs\Categories\" />
-    <Folder Include="Models\DTOs\Customers\" />
-    <Folder Include="Models\DTOs\Dashboards\" />
-    <Folder Include="Models\DTOs\Events\" />
-    <Folder Include="Models\DTOs\Notifications\" />
-    <Folder Include="Models\DTOs\Parking\" />
-    <Folder Include="Models\DTOs\Seats\" />
-    <Folder Include="Models\DTOs\Venues\" />
-    <Folder Include="Models\Entities\Bookings\" />
-    <Folder Include="Models\Entities\Categories\" />
-    <Folder Include="Models\Entities\Customers\" />
-    <Folder Include="Models\Entities\Events\" />
-    <Folder Include="Models\Entities\Notifications\" />
-    <Folder Include="Models\Entities\ParkingReservations\" />
-    <Folder Include="Models\Entities\Parking\" />
-    <Folder Include="Validators\Categories\" />
-    <Folder Include="Validators\Customers\" />
-    <Folder Include="Validators\Events\" />
-    <Folder Include="Validators\Parking\" />
-    <Folder Include="Validators\Seats\" />
-    <Folder Include="Validators\Venues\" />
   </ItemGroup>
 
 </Project>
