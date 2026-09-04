@@ -1,4 +1,22 @@
+using EventParkingReservationSystem.API.Data.Context;
+using Microsoft.EntityFrameworkCore;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
+using EventParkingReservationSystem.API.Repositories.Customers;
+using Microsoft.AspNetCore.Identity;
+using EventParkingReservationSystem.API.Models.Entities.Customers;
+using EventParkingReservationSystem.API.Interfaces.Services.Customers;
+using EventParkingReservationSystem.API.Services.Customers;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IPasswordHasher<Customer>,
+    PasswordHasher<Customer>>();
+
+builder.Services.AddScoped<ICustomerService,
+    CustomerService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
