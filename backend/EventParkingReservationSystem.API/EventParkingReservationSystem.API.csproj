@@ -102,7 +102,6 @@
     <Folder Include="Models\DTOs\Categories\" />
     <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />
-    <Folder Include="Models\DTOs\Notifications\" />
     <Folder Include="Models\DTOs\Parking\" />
     <Folder Include="Models\DTOs\Seats\" />
     <Folder Include="Models\DTOs\Venues\" />
