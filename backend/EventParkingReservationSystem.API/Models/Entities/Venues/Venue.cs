@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿namespace EventParkingReservationSystem.API.Models.Entities.Venues;
 
 public class Venue
@@ -18,11 +17,4 @@ public class Venue
     public ICollection<Models.Entities.Events.Event> Events { get; set; }
         = new List<Models.Entities.Events.Event>();
 }
-=======
-﻿namespace EventParkingReservationSystem.API.Models.Entities.Venues
-{
-    public class Venue
-    {
-    }
-}
->>>>>>> 1ab0d77b5954dfd2c2db8b36cfda8232aec1a478
+ 
