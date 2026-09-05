@@ -117,12 +117,9 @@
     <Folder Include="Models\Entities\Notifications\" />
     <Folder Include="Models\Entities\ParkingReservations\" />
     <Folder Include="Models\Entities\Parking\" />
-    <Folder Include="Validators\Categories\" />
     <Folder Include="Validators\Customers\" />
-    <Folder Include="Validators\Events\" />
     <Folder Include="Validators\Parking\" />
     <Folder Include="Validators\Seats\" />
-    <Folder Include="Validators\Venues\" />
   </ItemGroup>
 
 </Project>
