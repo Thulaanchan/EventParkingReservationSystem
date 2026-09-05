@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>156c13b5-d7aa-4a93-965d-dcde494e6f7b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +32,6 @@
     <Folder Include="Configurations\Email\" />
     <Folder Include="Configurations\JWT\" />
     <Folder Include="Configurations\Swagger\" />
-    <Folder Include="Controllers\Auth\" />
     <Folder Include="Controllers\Bookings\" />
     <Folder Include="Controllers\Categories\" />
     <Folder Include="Controllers\Customers\" />
@@ -75,11 +75,9 @@
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Notifications\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
-    <Folder Include="Interfaces\Services\Auth\" />
     <Folder Include="Interfaces\Services\Categories\" />
     <Folder Include="Interfaces\Services\Customers\" />
     <Folder Include="Interfaces\Services\Dashboards\" />
-    <Folder Include="Interfaces\Services\Email\" />
     <Folder Include="Interfaces\Services\Events\" />
     <Folder Include="Interfaces\Services\Notifications\" />
     <Folder Include="Interfaces\Services\Parking\" />
