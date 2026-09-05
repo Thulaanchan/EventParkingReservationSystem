@@ -75,8 +75,6 @@
     <Folder Include="Interfaces\Repositories\Dashboards\" />
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Notifications\" />
-    <Folder Include="Interfaces\Repositories\Parking\" />
-    <Folder Include="Interfaces\Repositories\Seats\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Auth\" />
     <Folder Include="Interfaces\Services\Bookings\" />
@@ -100,10 +98,8 @@
     <Folder Include="Mappings\Venues\" />
     <Folder Include="Middleware\ExceptionHandling\" />
     <Folder Include="Middleware\RequestLogging\" />
-    <Folder Include="Models\DTOs\Auth\" />
     <Folder Include="Models\DTOs\Bookings\" />
     <Folder Include="Models\DTOs\Categories\" />
-    <Folder Include="Models\DTOs\Customers\" />
     <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />
     <Folder Include="Models\DTOs\Notifications\" />

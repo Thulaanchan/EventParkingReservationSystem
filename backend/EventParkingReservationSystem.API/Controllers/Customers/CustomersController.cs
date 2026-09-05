@@ -16,8 +16,8 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<CustomerResponseDto>> Register(
-        RegisterCustomerDto request)
+    public async Task<ActionResult<CustomerDto>> Register(
+        [FromBody] RegisterCustomerRequestDto request)
     {
         try
         {
