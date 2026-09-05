@@ -1,16 +1,21 @@
 ﻿using EventParkingReservationSystem.API.Models.Entities.Customers;
 
-namespace EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
-
-public interface ICustomerRepository
+namespace EventParkingReservationSystem.API.Interfaces.Repositories.Customers
 {
-    Task<Customer?> GetByIdAsync(int customerId);
+    public interface ICustomerRepository
+    {
+        Task<Customer?> GetByIdAsync(int customerId);
 
-    Task<Customer?> GetByEmailAsync(string email);
+        Task<Customer?> GetByEmailAsync(string email);
 
-    Task<bool> EmailExistsAsync(string email);
+        Task<bool> EmailExistsAsync(
+            string email,
+            int? excludeCustomerId = null);
 
-    Task<Customer> AddAsync(Customer customer);
+        Task<IReadOnlyList<Customer>> SearchAsync(string? search);
 
-    Task UpdateAsync(Customer customer);
+        Task<Customer> AddAsync(Customer customer);
+
+        Task UpdateAsync(Customer customer);
+    }
 }
