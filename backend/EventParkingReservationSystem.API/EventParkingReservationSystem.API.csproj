@@ -26,7 +26,6 @@
     <Folder Include="Common\Constants\" />
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Models\" />
-    <Folder Include="Common\Pagination\" />
     <Folder Include="Common\Responses\" />
     <Folder Include="Configurations\Authentication\" />
     <Folder Include="Configurations\Email\" />
