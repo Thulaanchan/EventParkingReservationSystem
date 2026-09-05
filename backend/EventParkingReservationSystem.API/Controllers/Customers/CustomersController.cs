@@ -1,4 +1,5 @@
-﻿using EventParkingReservationSystem.API.Interfaces.Services.Customers;
+﻿using EventParkingReservationSystem.API.Interfaces.Services.Auth;
+using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,14 @@ namespace EventParkingReservationSystem.API.Controllers.Customers;
 [Route("api/customers")]
 public class CustomersController : ControllerBase
 {
+    private readonly IAuthService _authService;
     private readonly ICustomerService _customerService;
 
-    public CustomersController(ICustomerService customerService)
+    public CustomersController(
+        IAuthService authService,
+        ICustomerService customerService)
     {
+        _authService = authService;
         _customerService = customerService;
     }
 
@@ -22,7 +27,7 @@ public class CustomersController : ControllerBase
         try
         {
             var customer =
-                await _customerService.RegisterAsync(request);
+                await _authService.RegisterAsync(request);
 
             return StatusCode(
                 StatusCodes.Status201Created,
