@@ -4,19 +4,23 @@ using EventParkingReservationSystem.API.Data.Context;
 
 using EventParkingReservationSystem.API.Interfaces.Repositories.Bookings;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Notifications;
 
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
 using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Interfaces.Services.Email;
+using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
 
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 
 using EventParkingReservationSystem.API.Repositories.Bookings;
 using EventParkingReservationSystem.API.Repositories.Customers;
+using EventParkingReservationSystem.API.Repositories.Notifications;
 
 using EventParkingReservationSystem.API.Services.Auth;
 using EventParkingReservationSystem.API.Services.Customers;
 using EventParkingReservationSystem.API.Services.Email;
+using EventParkingReservationSystem.API.Services.Notifications;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -44,12 +48,23 @@ builder.Services.AddScoped<
     IBookingRepository,
     BookingRepository>();
 
+builder.Services.AddScoped<
+    INotificationRepository,
+    NotificationRepository>();
+
 //
 // Customer services
 //
 builder.Services.AddScoped<
     ICustomerService,
     CustomerService>();
+
+//
+// Notification services
+//
+builder.Services.AddScoped<
+    INotificationService,
+    NotificationService>();
 
 //
 // Authentication services
