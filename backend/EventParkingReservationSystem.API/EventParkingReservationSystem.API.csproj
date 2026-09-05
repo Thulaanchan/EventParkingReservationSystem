@@ -49,7 +49,6 @@
     <Folder Include="Data\Configurations\Events\" />
     <Folder Include="Data\Configurations\Notifications\" />
     <Folder Include="Data\Configurations\Parking\" />
-    <Folder Include="Data\Configurations\Payments\" />
     <Folder Include="Data\Configurations\Seats\" />
     <Folder Include="Data\Configurations\Venues\" />
     <Folder Include="Data\Context\" />
@@ -63,7 +62,6 @@
     <Folder Include="Enums\Authentication\" />
     <Folder Include="Enums\Notifications\" />
     <Folder Include="Enums\Parking\" />
-    <Folder Include="Enums\Payments\" />
     <Folder Include="Enums\Seats\" />
     <Folder Include="Extensions\Application\" />
     <Folder Include="Extensions\Services\" />
@@ -79,7 +77,6 @@
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Notifications\" />
     <Folder Include="Interfaces\Repositories\Parking\" />
-    <Folder Include="Interfaces\Repositories\Payments\" />
     <Folder Include="Interfaces\Repositories\Seats\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Auth\" />
@@ -91,7 +88,6 @@
     <Folder Include="Interfaces\Services\Events\" />
     <Folder Include="Interfaces\Services\Notifications\" />
     <Folder Include="Interfaces\Services\Parking\" />
-    <Folder Include="Interfaces\Services\Payments\" />
     <Folder Include="Interfaces\Services\Seats\" />
     <Folder Include="Interfaces\Services\Venues\" />
     <Folder Include="Mappings\Bookings\" />
@@ -113,7 +109,6 @@
     <Folder Include="Models\DTOs\Events\" />
     <Folder Include="Models\DTOs\Notifications\" />
     <Folder Include="Models\DTOs\Parking\" />
-    <Folder Include="Models\DTOs\Payments\" />
     <Folder Include="Models\DTOs\Seats\" />
     <Folder Include="Models\DTOs\Venues\" />
     <Folder Include="Models\Entities\Bookings\" />
@@ -123,12 +118,10 @@
     <Folder Include="Models\Entities\Notifications\" />
     <Folder Include="Models\Entities\ParkingReservations\" />
     <Folder Include="Models\Entities\Parking\" />
-    <Folder Include="Models\Entities\Payments\" />
     <Folder Include="Validators\Categories\" />
     <Folder Include="Validators\Customers\" />
     <Folder Include="Validators\Events\" />
     <Folder Include="Validators\Parking\" />
-    <Folder Include="Validators\Payments\" />
     <Folder Include="Validators\Seats\" />
     <Folder Include="Validators\Venues\" />
   </ItemGroup>
