@@ -100,14 +100,12 @@
     <Folder Include="Models\DTOs\Categories\" />
     <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />
-    <Folder Include="Models\DTOs\Notifications\" />
     <Folder Include="Models\DTOs\Parking\" />
     <Folder Include="Models\DTOs\Seats\" />
     <Folder Include="Models\DTOs\Venues\" />
     <Folder Include="Models\Entities\Categories\" />
     <Folder Include="Models\Entities\Customers\" />
     <Folder Include="Models\Entities\Events\" />
-    <Folder Include="Models\Entities\Notifications\" />
     <Folder Include="Models\Entities\ParkingReservations\" />
     <Folder Include="Models\Entities\Parking\" />
     <Folder Include="Validators\Customers\" />

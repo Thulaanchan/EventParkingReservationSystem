@@ -17,3 +17,5 @@ public class Venue
     public ICollection<Models.Entities.Events.Event> Events { get; set; }
         = new List<Models.Entities.Events.Event>();
 
+}
+
