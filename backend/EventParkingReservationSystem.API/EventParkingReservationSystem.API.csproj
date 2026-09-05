@@ -69,7 +69,6 @@
     <Folder Include="Helpers\Bookings\" />
     <Folder Include="Helpers\DateTime\" />
     <Folder Include="Helpers\Payments\" />
-    <Folder Include="Interfaces\Repositories\Bookings\" />
     <Folder Include="Interfaces\Repositories\Categories\" />
     <Folder Include="Interfaces\Repositories\Customers\" />
     <Folder Include="Interfaces\Repositories\Dashboards\" />
@@ -77,7 +76,6 @@
     <Folder Include="Interfaces\Repositories\Notifications\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Auth\" />
-    <Folder Include="Interfaces\Services\Bookings\" />
     <Folder Include="Interfaces\Services\Categories\" />
     <Folder Include="Interfaces\Services\Customers\" />
     <Folder Include="Interfaces\Services\Dashboards\" />
@@ -106,7 +104,6 @@
     <Folder Include="Models\DTOs\Parking\" />
     <Folder Include="Models\DTOs\Seats\" />
     <Folder Include="Models\DTOs\Venues\" />
-    <Folder Include="Models\Entities\Bookings\" />
     <Folder Include="Models\Entities\Categories\" />
     <Folder Include="Models\Entities\Customers\" />
     <Folder Include="Models\Entities\Events\" />
