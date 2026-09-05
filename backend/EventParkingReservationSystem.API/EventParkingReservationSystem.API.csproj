@@ -110,7 +110,6 @@
     <Folder Include="Models\Entities\Categories\" />
     <Folder Include="Models\Entities\Customers\" />
     <Folder Include="Models\Entities\Events\" />
-    <Folder Include="Models\Entities\Notifications\" />
     <Folder Include="Models\Entities\ParkingReservations\" />
     <Folder Include="Models\Entities\Parking\" />
     <Folder Include="Validators\Customers\" />
