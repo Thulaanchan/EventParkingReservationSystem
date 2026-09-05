@@ -75,8 +75,6 @@
     <Folder Include="Interfaces\Repositories\Dashboards\" />
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Notifications\" />
-    <Folder Include="Interfaces\Repositories\Parking\" />
-    <Folder Include="Interfaces\Repositories\Seats\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Auth\" />
     <Folder Include="Interfaces\Services\Bookings\" />
