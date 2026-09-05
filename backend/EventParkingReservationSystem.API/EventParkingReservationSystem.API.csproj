@@ -80,7 +80,6 @@
     <Folder Include="Interfaces\Services\Dashboards\" />
     <Folder Include="Interfaces\Services\Email\" />
     <Folder Include="Interfaces\Services\Events\" />
-    <Folder Include="Interfaces\Services\Notifications\" />
     <Folder Include="Interfaces\Services\Parking\" />
     <Folder Include="Interfaces\Services\Seats\" />
     <Folder Include="Interfaces\Services\Venues\" />
