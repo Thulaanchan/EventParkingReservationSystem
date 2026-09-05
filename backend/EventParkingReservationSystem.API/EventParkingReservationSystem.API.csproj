@@ -73,7 +73,6 @@
     <Folder Include="Interfaces\Repositories\Customers\" />
     <Folder Include="Interfaces\Repositories\Dashboards\" />
     <Folder Include="Interfaces\Repositories\Events\" />
-    <Folder Include="Interfaces\Repositories\Notifications\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Auth\" />
     <Folder Include="Interfaces\Services\Categories\" />
