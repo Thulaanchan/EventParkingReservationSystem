@@ -11,6 +11,10 @@ namespace EventParkingReservationSystem.API.Models.Entities.Seats
         public string Name { get; set; } = string.Empty;
         // VIP, Platinum, Gold, Silver
 
+        // Short identifier used in seat codes.
+        // Example: Platinum = P, Gold = G, Silver = S
+        public string Code { get; set; } = string.Empty;
+
         public decimal AdultPrice { get; set; }
 
         public bool IsPubliclyBookable { get; set; } = true;

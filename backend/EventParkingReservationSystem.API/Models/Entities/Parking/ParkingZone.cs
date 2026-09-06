@@ -1,4 +1,5 @@
-﻿using EventParkingReservationSystem.API.Models.Entities.Events;
+﻿using EventParkingReservationSystem.API.Enums.Parking;
+using EventParkingReservationSystem.API.Models.Entities.Events;
 
 namespace EventParkingReservationSystem.API.Models.Entities.Parking
 {
