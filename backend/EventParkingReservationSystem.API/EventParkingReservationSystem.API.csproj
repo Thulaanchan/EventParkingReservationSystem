@@ -59,7 +59,6 @@
     <Folder Include="Data\Seed\Venues\" />
     <Folder Include="Enums\Authentication\" />
     <Folder Include="Enums\Notifications\" />
-    <Folder Include="Enums\Parking\" />
     <Folder Include="Enums\Seats\" />
     <Folder Include="Extensions\Application\" />
     <Folder Include="Extensions\Services\" />
@@ -101,7 +100,6 @@
     <Folder Include="Models\Entities\Customers\" />
     <Folder Include="Models\Entities\Events\" />
     <Folder Include="Models\Entities\ParkingReservations\" />
-    <Folder Include="Models\Entities\Parking\" />
     <Folder Include="Validators\Customers\" />
     <Folder Include="Validators\Parking\" />
     <Folder Include="Validators\Seats\" />

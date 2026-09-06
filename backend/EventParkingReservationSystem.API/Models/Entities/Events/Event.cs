@@ -23,6 +23,9 @@ public class Event
 
     public decimal TicketPrice { get; set; }
 
+    // Child tickets are 50% discounted from adult seat-category price.
+    public decimal ChildDiscountPercent { get; set; } = 50m;
+
     public int? Capacity { get; set; }
 
     public string? StageLayout { get; set; }
