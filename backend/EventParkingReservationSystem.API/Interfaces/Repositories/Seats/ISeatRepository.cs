@@ -5,14 +5,6 @@ namespace EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
 
 public interface ISeatRepository
 {
-    Task<bool> EventExistsAsync(
-        int eventId,
-        CancellationToken cancellationToken = default);
-
-    Task<bool> EventHasBookingsAsync(
-        int eventId,
-        CancellationToken cancellationToken = default);
-
     Task<IReadOnlyList<Seat>> GetByEventAsync(
         int eventId,
         CancellationToken cancellationToken = default);
@@ -27,6 +19,7 @@ public interface ISeatRepository
 
     Task<bool> PositionExistsAsync(
         int eventId,
+        int seatSectionId,
         string rowLabel,
         int number,
         int? excludeSeatId = null,
@@ -44,18 +37,10 @@ public interface ISeatRepository
         SeatStatus newStatus,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<int>> GetUnavailableSeatIdsAsync(
-        IReadOnlyCollection<int> seatIds,
-        CancellationToken cancellationToken = default);
-
-    Task<IReadOnlyList<int>> GetSeatIdsForBookingAsync(
-        int bookingId,
-        CancellationToken cancellationToken = default);
-
-    Task AddBookingSeatLinksAsync(
-        int bookingId,
-        IReadOnlyCollection<int> seatIds,
-        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<int>>
+        GetUnavailableSeatIdsAsync(
+            IReadOnlyCollection<int> seatIds,
+            CancellationToken cancellationToken = default);
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
