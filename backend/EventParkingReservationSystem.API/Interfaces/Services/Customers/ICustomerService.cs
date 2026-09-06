@@ -1,4 +1,5 @@
-﻿using EventParkingReservationSystem.API.Models.DTOs.Customers;
+﻿using EventParkingReservationSystem.API.Common.Pagination;
+using EventParkingReservationSystem.API.Models.DTOs.Customers;
 
 namespace EventParkingReservationSystem.API.Interfaces.Services.Customers
 {
@@ -14,8 +15,10 @@ namespace EventParkingReservationSystem.API.Interfaces.Services.Customers
             int customerId,
             UpdateCustomerRequestDto request);
 
-        Task<IReadOnlyList<CustomerSummaryDto>> SearchAsync(
-            string? search);
+        Task<PagedResult<CustomerSummaryDto>> SearchAsync(
+            string? search,
+            int page,
+            int pageSize);
 
         Task<bool> DeactivateAsync(
             int customerId);

@@ -92,7 +92,6 @@
     <Folder Include="Mappings\Venues\" />
     <Folder Include="Middleware\ExceptionHandling\" />
     <Folder Include="Middleware\RequestLogging\" />
-    <Folder Include="Models\DTOs\Bookings\" />
     <Folder Include="Models\DTOs\Categories\" />
     <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />

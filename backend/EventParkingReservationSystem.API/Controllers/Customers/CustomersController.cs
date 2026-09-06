@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using EventParkingReservationSystem.API.Common.Pagination;
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
 using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Models.DTOs.Auth;
@@ -53,12 +54,6 @@ public class CustomersController : ControllerBase
     // =========================
     // 2. GET CUSTOMER BY ID
     // GET: /api/customers/5
-    //
-    // Customer:
-    // can view only own profile
-    //
-    // Administrator:
-    // can view any customer profile
     // =========================
     [Authorize(Roles = "Customer,Administrator")]
     [HttpGet("{id:int}")]
@@ -114,9 +109,6 @@ public class CustomersController : ControllerBase
     // =========================
     // 3. UPDATE OWN PROFILE
     // PUT: /api/customers/5
-    //
-    // Only Customer role
-    // Customer can update only own profile
     // =========================
     [Authorize(Roles = "Customer")]
     [HttpPut("{id:int}")]
@@ -210,28 +202,27 @@ public class CustomersController : ControllerBase
     //
     // GET: /api/customers
     // GET: /api/customers?search=aari
-    //
-    // Administrator only
+    // GET: /api/customers?search=aari&page=1&pageSize=10
     // =========================
     [Authorize(Roles = "Administrator")]
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<CustomerSummaryDto>>> Search(
-        [FromQuery] string? search)
+    public async Task<ActionResult<PagedResult<CustomerSummaryDto>>> Search(
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
         var customers =
-            await _customerService.SearchAsync(search);
+            await _customerService.SearchAsync(
+                search,
+                page,
+                pageSize);
 
         return Ok(customers);
     }
 
     // =========================
     // 5. ADMIN DEACTIVATE CUSTOMER
-    //
     // DELETE: /api/customers/5
-    //
-    // This does NOT physically delete customer.
-    // It sets IsActive = false.
-    // Administrator only.
     // =========================
     [Authorize(Roles = "Administrator")]
     [HttpDelete("{id:int}")]
