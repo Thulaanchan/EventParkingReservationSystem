@@ -1,4 +1,6 @@
-﻿using EventParkingReservationSystem.API.Models.Entities.Customers;
+﻿using EventParkingReservationSystem.API.Common.Pagination;
+using EventParkingReservationSystem.API.Models.Entities.Customers;
+
 
 namespace EventParkingReservationSystem.API.Interfaces.Repositories.Customers
 {
@@ -12,7 +14,10 @@ namespace EventParkingReservationSystem.API.Interfaces.Repositories.Customers
             string email,
             int? excludeCustomerId = null);
 
-        Task<IReadOnlyList<Customer>> SearchAsync(string? search);
+        Task<PagedResult<Customer>> SearchAsync(
+            string? search,
+            int page,
+            int pageSize);
 
         Task<Customer> AddAsync(Customer customer);
 

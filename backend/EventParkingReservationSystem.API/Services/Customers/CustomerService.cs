@@ -4,6 +4,7 @@ using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
 using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using EventParkingReservationSystem.API.Models.Entities.Customers;
+using EventParkingReservationSystem.API.Common.Pagination;
 
 namespace EventParkingReservationSystem.API.Services.Customers
 {
@@ -56,11 +57,6 @@ namespace EventParkingReservationSystem.API.Services.Customers
             }
             catch (DbUpdateException)
             {
-                /*
-                 * The database also has a UNIQUE index on Email.
-                 * This protects against near-simultaneous duplicate
-                 * registration requests.
-                 */
                 if (await _customerRepository
                     .EmailExistsAsync(normalizedEmail))
                 {
@@ -123,10 +119,6 @@ namespace EventParkingReservationSystem.API.Services.Customers
 
                 customer.Email = normalizedEmail;
 
-                /*
-                 * A newly changed email address has not yet
-                 * been proven to belong to this customer.
-                 */
                 customer.IsEmailVerified = false;
                 customer.EmailVerificationTokenHash = null;
                 customer.EmailVerificationTokenExpiresAt = null;
@@ -142,15 +134,40 @@ namespace EventParkingReservationSystem.API.Services.Customers
             return MapToDto(customer);
         }
 
-        public async Task<IReadOnlyList<CustomerSummaryDto>> SearchAsync(
-            string? search)
+        public async Task<PagedResult<CustomerSummaryDto>> SearchAsync(
+            string? search,
+            int page,
+            int pageSize)
         {
-            var customers =
-                await _customerRepository.SearchAsync(search);
+            page = page < 1
+                ? 1
+                : page;
 
-            return customers
-                .Select(MapToSummaryDto)
-                .ToList();
+            pageSize = pageSize switch
+            {
+                < 1 => 10,
+                > 100 => 100,
+                _ => pageSize
+            };
+
+            var result =
+                await _customerRepository.SearchAsync(
+                    search,
+                    page,
+                    pageSize);
+
+            var items =
+                result.Items
+                    .Select(MapToSummaryDto)
+                    .ToList();
+
+            return new PagedResult<CustomerSummaryDto>
+            {
+                Items = items,
+                Page = result.Page,
+                PageSize = result.PageSize,
+                TotalCount = result.TotalCount
+            };
         }
 
         public async Task<bool> DeactivateAsync(
