@@ -59,6 +59,14 @@ public class BookingRepository : IBookingRepository
             .ToListAsync();
     }
 
+    public async Task<int> CountByCustomerIdAsync(
+        int customerId)
+    {
+        return await _context.Bookings
+            .CountAsync(b =>
+                b.CustomerId == customerId);
+    }
+
     public async Task<Booking> AddAsync(Booking booking)
     {
         await _context.Bookings.AddAsync(booking);

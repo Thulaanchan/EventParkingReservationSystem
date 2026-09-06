@@ -8,12 +8,13 @@ using EventParkingReservationSystem.API.Models.DTOs.Auth;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 using Microsoft.AspNetCore.Identity;
+using EventParkingReservationSystem.API.Common.Constants;
 
 namespace EventParkingReservationSystem.API.Services.Auth;
 
 public class AuthService : IAuthService
 {
-    private const string CustomerRole = "Customer";
+    
 
     private readonly ICustomerService _customerService;
     private readonly ICustomerRepository _customerRepository;
@@ -121,7 +122,7 @@ public class AuthService : IAuthService
                 customer.CustomerId,
                 customer.Email,
                 GetDisplayName(customer),
-                CustomerRole,
+                AppRoles.Customer,
                 request.RememberMe);
 
         return new AuthResponseDto
@@ -131,7 +132,7 @@ public class AuthService : IAuthService
             UserId = customer.CustomerId,
             DisplayName = GetDisplayName(customer),
             Email = customer.Email,
-            Role = CustomerRole
+            Role = AppRoles.Customer
         };
     }
 

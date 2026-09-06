@@ -14,6 +14,7 @@ public interface IBookingRepository
 
     Task<IReadOnlyList<Booking>> GetExpiredPendingBookingsAsync(
         DateTime utcNow);
+    Task<int> CountByCustomerIdAsync(int customerId);
 
     Task<Booking> AddAsync(Booking booking);
 

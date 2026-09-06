@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="BackgroundServices\BookingExpiry\" />
-    <Folder Include="Common\Constants\" />
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Responses\" />
