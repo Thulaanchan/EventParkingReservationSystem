@@ -6,6 +6,7 @@ using EventParkingReservationSystem.API.Models.DTOs.Auth;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using EventParkingReservationSystem.API.Common.Constants;
 
 namespace EventParkingReservationSystem.API.Controllers.Customers;
 
@@ -55,7 +56,8 @@ public class CustomersController : ControllerBase
     // 2. GET CUSTOMER BY ID
     // GET: /api/customers/5
     // =========================
-    [Authorize(Roles = "Customer,Administrator")]
+    [Authorize(
+     Roles = AppRoles.Customer + "," + AppRoles.Administrator)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CustomerDto>> GetById(
         int id)
@@ -79,11 +81,10 @@ public class CustomersController : ControllerBase
             });
         }
 
-        var isAdministrator =
-            string.Equals(
-                role,
-                "Administrator",
-                StringComparison.OrdinalIgnoreCase);
+            var isAdministrator =string.Equals(
+             role,
+             AppRoles.Administrator,
+             StringComparison.OrdinalIgnoreCase);
 
         if (!isAdministrator &&
             authenticatedUserId != id)
@@ -110,7 +111,7 @@ public class CustomersController : ControllerBase
     // 3. UPDATE OWN PROFILE
     // PUT: /api/customers/5
     // =========================
-    [Authorize(Roles = "Customer")]
+    [Authorize(Roles = AppRoles.Customer)]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CustomerDto>> Update(
         int id,
@@ -204,7 +205,7 @@ public class CustomersController : ControllerBase
     // GET: /api/customers?search=aari
     // GET: /api/customers?search=aari&page=1&pageSize=10
     // =========================
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = AppRoles.Administrator)]
     [HttpGet]
     public async Task<ActionResult<PagedResult<CustomerSummaryDto>>> Search(
         [FromQuery] string? search,
@@ -224,7 +225,7 @@ public class CustomersController : ControllerBase
     // 5. ADMIN DEACTIVATE CUSTOMER
     // DELETE: /api/customers/5
     // =========================
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = AppRoles.Administrator)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Deactivate(
         int id)

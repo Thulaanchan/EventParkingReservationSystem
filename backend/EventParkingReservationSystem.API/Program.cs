@@ -7,6 +7,7 @@ using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Notifications;
 
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
+using EventParkingReservationSystem.API.Interfaces.Services.Bookings;
 using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Interfaces.Services.Email;
 using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
@@ -18,6 +19,7 @@ using EventParkingReservationSystem.API.Repositories.Customers;
 using EventParkingReservationSystem.API.Repositories.Notifications;
 
 using EventParkingReservationSystem.API.Services.Auth;
+using EventParkingReservationSystem.API.Services.Bookings;
 using EventParkingReservationSystem.API.Services.Customers;
 using EventParkingReservationSystem.API.Services.Email;
 using EventParkingReservationSystem.API.Services.Notifications;
@@ -59,6 +61,13 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     ICustomerService,
     CustomerService>();
+
+//
+// Booking services
+//
+builder.Services.AddScoped<
+    IBookingNumberGenerator,
+    BookingNumberGenerator>();
 
 //
 // Notification services
