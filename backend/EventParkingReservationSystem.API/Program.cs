@@ -1,55 +1,63 @@
 using System.Text;
 
+using EventParkingReservationSystem.API.Configurations.Booking;
 using EventParkingReservationSystem.API.Data.Context;
 
 using EventParkingReservationSystem.API.Interfaces.Repositories.Bookings;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Categories;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Dashboards;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Events;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Notifications;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Parking;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Payments;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Venues;
 
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
 using EventParkingReservationSystem.API.Interfaces.Services.Bookings;
+using EventParkingReservationSystem.API.Interfaces.Services.Categories;
 using EventParkingReservationSystem.API.Interfaces.Services.Customers;
+using EventParkingReservationSystem.API.Interfaces.Services.Dashboards;
 using EventParkingReservationSystem.API.Interfaces.Services.Email;
+using EventParkingReservationSystem.API.Interfaces.Services.Events;
 using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
+using EventParkingReservationSystem.API.Interfaces.Services.Parking;
+using EventParkingReservationSystem.API.Interfaces.Services.Seats;
+using EventParkingReservationSystem.API.Interfaces.Services.Venues;
 
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 
 using EventParkingReservationSystem.API.Repositories.Bookings;
+using EventParkingReservationSystem.API.Repositories.Categories;
 using EventParkingReservationSystem.API.Repositories.Customers;
+using EventParkingReservationSystem.API.Repositories.Dashboards;
+using EventParkingReservationSystem.API.Repositories.Events;
 using EventParkingReservationSystem.API.Repositories.Notifications;
+using EventParkingReservationSystem.API.Repositories.Parking;
 using EventParkingReservationSystem.API.Repositories.Payments;
+using EventParkingReservationSystem.API.Repositories.Seats;
+using EventParkingReservationSystem.API.Repositories.Venues;
 
 using EventParkingReservationSystem.API.Services.Auth;
 using EventParkingReservationSystem.API.Services.Bookings;
+using EventParkingReservationSystem.API.Services.Categories;
 using EventParkingReservationSystem.API.Services.Customers;
+using EventParkingReservationSystem.API.Services.Dashboards;
 using EventParkingReservationSystem.API.Services.Email;
+using EventParkingReservationSystem.API.Services.Events;
 using EventParkingReservationSystem.API.Services.Notifications;
+using EventParkingReservationSystem.API.Services.Parking;
+using EventParkingReservationSystem.API.Services.Seats;
+using EventParkingReservationSystem.API.Services.Venues;
+
+using EventParkingReservationSystem.API.Validators.Bookings;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-
-using EventParkingReservationSystem.API.Enums.Bookings;
-using EventParkingReservationSystem.API.Models.DTOs.Parking;
-using EventParkingReservationSystem.API.Models.DTOs.Seats;
-
-using EventParkingReservationSystem.API.Interfaces.Repositories.Parking;
-using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
-
-using EventParkingReservationSystem.API.Interfaces.Services.Parking;
-using EventParkingReservationSystem.API.Interfaces.Services.Seats;
-
-using EventParkingReservationSystem.API.Repositories.Parking;
-using EventParkingReservationSystem.API.Repositories.Seats;
-
-using EventParkingReservationSystem.API.Services.Parking;
-using EventParkingReservationSystem.API.Services.Seats;
-
-using EventParkingReservationSystem.API.Configurations.Booking;
-using EventParkingReservationSystem.API.Validators.Bookings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,23 +70,79 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
             "DefaultConnection")));
 
 //
+// Shared infrastructure
+//
+builder.Services.AddMemoryCache();
+
+//
 // Repositories
 //
+
+// Customer
 builder.Services.AddScoped<
     ICustomerRepository,
     CustomerRepository>();
 
+// Booking
 builder.Services.AddScoped<
     IBookingRepository,
     BookingRepository>();
 
+// Category
+builder.Services.AddScoped<
+    ICategoryRepository,
+    CategoryRepository>();
+
+// Venue
+builder.Services.AddScoped<
+    IVenueRepository,
+    VenueRepository>();
+
+// Event
+builder.Services.AddScoped<
+    IEventRepository,
+    EventRepository>();
+
+// Seat
+builder.Services.AddScoped<
+    ISeatRepository,
+    SeatRepository>();
+
+builder.Services.AddScoped<
+    ISeatSectionRepository,
+    SeatSectionRepository>();
+
+builder.Services.AddScoped<
+    IEventSeatCategoryRepository,
+    EventSeatCategoryRepository>();
+
+// Parking
+builder.Services.AddScoped<
+    IParkingSlotRepository,
+    ParkingSlotRepository>();
+
+builder.Services.AddScoped<
+    IParkingZoneRepository,
+    ParkingZoneRepository>();
+
+builder.Services.AddScoped<
+    IParkingReservationRepository,
+    ParkingReservationRepository>();
+
+// Payment
+builder.Services.AddScoped<
+    IPaymentRepository,
+    PaymentRepository>();
+
+// Notification
 builder.Services.AddScoped<
     INotificationRepository,
     NotificationRepository>();
 
+// Admin Dashboard
 builder.Services.AddScoped<
-    IPaymentRepository,
-    PaymentRepository>();
+    IAdminDashboardRepository,
+    AdminDashboardRepository>();
 
 //
 // Customer services
@@ -88,12 +152,58 @@ builder.Services.AddScoped<
     CustomerService>();
 
 //
+// Category services
+//
+builder.Services.AddScoped<
+    ICategoryService,
+    CategoryService>();
+
+//
+// Venue services
+//
+builder.Services.AddScoped<
+    IVenueService,
+    VenueService>();
+
+//
+// Event services
+//
+builder.Services.AddSingleton<
+    IEventPosterStorage,
+    LocalEventPosterStorage>();
+
+builder.Services.AddScoped<
+    IEventService,
+    EventService>();
+
+//
+// Seat services
+//
+builder.Services.AddScoped<
+    ISeatService,
+    SeatService>();
+
+//
+// Parking services
+//
+builder.Services.AddScoped<
+    IParkingService,
+    ParkingService>();
+
+//
 // Booking services
 //
 builder.Services.AddScoped<
     IBookingNumberGenerator,
     BookingNumberGenerator>();
 
+builder.Services.AddScoped<
+    IBookingService,
+    BookingService>();
+
+//
+// Booking configuration
+//
 builder.Services
     .AddOptions<BookingHoldOptions>()
     .Bind(
@@ -112,7 +222,14 @@ builder.Services.AddScoped<
     INotificationService,
     NotificationService>();
 
-// 
+//
+// Admin Dashboard services
+//
+builder.Services.AddScoped<
+    IAdminDashboardService,
+    AdminDashboardService>();
+
+//
 // Authentication services
 //
 builder.Services.AddScoped<
