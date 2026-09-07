@@ -192,6 +192,10 @@ builder.Services.AddScoped<
     IParkingService,
     ParkingService>();
 
+builder.Services.AddScoped<
+    IParkingZoneService,
+    ParkingZoneService>();
+
 //
 // Booking services
 //
