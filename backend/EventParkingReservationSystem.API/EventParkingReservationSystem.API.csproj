@@ -31,12 +31,10 @@
     <Folder Include="Configurations\Email\" />
     <Folder Include="Configurations\JWT\" />
     <Folder Include="Configurations\Swagger\" />
-    <Folder Include="Controllers\Categories\" />
     <Folder Include="Controllers\Customers\" />
-    <Folder Include="Controllers\Dashboards\" />
-    <Folder Include="Controllers\Events\" />
     <Folder Include="Controllers\Notifications\" />
     <Folder Include="Controllers\Payments\" />
+    <Folder Include="Controllers\Seats\" />
     <Folder Include="Controllers\Venues\" />
     <Folder Include="Data\Configurations\Categories\" />
     <Folder Include="Data\Configurations\Customers\" />
@@ -55,7 +53,6 @@
     <Folder Include="Enums\Notifications\" />
     <Folder Include="Enums\Seats\" />
     <Folder Include="Extensions\Application\" />
-    <Folder Include="Extensions\Services\" />
     <Folder Include="Filters\" />
     <Folder Include="Helpers\Authentication\" />
     <Folder Include="Helpers\Bookings\" />
