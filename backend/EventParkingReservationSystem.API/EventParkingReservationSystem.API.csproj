@@ -69,11 +69,7 @@
     <Folder Include="Interfaces\Repositories\Dashboards\" />
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
-    <Folder Include="Interfaces\Services\Categories\" />
     <Folder Include="Interfaces\Services\Customers\" />
-    <Folder Include="Interfaces\Services\Dashboards\" />
-    <Folder Include="Interfaces\Services\Events\" />
-    <Folder Include="Interfaces\Services\Venues\" />
     <Folder Include="Mappings\Bookings\" />
     <Folder Include="Mappings\Categories\" />
     <Folder Include="Mappings\Customers\" />

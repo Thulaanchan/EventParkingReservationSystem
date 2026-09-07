@@ -30,4 +30,6 @@ public class Booking
         = DateTime.UtcNow;
 
     public DateTime? UpdatedAt { get; set; }
+    public BookingStatus Status { get; set; } = BookingStatus.Pending;
+    public int Id { get; internal set; }
 }

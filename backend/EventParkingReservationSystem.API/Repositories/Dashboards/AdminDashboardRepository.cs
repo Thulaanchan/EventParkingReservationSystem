@@ -132,9 +132,9 @@ public sealed class AdminDashboardRepository(
             .Take(take)
             .Select(x => new RecentBookingDto
             {
-                BookingId = x.Id,
+                BookingId = x.BookingId,
                 BookingNumber = x.BookingNumber,
-                CustomerName = x.Customer.Name,
+                CustomerName = x.Customer.CustomerName,
                 EventName = x.Event.Name,
                 CreatedAt = x.CreatedAt,
                 Status = x.Status.ToString(),
