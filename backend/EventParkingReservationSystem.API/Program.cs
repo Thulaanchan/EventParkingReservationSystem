@@ -36,6 +36,18 @@ using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Models.DTOs.Parking;
 using EventParkingReservationSystem.API.Models.DTOs.Seats;
 
+using EventParkingReservationSystem.API.Interfaces.Repositories.Parking;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
+
+using EventParkingReservationSystem.API.Interfaces.Services.Parking;
+using EventParkingReservationSystem.API.Interfaces.Services.Seats;
+
+using EventParkingReservationSystem.API.Repositories.Parking;
+using EventParkingReservationSystem.API.Repositories.Seats;
+
+using EventParkingReservationSystem.API.Services.Parking;
+using EventParkingReservationSystem.API.Services.Seats;
+
 using EventParkingReservationSystem.API.Configurations.Booking;
 using EventParkingReservationSystem.API.Validators.Bookings;
 

@@ -21,6 +21,9 @@ public interface IBookingService
         int bookingId,
         int customerId);
 
+    Task<BookingDto> ConfirmAfterPaymentAsync(
+        int bookingId);
+
     Task<int> ExpirePendingBookingsAsync(
         DateTime utcNow);
 }

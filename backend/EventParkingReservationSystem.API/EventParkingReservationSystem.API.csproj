@@ -31,7 +31,6 @@
     <Folder Include="Configurations\Email\" />
     <Folder Include="Configurations\JWT\" />
     <Folder Include="Configurations\Swagger\" />
-    <Folder Include="Controllers\Bookings\" />
     <Folder Include="Controllers\Categories\" />
     <Folder Include="Controllers\Customers\" />
     <Folder Include="Controllers\Dashboards\" />

@@ -5,19 +5,23 @@ using EventParkingReservationSystem.API.Interfaces.Services.Customers;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 using EventParkingReservationSystem.API.Common.Pagination;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Bookings;
 
 namespace EventParkingReservationSystem.API.Services.Customers
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IBookingRepository _bookingRepository;
         private readonly IPasswordHasher<Customer> _passwordHasher;
 
         public CustomerService(
             ICustomerRepository customerRepository,
+            IBookingRepository bookingRepository,
             IPasswordHasher<Customer> passwordHasher)
         {
             _customerRepository = customerRepository;
+            _bookingRepository = bookingRepository;
             _passwordHasher = passwordHasher;
         }
 
@@ -157,9 +161,20 @@ namespace EventParkingReservationSystem.API.Services.Customers
                     pageSize);
 
             var items =
-                result.Items
-                    .Select(MapToSummaryDto)
-                    .ToList();
+             new List<CustomerSummaryDto>();
+
+            foreach (var customer in result.Items)
+            {
+                var dto =
+                    MapToSummaryDto(customer);
+
+                dto.BookingCount =
+                    await _bookingRepository
+                        .CountByCustomerIdAsync(
+                            customer.CustomerId);
+
+                items.Add(dto);
+            }
 
             return new PagedResult<CustomerSummaryDto>
             {
