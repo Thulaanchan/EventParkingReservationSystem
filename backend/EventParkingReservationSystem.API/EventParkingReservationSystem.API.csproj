@@ -41,13 +41,10 @@
     <Folder Include="Controllers\Payments\" />
     <Folder Include="Controllers\Seats\" />
     <Folder Include="Controllers\Venues\" />
-    <Folder Include="Data\Configurations\Bookings\" />
     <Folder Include="Data\Configurations\Categories\" />
     <Folder Include="Data\Configurations\Customers\" />
     <Folder Include="Data\Configurations\Events\" />
     <Folder Include="Data\Configurations\Notifications\" />
-    <Folder Include="Data\Configurations\Parking\" />
-    <Folder Include="Data\Configurations\Seats\" />
     <Folder Include="Data\Configurations\Venues\" />
     <Folder Include="Data\Context\" />
     <Folder Include="Data\Migrations\" />
@@ -76,8 +73,6 @@
     <Folder Include="Interfaces\Services\Customers\" />
     <Folder Include="Interfaces\Services\Dashboards\" />
     <Folder Include="Interfaces\Services\Events\" />
-    <Folder Include="Interfaces\Services\Parking\" />
-    <Folder Include="Interfaces\Services\Seats\" />
     <Folder Include="Interfaces\Services\Venues\" />
     <Folder Include="Mappings\Bookings\" />
     <Folder Include="Mappings\Categories\" />
@@ -93,8 +88,6 @@
     <Folder Include="Models\DTOs\Categories\" />
     <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />
-    <Folder Include="Models\DTOs\Parking\" />
-    <Folder Include="Models\DTOs\Seats\" />
     <Folder Include="Models\DTOs\Venues\" />
     <Folder Include="Models\Entities\Categories\" />
     <Folder Include="Models\Entities\Customers\" />

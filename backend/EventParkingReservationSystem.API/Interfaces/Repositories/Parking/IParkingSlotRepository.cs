@@ -5,13 +5,10 @@ namespace EventParkingReservationSystem.API.Interfaces.Repositories.Parking;
 
 public interface IParkingSlotRepository
 {
-    Task<bool> EventExistsAsync(
-        int eventId,
-        CancellationToken cancellationToken = default);
-
-    Task<IReadOnlyList<ParkingSlot>> GetByEventAsync(
-        int eventId,
-        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ParkingSlot>>
+        GetByEventAsync(
+            int eventId,
+            CancellationToken cancellationToken = default);
 
     Task<ParkingSlot?> GetByIdAsync(
         int id,

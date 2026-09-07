@@ -4,39 +4,36 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventParkingReservationSystem.API.Data.Configurations.Seats;
 
-public class SeatConfiguration
-    : IEntityTypeConfiguration<Seat>
+public class EventSeatCategoryConfiguration
+    : IEntityTypeConfiguration<EventSeatCategory>
 {
     public void Configure(
-        EntityTypeBuilder<Seat> builder)
+        EntityTypeBuilder<EventSeatCategory> builder)
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.RowLabel)
+        builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(50);
 
-        builder.Property(x => x.Number)
+        builder.Property(x => x.Code)
+            .IsRequired()
+            .HasMaxLength(10);
+
+        builder.Property(x => x.AdultPrice)
+            .HasPrecision(18, 2)
             .IsRequired();
 
-        builder.Property(x => x.Status)
+        builder.Property(x => x.IsPubliclyBookable)
             .IsRequired();
 
         builder.Property(x => x.DisplayOrder)
             .IsRequired();
 
-        builder.Property(x => x.PositionX)
-            .HasPrecision(10, 2);
-
-        builder.Property(x => x.PositionY)
-            .HasPrecision(10, 2);
-
         builder.HasIndex(x => new
         {
             x.EventId,
-            x.SeatSectionId,
-            x.RowLabel,
-            x.Number
+            x.Code
         })
         .IsUnique();
 
@@ -45,9 +42,9 @@ public class SeatConfiguration
             .HasForeignKey(x => x.EventId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Section)
-            .WithMany(x => x.Seats)
-            .HasForeignKey(x => x.SeatSectionId)
+        builder.HasMany(x => x.Sections)
+            .WithOne(x => x.SeatCategory)
+            .HasForeignKey(x => x.EventSeatCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
