@@ -8,7 +8,9 @@ using EventParkingReservationSystem.API.Models.DTOs.Bookings;
 using EventParkingReservationSystem.API.Models.DTOs.Parking;
 using EventParkingReservationSystem.API.Models.DTOs.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Bookings;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using EventParkingReservationSystem.API.Data.Context;
 
 namespace EventParkingReservationSystem.API.Services.Bookings;
 
@@ -19,14 +21,17 @@ public class BookingService : IBookingService
     private readonly ISeatService _seatService;
     private readonly IParkingService _parkingService;
     private readonly BookingHoldOptions _bookingHoldOptions;
+    private readonly ApplicationDbContext _context;
 
     public BookingService(
-        IBookingRepository bookingRepository,
-        IBookingNumberGenerator bookingNumberGenerator,
-        ISeatService seatService,
-        IParkingService parkingService,
-        IOptions<BookingHoldOptions> bookingHoldOptions)
+    ApplicationDbContext context,
+    IBookingRepository bookingRepository,
+    IBookingNumberGenerator bookingNumberGenerator,
+    ISeatService seatService,
+    IParkingService parkingService,
+    IOptions<BookingHoldOptions> bookingHoldOptions)
     {
+        _context = context;
         _bookingRepository = bookingRepository;
         _bookingNumberGenerator = bookingNumberGenerator;
         _seatService = seatService;
@@ -235,10 +240,147 @@ public class BookingService : IBookingService
     // EXPIRE PENDING BOOKINGS
     // Will be implemented after cancellation logic.
     // =====================================================
-    public Task<int> ExpirePendingBookingsAsync(
-        DateTime utcNow)
+
+    public async Task<BookingDto> ConfirmAfterPaymentAsync(
+    int bookingId)
     {
-        throw new NotImplementedException();
+        var booking =
+            await _bookingRepository.GetByIdAsync(
+                bookingId);
+
+        if (booking is null)
+        {
+            throw new KeyNotFoundException(
+                "Booking was not found.");
+        }
+
+        // Already confirmed - return safely.
+        if (booking.BookingStatus ==
+            BookingStatus.Confirmed)
+        {
+            return MapToDto(booking);
+        }
+
+        if (booking.BookingStatus ==
+            BookingStatus.Cancelled)
+        {
+            throw new InvalidOperationException(
+                "A cancelled booking cannot be confirmed.");
+        }
+
+        if (booking.BookingStatus ==
+            BookingStatus.Expired)
+        {
+            throw new InvalidOperationException(
+                "An expired booking cannot be confirmed.");
+        }
+
+        if (booking.BookingStatus !=
+            BookingStatus.Pending)
+        {
+            throw new InvalidOperationException(
+                "Only pending bookings can be confirmed.");
+        }
+
+        var utcNow =
+            DateTime.UtcNow;
+
+        // Payment must not confirm an expired hold.
+        if (booking.HoldExpiresAtUtc <= utcNow)
+        {
+            throw new InvalidOperationException(
+                "The booking hold has expired and cannot be confirmed.");
+        }
+
+        await using var transaction =
+            await _context.Database
+                .BeginTransactionAsync();
+
+        try
+        {
+            // Held seats -> Booked
+            await _seatService
+                .ConfirmSeatsForBookingAsync(
+                    booking.BookingId);
+
+            // Held parking -> Occupied
+            // If there is no parking reservation,
+            // ParkingService safely does nothing.
+            await _parkingService
+                .ConfirmParkingForBookingAsync(
+                    booking.BookingId);
+
+            booking.BookingStatus =
+                BookingStatus.Confirmed;
+
+            booking.UpdatedAt =
+                utcNow;
+
+            await _bookingRepository
+                .UpdateAsync(booking);
+
+            await transaction.CommitAsync();
+
+            return MapToDto(booking);
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+
+            throw;
+        }
+    }
+    public async Task<int> ExpirePendingBookingsAsync(
+    DateTime utcNow)
+    {
+        var expiredBookings =
+            await _bookingRepository
+                .GetExpiredPendingBookingsAsync(
+                    utcNow);
+
+        var expiredCount = 0;
+
+        foreach (var booking in expiredBookings)
+        {
+            await using var transaction =
+                await _context.Database
+                    .BeginTransactionAsync();
+
+            try
+            {
+                // Release all seats held by this booking.
+                await _seatService
+                    .ReleaseSeatsForBookingAsync(
+                        booking.BookingId);
+
+                // Release parking if this booking
+                // has a parking reservation.
+                await _parkingService
+                    .ReleaseParkingForBookingAsync(
+                        booking.BookingId);
+
+                booking.BookingStatus =
+                    BookingStatus.Expired;
+
+                booking.UpdatedAt =
+                    utcNow;
+
+                await _bookingRepository.UpdateAsync(
+                    booking);
+
+                await transaction.CommitAsync();
+
+                expiredCount++;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+
+                throw;
+            }
+        }
+
+        return expiredCount;
     }
 
     // =====================================================
