@@ -40,5 +40,6 @@ namespace EventParkingReservationSystem.API.Models.Entities.Customers
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; }
+        public string CustomerName { get; internal set; }
     }
 }
