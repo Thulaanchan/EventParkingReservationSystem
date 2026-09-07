@@ -37,9 +37,7 @@
     <Folder Include="Controllers\Dashboards\" />
     <Folder Include="Controllers\Events\" />
     <Folder Include="Controllers\Notifications\" />
-    <Folder Include="Controllers\Parking\" />
     <Folder Include="Controllers\Payments\" />
-    <Folder Include="Controllers\Seats\" />
     <Folder Include="Controllers\Venues\" />
     <Folder Include="Data\Configurations\Categories\" />
     <Folder Include="Data\Configurations\Customers\" />
