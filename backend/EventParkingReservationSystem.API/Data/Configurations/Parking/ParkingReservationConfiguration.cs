@@ -1,31 +1,43 @@
-﻿using EventParkingReservationSystem.API.Models.Entities.Bookings;
-using EventParkingReservationSystem.API.Models.Entities.Parking;
-using EventParkingReservationSystem.API.Models.Entities.ParkingReservations;
+﻿using EventParkingReservationSystem.API.Models.Entities.ParkingReservations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventParkingReservationSystem.API.Data.Configurations.Parking;
 
-public class ParkingReservationConfiguration :
-    IEntityTypeConfiguration<ParkingReservation>
+public class ParkingReservationConfiguration
+    : IEntityTypeConfiguration<ParkingReservation>
 {
-    public void Configure(EntityTypeBuilder<ParkingReservation> builder)
+    public void Configure(
+        EntityTypeBuilder<ParkingReservation> builder)
     {
         builder.HasKey(x => x.Id);
 
-        // Maximum one parking reservation per booking.
+        builder.Property(x => x.FeeSnapshot)
+            .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.Property(x => x.VehicleTypeSnapshot)
+            .IsRequired();
+
+        builder.Property(x => x.ZoneNameSnapshot)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(x => x.ReservedAtUtc)
+            .IsRequired();
+
+        // One booking may have at most one parking reservation.
         builder.HasIndex(x => x.BookingId)
             .IsUnique();
 
-        // Useful for availability/reservation lookup.
         builder.HasIndex(x => x.ParkingSlotId);
 
-        builder.HasOne<Booking>()
+        builder.HasOne(x => x.Booking)
             .WithMany()
             .HasForeignKey(x => x.BookingId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<ParkingSlot>()
+        builder.HasOne(x => x.ParkingSlot)
             .WithMany()
             .HasForeignKey(x => x.ParkingSlotId)
             .OnDelete(DeleteBehavior.Restrict);

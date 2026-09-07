@@ -4,34 +4,35 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventParkingReservationSystem.API.Data.Configurations.Parking;
 
-public class ParkingSlotConfiguration
-    : IEntityTypeConfiguration<ParkingSlot>
+public class ParkingZoneConfiguration
+    : IEntityTypeConfiguration<ParkingZone>
 {
     public void Configure(
-        EntityTypeBuilder<ParkingSlot> builder)
+        EntityTypeBuilder<ParkingZone> builder)
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.SlotCode)
+        builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(30);
+            .HasMaxLength(100);
 
-        builder.Property(x => x.Status)
+        builder.Property(x => x.VehicleType)
+            .IsRequired();
+
+        builder.Property(x => x.Fee)
+            .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.Property(x => x.IsOnlineBookable)
             .IsRequired();
 
         builder.Property(x => x.DisplayOrder)
             .IsRequired();
 
-        builder.Property(x => x.PositionX)
-            .HasPrecision(10, 2);
-
-        builder.Property(x => x.PositionY)
-            .HasPrecision(10, 2);
-
         builder.HasIndex(x => new
         {
             x.EventId,
-            x.SlotCode
+            x.Name
         })
         .IsUnique();
 
@@ -40,8 +41,8 @@ public class ParkingSlotConfiguration
             .HasForeignKey(x => x.EventId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.ParkingZone)
-            .WithMany(x => x.ParkingSlots)
+        builder.HasMany(x => x.ParkingSlots)
+            .WithOne(x => x.ParkingZone)
             .HasForeignKey(x => x.ParkingZoneId)
             .OnDelete(DeleteBehavior.Restrict);
     }

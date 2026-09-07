@@ -1,18 +1,12 @@
 ﻿namespace EventParkingReservationSystem.API.Models.DTOs.Parking;
 
-public class ParkingSlotDto
+public class ParkingZoneDto
 {
     public int Id { get; set; }
 
     public int EventId { get; set; }
 
-    public int ParkingZoneId { get; set; }
-
-    public string SlotCode { get; set; } = string.Empty;
-
-    public string Status { get; set; } = string.Empty;
-
-    public string ZoneName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     public string VehicleType { get; set; } = string.Empty;
 
@@ -22,7 +16,5 @@ public class ParkingSlotDto
 
     public int DisplayOrder { get; set; }
 
-    public decimal? PositionX { get; set; }
-
-    public decimal? PositionY { get; set; }
+    public int SlotCount { get; set; }
 }

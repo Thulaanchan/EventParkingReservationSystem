@@ -4,29 +4,49 @@ namespace EventParkingReservationSystem.API.Validators.Seats;
 
 public static class SeatValidator
 {
-    public static void ValidateReserveRequest(ReserveSeatsRequest request)
+    public static void ValidateReserveRequest(
+        ReserveSeatsRequest request)
     {
-        if (request.SeatIds == null || request.SeatIds.Count == 0)
+        if (request.Seats is null ||
+            request.Seats.Count == 0)
         {
             throw new ArgumentException(
                 "At least one seat must be selected.");
         }
 
-        if (request.SeatIds.Any(id => id <= 0))
+        if (request.Seats.Any(x => x.SeatId <= 0))
         {
             throw new ArgumentException(
-                "Every seat id must be greater than zero.");
+                "Every seat id must be valid.");
         }
 
-        if (request.SeatIds.Count != request.SeatIds.Distinct().Count())
+        var duplicateSeatIds =
+            request.Seats
+                .GroupBy(x => x.SeatId)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToArray();
+
+        if (duplicateSeatIds.Length > 0)
         {
             throw new ArgumentException(
                 "The same seat cannot be selected more than once.");
         }
     }
 
-    public static string NormalizeRowLabel(string rowLabel)
+    public static string NormalizeRowLabel(
+        string rowLabel)
     {
-        return rowLabel.Trim().ToUpperInvariant();
+        return rowLabel
+            .Trim()
+            .ToUpperInvariant();
+    }
+
+    public static string NormalizeCode(
+        string code)
+    {
+        return code
+            .Trim()
+            .ToUpperInvariant();
     }
 }

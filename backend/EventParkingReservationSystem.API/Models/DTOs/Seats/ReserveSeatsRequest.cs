@@ -6,5 +6,5 @@ public class ReserveSeatsRequest
 {
     [Required]
     [MinLength(1)]
-    public List<int> SeatIds { get; set; } = new();
+    public List<SeatSelectionRequest> Seats { get; set; } = new();
 }

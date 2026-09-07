@@ -4,7 +4,8 @@ namespace EventParkingReservationSystem.API.Validators.Parking;
 
 public static class ParkingValidator
 {
-    public static void ValidateReserveRequest(ReserveParkingRequest request)
+    public static void ValidateReserveRequest(
+        ReserveParkingRequest request)
     {
         if (request.ParkingSlotId <= 0)
         {
@@ -13,8 +14,17 @@ public static class ParkingValidator
         }
     }
 
-    public static string NormalizeSlotCode(string slotCode)
+    public static string NormalizeSlotCode(
+        string slotCode)
     {
-        return slotCode.Trim().ToUpperInvariant();
+        return slotCode
+            .Trim()
+            .ToUpperInvariant();
+    }
+
+    public static string NormalizeZoneName(
+        string zoneName)
+    {
+        return zoneName.Trim();
     }
 }
