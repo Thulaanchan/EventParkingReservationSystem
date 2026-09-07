@@ -12,6 +12,12 @@ namespace EventParkingReservationSystem.API.Interfaces.Repositories.Payments
 
         Task<IEnumerable<Payment>> GetAllAsync();
 
+        Task<IEnumerable<Payment>> GetByCustomerIdAsync(
+            int customerId);
+
+        Task<decimal> GetSeatAmountForBookingAsync(
+            int bookingId);
+
         Task AddAsync(Payment payment);
 
         Task UpdateAsync(Payment payment);
