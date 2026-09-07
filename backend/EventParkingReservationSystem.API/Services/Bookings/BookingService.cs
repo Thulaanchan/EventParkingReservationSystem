@@ -11,6 +11,7 @@ using EventParkingReservationSystem.API.Models.Entities.Bookings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using EventParkingReservationSystem.API.Data.Context;
+using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
 
 namespace EventParkingReservationSystem.API.Services.Bookings;
 
@@ -22,6 +23,7 @@ public class BookingService : IBookingService
     private readonly IParkingService _parkingService;
     private readonly BookingHoldOptions _bookingHoldOptions;
     private readonly ApplicationDbContext _context;
+    private readonly INotificationService _notificationService;
 
     public BookingService(
     ApplicationDbContext context,
@@ -29,6 +31,7 @@ public class BookingService : IBookingService
     IBookingNumberGenerator bookingNumberGenerator,
     ISeatService seatService,
     IParkingService parkingService,
+    INotificationService notificationService,
     IOptions<BookingHoldOptions> bookingHoldOptions)
     {
         _context = context;
@@ -318,6 +321,8 @@ public class BookingService : IBookingService
 
             await _bookingRepository
                 .UpdateAsync(booking);
+            await _notificationService.CreateNotificationAsync(booking.CustomerId,"Booking Cancelled",
+                $"Your booking {booking.BookingNumber} has been cancelled successfully.");
 
             await transaction.CommitAsync();
 
@@ -367,7 +372,10 @@ public class BookingService : IBookingService
 
                 await _bookingRepository.UpdateAsync(
                     booking);
-
+                await _notificationService.CreateNotificationAsync(
+                    booking.CustomerId,
+                    "Booking Confirmed",
+                    $"Your booking {booking.BookingNumber} has been confirmed successfully.");
                 await transaction.CommitAsync();
 
                 expiredCount++;
