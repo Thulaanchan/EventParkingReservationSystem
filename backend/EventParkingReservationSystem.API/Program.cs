@@ -32,6 +32,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
+using EventParkingReservationSystem.API.Enums.Bookings;
+using EventParkingReservationSystem.API.Models.DTOs.Parking;
+using EventParkingReservationSystem.API.Models.DTOs.Seats;
+
+using EventParkingReservationSystem.API.Configurations.Booking;
+using EventParkingReservationSystem.API.Validators.Bookings;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //
@@ -75,6 +82,17 @@ builder.Services.AddScoped<
     IBookingNumberGenerator,
     BookingNumberGenerator>();
 
+builder.Services
+    .AddOptions<BookingHoldOptions>()
+    .Bind(
+        builder.Configuration.GetSection(
+            BookingHoldOptions.SectionName))
+    .ValidateOnStart();
+
+builder.Services.AddSingleton<
+    Microsoft.Extensions.Options.IValidateOptions<BookingHoldOptions>,
+    BookingHoldOptionsValidator>();
+
 //
 // Notification services
 //
@@ -82,7 +100,7 @@ builder.Services.AddScoped<
     INotificationService,
     NotificationService>();
 
-//
+// 
 // Authentication services
 //
 builder.Services.AddScoped<
