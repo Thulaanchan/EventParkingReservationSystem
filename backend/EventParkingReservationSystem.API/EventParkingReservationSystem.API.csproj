@@ -33,7 +33,6 @@
     <Folder Include="Configurations\Swagger\" />
     <Folder Include="Controllers\Customers\" />
     <Folder Include="Controllers\Notifications\" />
-    <Folder Include="Controllers\Payments\" />
     <Folder Include="Controllers\Seats\" />
     <Folder Include="Controllers\Venues\" />
     <Folder Include="Data\Configurations\Categories\" />
