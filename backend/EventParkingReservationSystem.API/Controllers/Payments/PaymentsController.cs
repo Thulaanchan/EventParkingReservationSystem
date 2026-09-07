@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 
+using EventParkingReservationSystem.API.Common.Constants;
 using EventParkingReservationSystem.API.Interfaces.Services.Payments;
 using EventParkingReservationSystem.API.Models.DTOs.Payments;
 
@@ -22,6 +23,7 @@ namespace EventParkingReservationSystem.API.Controllers.Payments
         }
 
         // GET: /api/bookings/{bookingId}/payment
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet("bookings/{bookingId:int}/payment")]
         public async Task<ActionResult<BookingPaymentDto>>
             GetBookingPayment(int bookingId)
@@ -52,6 +54,7 @@ namespace EventParkingReservationSystem.API.Controllers.Payments
         }
 
         // POST: /api/bookings/{bookingId}/payment
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpPost("bookings/{bookingId:int}/payment")]
         public async Task<ActionResult<PaymentResultDto>>
             ProcessPayment(
@@ -106,6 +109,7 @@ namespace EventParkingReservationSystem.API.Controllers.Payments
         }
 
         // GET: /api/payments/customer/{customerId}
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet("payments/customer/{customerId:int}")]
         public async Task<
             ActionResult<IEnumerable<PaymentHistoryDto>>>
@@ -132,6 +136,7 @@ namespace EventParkingReservationSystem.API.Controllers.Payments
         }
 
         // GET: /api/payments/{paymentId}/receipt
+        [Authorize(Roles = AppRoles.Customer)]
         [HttpGet("payments/{paymentId:int}/receipt")]
         public async Task<ActionResult<PaymentReceiptDto>>
             GetReceipt(int paymentId)
@@ -159,6 +164,21 @@ namespace EventParkingReservationSystem.API.Controllers.Payments
             }
 
             return Ok(receipt);
+        }
+
+        // GET: /api/payments
+        // Administrator only
+        [Authorize(Roles = AppRoles.Administrator)]
+        [HttpGet("payments")]
+        public async Task<
+            ActionResult<IEnumerable<PaymentHistoryDto>>>
+            GetAllPayments()
+        {
+            var payments =
+                await _paymentService
+                    .GetAllPaymentsAsync();
+
+            return Ok(payments);
         }
 
         private bool TryGetAuthenticatedCustomerId(
