@@ -10,4 +10,9 @@ public class SeatSelectionRequest
 
     [Required]
     public AttendeeType AttendeeType { get; set; }
+
+    [Required]
+    [MaxLength(100)]
+    public string AttendeeName { get; set; }
+        = string.Empty;
 }

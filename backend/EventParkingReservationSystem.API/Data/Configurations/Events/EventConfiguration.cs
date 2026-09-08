@@ -8,7 +8,8 @@ namespace EventParkingReservationSystem.API.Data.Configurations.Events;
 public sealed class EventConfiguration
     : IEntityTypeConfiguration<Event>
 {
-    public void Configure(EntityTypeBuilder<Event> builder)
+    public void Configure(
+        EntityTypeBuilder<Event> builder)
     {
         builder.ToTable("Events");
 
@@ -24,12 +25,34 @@ public sealed class EventConfiguration
         builder.Property(x => x.TicketPrice)
             .HasPrecision(18, 2);
 
+        builder.Property(x => x.ChildDiscountPercent)
+            .HasPrecision(5, 2);
+
         builder.Property(x => x.StageLayout)
             .HasMaxLength(100);
 
         builder.Property(x => x.PosterUrl)
             .HasMaxLength(500);
 
+        // =====================================================
+        // EVENT ↔ VENUE
+        // =====================================================
+        builder.HasOne(x => x.Venue)
+            .WithMany(v => v.Events)
+            .HasForeignKey(x => x.VenueId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // =====================================================
+        // EVENT ↔ CATEGORY
+        // =====================================================
+        builder.HasOne(x => x.Category)
+            .WithMany(c => c.Events)
+            .HasForeignKey(x => x.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // =====================================================
+        // INDEXES
+        // =====================================================
         builder.HasIndex(x => x.EventDate);
 
         builder.HasIndex(x => x.CategoryId);
@@ -40,6 +63,10 @@ public sealed class EventConfiguration
             x.EventDate
         });
 
-        builder.HasData(EventSeedData.GetEvents());
+        // =====================================================
+        // SEED DATA
+        // =====================================================
+        builder.HasData(
+            EventSeedData.GetEvents());
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using EventParkingReservationSystem.API.Common.Constants;
+using EventParkingReservationSystem.API.Common.Exceptions;
 using EventParkingReservationSystem.API.Interfaces.Services.Bookings;
 using EventParkingReservationSystem.API.Models.DTOs.Bookings;
 using Microsoft.AspNetCore.Authorization;
@@ -43,9 +44,10 @@ public class BookingsController : ControllerBase
         try
         {
             var booking =
-                await _bookingService.CreateAsync(
-                    customerId,
-                    request);
+                await _bookingService
+                    .CreateAsync(
+                        customerId,
+                        request);
 
             return StatusCode(
                 StatusCodes.Status201Created,
@@ -55,14 +57,49 @@ public class BookingsController : ControllerBase
         {
             return BadRequest(new
             {
-                message = ex.Message
+                message =
+                    ex.Message
+            });
+        }
+        catch (BookingConflictException ex)
+        {
+            // =========================================
+            // SEAT DOUBLE-BOOKING CONFLICT
+            // =========================================
+            //
+            // Return both the message and the
+            // conflicting seat ids so Angular can:
+            //
+            // 1. Show the conflict message.
+            // 2. Refresh the seat map.
+            // 3. Remove taken seats from selection.
+            //
+            return Conflict(new
+            {
+                message =
+                    ex.Message,
+
+                conflictingSeatIds =
+                    ex.ConflictingSeatIds
+            });
+        }
+        catch (ParkingConflictException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message,
+                conflictingParkingSlotId =
+                    ex.ConflictingParkingSlotId
             });
         }
         catch (InvalidOperationException ex)
         {
+            // Other booking conflicts such as
+            // parking reservation failures.
             return Conflict(new
             {
-                message = ex.Message
+                message =
+                    ex.Message
             });
         }
     }
@@ -95,7 +132,9 @@ public class BookingsController : ControllerBase
         }
 
         var booking =
-            await _bookingService.GetByIdAsync(id);
+            await _bookingService
+                .GetByIdAsync(
+                    id);
 
         if (booking is null)
         {
@@ -111,12 +150,14 @@ public class BookingsController : ControllerBase
                 AppRoles.Administrator);
 
         if (!isAdministrator &&
-            booking.CustomerId != authenticatedUserId)
+            booking.CustomerId !=
+                authenticatedUserId)
         {
             return Forbid();
         }
 
-        return Ok(booking);
+        return Ok(
+            booking);
     }
 
 
@@ -165,7 +206,8 @@ public class BookingsController : ControllerBase
                 .GetCustomerBookingsAsync(
                     customerId);
 
-        return Ok(bookings);
+        return Ok(
+            bookings);
     }
 
 
@@ -199,7 +241,8 @@ public class BookingsController : ControllerBase
                 .GetEventBookingsAsync(
                     eventId);
 
-        return Ok(bookings);
+        return Ok(
+            bookings);
     }
 
 
@@ -232,9 +275,10 @@ public class BookingsController : ControllerBase
         try
         {
             var result =
-                await _bookingService.CancelAsync(
-                    id,
-                    customerId);
+                await _bookingService
+                    .CancelAsync(
+                        id,
+                        customerId);
 
             if (result is null)
             {
@@ -245,7 +289,8 @@ public class BookingsController : ControllerBase
                 });
             }
 
-            return Ok(result);
+            return Ok(
+                result);
         }
         catch (UnauthorizedAccessException)
         {
@@ -255,7 +300,8 @@ public class BookingsController : ControllerBase
         {
             return Conflict(new
             {
-                message = ex.Message
+                message =
+                    ex.Message
             });
         }
     }

@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="BackgroundServices\BookingExpiry\" />
-    <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Responses\" />
     <Folder Include="Configurations\Authentication\" />
@@ -59,7 +58,6 @@
     <Folder Include="Helpers\Payments\" />
     <Folder Include="Interfaces\Repositories\Categories\" />
     <Folder Include="Interfaces\Repositories\Customers\" />
-    <Folder Include="Interfaces\Repositories\Dashboards\" />
     <Folder Include="Interfaces\Repositories\Events\" />
     <Folder Include="Interfaces\Repositories\Venues\" />
     <Folder Include="Interfaces\Services\Customers\" />
@@ -73,7 +71,6 @@
     <Folder Include="Middleware\ExceptionHandling\" />
     <Folder Include="Middleware\RequestLogging\" />
     <Folder Include="Models\DTOs\Categories\" />
-    <Folder Include="Models\DTOs\Dashboards\" />
     <Folder Include="Models\DTOs\Events\" />
     <Folder Include="Models\DTOs\Venues\" />
     <Folder Include="Models\Entities\Categories\" />

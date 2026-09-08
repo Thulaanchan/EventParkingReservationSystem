@@ -417,6 +417,9 @@ public class SeatService : ISeatService
                     BookingId = bookingId,
                     SeatId = seat.Id,
 
+                    AttendeeName =
+                        requestedSeat.AttendeeName.Trim(),
+
                     AttendeeType =
                         requestedSeat.AttendeeType,
 

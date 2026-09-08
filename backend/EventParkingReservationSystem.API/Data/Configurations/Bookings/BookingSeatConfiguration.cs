@@ -12,14 +12,18 @@ public class BookingSeatConfiguration
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.AttendeeName)
+            .IsRequired()
+            .HasMaxLength(100);
+
         builder.Property(x => x.AttendeeType)
             .IsRequired();
 
-        builder.Property(x => x.AttendeeName)
-            .HasMaxLength(150);
-
         builder.Property(x => x.PriceSnapshot)
             .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.Property(x => x.CreatedAtUtc)
             .IsRequired();
 
         builder.HasIndex(x => new
@@ -30,7 +34,7 @@ public class BookingSeatConfiguration
         .IsUnique();
 
         builder.HasOne(x => x.Booking)
-            .WithMany()
+            .WithMany(b => b.BookingSeats)
             .HasForeignKey(x => x.BookingId)
             .OnDelete(DeleteBehavior.Restrict);
 

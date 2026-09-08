@@ -16,6 +16,10 @@ public class SeatConfiguration
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.Property(x => x.SeatCode)
+            .IsRequired()
+            .HasMaxLength(30);
+
         builder.Property(x => x.Number)
             .IsRequired();
 
@@ -31,20 +35,25 @@ public class SeatConfiguration
         builder.Property(x => x.PositionY)
             .HasPrecision(10, 2);
 
+        // A SeatCode must be unique inside an event.
         builder.HasIndex(x => new
         {
             x.EventId,
-            x.SeatSectionId,
-            x.RowLabel,
-            x.Number
+            x.SeatCode
         })
         .IsUnique();
 
+        // =====================================================
+        // EVENT ↔ SEAT
+        // =====================================================
         builder.HasOne(x => x.Event)
             .WithMany()
             .HasForeignKey(x => x.EventId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
+        // =====================================================
+        // SEAT SECTION ↔ SEAT
+        // =====================================================
         builder.HasOne(x => x.Section)
             .WithMany(x => x.Seats)
             .HasForeignKey(x => x.SeatSectionId)

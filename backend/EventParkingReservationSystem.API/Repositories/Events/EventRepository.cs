@@ -129,14 +129,14 @@ public sealed class EventRepository(
     }
 
     public Task<bool> HasActiveBookingsAsync(
-        int eventId,
-        CancellationToken cancellationToken = default)
+    int eventId,
+    CancellationToken cancellationToken = default)
     {
         return _context.Bookings.AnyAsync(
             x =>
                 x.EventId == eventId &&
-                x.Status != BookingStatus.Cancelled &&
-                x.Status != BookingStatus.Expired,
+                x.BookingStatus != BookingStatus.Cancelled &&
+                x.BookingStatus != BookingStatus.Expired,
             cancellationToken);
     }
 

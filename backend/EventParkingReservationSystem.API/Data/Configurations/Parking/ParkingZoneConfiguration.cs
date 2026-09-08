@@ -36,11 +36,17 @@ public class ParkingZoneConfiguration
         })
         .IsUnique();
 
+        // =====================================================
+        // EVENT ↔ PARKING ZONE
+        // =====================================================
         builder.HasOne(x => x.Event)
             .WithMany()
             .HasForeignKey(x => x.EventId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
+        // =====================================================
+        // PARKING ZONE ↔ PARKING SLOT
+        // =====================================================
         builder.HasMany(x => x.ParkingSlots)
             .WithOne(x => x.ParkingZone)
             .HasForeignKey(x => x.ParkingZoneId)

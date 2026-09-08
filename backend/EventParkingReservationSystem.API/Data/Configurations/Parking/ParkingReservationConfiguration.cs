@@ -26,17 +26,25 @@ public class ParkingReservationConfiguration
         builder.Property(x => x.ReservedAtUtc)
             .IsRequired();
 
-        // One booking may have at most one parking reservation.
+        // One booking can have at most one parking reservation.
         builder.HasIndex(x => x.BookingId)
             .IsUnique();
 
         builder.HasIndex(x => x.ParkingSlotId);
 
+        // =====================================================
+        // BOOKING ↔ PARKING RESERVATION
+        // One-to-one relationship
+        // =====================================================
         builder.HasOne(x => x.Booking)
-            .WithMany()
-            .HasForeignKey(x => x.BookingId)
+            .WithOne(b => b.ParkingReservation)
+            .HasForeignKey<ParkingReservation>(
+                x => x.BookingId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // =====================================================
+        // PARKING SLOT ↔ PARKING RESERVATION
+        // =====================================================
         builder.HasOne(x => x.ParkingSlot)
             .WithMany()
             .HasForeignKey(x => x.ParkingSlotId)

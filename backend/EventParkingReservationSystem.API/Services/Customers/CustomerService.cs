@@ -75,17 +75,26 @@ namespace EventParkingReservationSystem.API.Services.Customers
         }
 
         public async Task<CustomerDto?> GetByIdAsync(
-            int customerId)
+    int customerId)
         {
             var customer =
-                await _customerRepository.GetByIdAsync(customerId);
+                await _customerRepository
+                    .GetByIdAsync(customerId);
 
             if (customer is null)
             {
                 return null;
             }
 
-            return MapToDto(customer);
+            var dto =
+                MapToDto(customer);
+
+            dto.BookingCount =
+                await _bookingRepository
+                    .CountByCustomerIdAsync(
+                        customer.CustomerId);
+
+            return dto;
         }
 
         public async Task<CustomerDto?> UpdateAsync(
