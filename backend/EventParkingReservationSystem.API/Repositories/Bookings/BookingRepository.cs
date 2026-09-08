@@ -38,7 +38,7 @@ public class BookingRepository : IBookingRepository
 
             // Optional parking
             .Include(b => b.ParkingReservation)
-                .ThenInclude(pr => pr.ParkingSlot)
+                .ThenInclude(pr => pr!.ParkingSlot)
 
             .FirstOrDefaultAsync(
                 b => b.BookingId == bookingId);
