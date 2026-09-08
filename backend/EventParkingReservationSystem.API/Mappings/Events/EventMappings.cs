@@ -30,6 +30,7 @@ public static class EventMappings
             EndTime = entity.EndTime,
             TicketPrice = entity.TicketPrice,
 
+
             VenueId = entity.VenueId,
             VenueName = entity.Venue.Name,
 
@@ -53,6 +54,7 @@ public static class EventMappings
         int totalSeats,
         int availableSeats,
         int bookedSeats,
+        int bookingCount,
         bool hasBookings)
     {
         var soldPercentage =
@@ -75,6 +77,8 @@ public static class EventMappings
             EndTime = entity.EndTime,
             TicketPrice = entity.TicketPrice,
 
+            ChildDiscountPercent = entity.ChildDiscountPercent,
+
             VenueId = entity.VenueId,
             VenueName = entity.Venue.Name,
             VenueAddress = entity.Venue.Address,
@@ -88,10 +92,15 @@ public static class EventMappings
             TotalSeats = totalSeats,
             AvailableSeats = availableSeats,
             BookedSeats = bookedSeats,
+            BookingCount = bookingCount,
+
             SoldPercentage = soldPercentage,
 
             HasBookings = hasBookings,
+
             CanEditTicketPrice = !hasBookings,
+            CanEditCapacity = !hasBookings,
+            CanEditStageLayout = !hasBookings,
             CanDelete = !hasBookings
         };
     }

@@ -20,6 +20,8 @@ public sealed class EventDetailsDto
 
     public decimal TicketPrice { get; init; }
 
+    public decimal ChildDiscountPercent { get; init; }
+
     public int VenueId { get; init; }
 
     public string VenueName { get; init; } = string.Empty;
@@ -35,10 +37,12 @@ public sealed class EventDetailsDto
     public int? Capacity { get; init; }
 
     public int TotalSeats { get; init; }
-
+  
     public int AvailableSeats { get; init; }
 
     public int BookedSeats { get; init; }
+
+    public int BookingCount { get; init; }
 
     public decimal SoldPercentage { get; init; }
 
@@ -46,5 +50,10 @@ public sealed class EventDetailsDto
 
     public bool CanEditTicketPrice { get; init; }
 
+    public bool CanEditCapacity { get; init; }
+
+    public bool CanEditStageLayout { get; init; }
+
     public bool CanDelete { get; init; }
+     
 }

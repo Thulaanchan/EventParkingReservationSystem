@@ -37,4 +37,5 @@ public sealed class EventListItemDto
     public bool HasBookings { get; init; }
 
     public bool CanDelete { get; init; }
+    public decimal ChildDiscountPercent { get; internal set; }
 }

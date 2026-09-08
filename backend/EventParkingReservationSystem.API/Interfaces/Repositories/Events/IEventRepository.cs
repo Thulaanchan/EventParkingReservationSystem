@@ -23,6 +23,10 @@ public interface IEventRepository
         int eventId,
         CancellationToken cancellationToken = default);
 
+    Task<int> GetActiveBookingCountAsync(
+        int eventId,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(
         EventEntity entity,
         CancellationToken cancellationToken = default);

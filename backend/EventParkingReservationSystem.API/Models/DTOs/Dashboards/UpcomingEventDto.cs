@@ -12,7 +12,11 @@ public sealed class UpcomingEventDto
 
     public TimeOnly StartTime { get; init; }
 
+    public int BookingCount { get; init; }
+
     public int TotalSeats { get; init; }
+
+    public int AvailableSeats { get; init; }
 
     public int BookedSeats { get; init; }
 
