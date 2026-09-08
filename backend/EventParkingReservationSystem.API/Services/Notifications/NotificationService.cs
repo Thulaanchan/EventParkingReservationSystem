@@ -1,5 +1,6 @@
 ﻿using EventParkingReservationSystem.API.Interfaces.Repositories.Notifications;
 using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
+using EventParkingReservationSystem.API.Mappings.Notifications;
 using EventParkingReservationSystem.API.Models.DTOs.Notifications;
 using EventParkingReservationSystem.API.Models.Entities.Notifications;
 
@@ -19,19 +20,16 @@ namespace EventParkingReservationSystem.API.Services.Notifications
             GetCustomerNotificationsAsync(int customerId)
         {
             var notifications =
-                await _notificationRepository.GetByCustomerIdAsync(customerId);
+                await _notificationRepository
+                    .GetByCustomerIdAsync(customerId);
 
-            return notifications.Select(n => new NotificationDto
-            {
-                NotificationId = n.NotificationId,
-                Title = n.Title,
-                Message = n.Message,
-                IsRead = n.IsRead,
-                CreatedAtUtc = n.CreatedAtUtc
-            });
+            return notifications
+                .Select(n => n.ToDto())
+                .ToList();
         }
 
-        public async Task<int> GetUnreadCountAsync(int customerId)
+        public async Task<int> GetUnreadCountAsync(
+            int customerId)
         {
             return await _notificationRepository
                 .GetUnreadCountAsync(customerId);
@@ -42,21 +40,31 @@ namespace EventParkingReservationSystem.API.Services.Notifications
             int customerId)
         {
             var notification =
-                await _notificationRepository.GetByIdAsync(notificationId);
+                await _notificationRepository
+                    .GetByIdAsync(notificationId);
 
             if (notification == null)
+            {
                 return false;
+            }
 
             if (notification.CustomerId != customerId)
+            {
                 return false;
+            }
 
             if (notification.IsRead)
+            {
                 return true;
+            }
 
             notification.IsRead = true;
 
-            await _notificationRepository.UpdateAsync(notification);
-            await _notificationRepository.SaveChangesAsync();
+            await _notificationRepository
+                .UpdateAsync(notification);
+
+            await _notificationRepository
+                .SaveChangesAsync();
 
             return true;
         }
@@ -67,14 +75,18 @@ namespace EventParkingReservationSystem.API.Services.Notifications
             string message)
         {
             if (string.IsNullOrWhiteSpace(title))
+            {
                 throw new ArgumentException(
                     "Notification title is required.",
                     nameof(title));
+            }
 
             if (string.IsNullOrWhiteSpace(message))
+            {
                 throw new ArgumentException(
                     "Notification message is required.",
                     nameof(message));
+            }
 
             var notification = new Notification
             {
@@ -85,8 +97,11 @@ namespace EventParkingReservationSystem.API.Services.Notifications
                 CreatedAtUtc = DateTime.UtcNow
             };
 
-            await _notificationRepository.AddAsync(notification);
-            await _notificationRepository.SaveChangesAsync();
+            await _notificationRepository
+                .AddAsync(notification);
+
+            await _notificationRepository
+                .SaveChangesAsync();
         }
     }
 }
