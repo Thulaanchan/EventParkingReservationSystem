@@ -80,8 +80,7 @@ public class BookingService : IBookingService
 
             HoldExpiresAtUtc =
                 utcNow.AddMinutes(
-                    _bookingHoldOptions
-                        .HoldDurationMinutes),
+                    _bookingHoldOptions.HoldDurationMinutes),
 
             CreatedAt =
                 utcNow
@@ -360,7 +359,7 @@ public class BookingService : IBookingService
     // CONFIRM BOOKING AFTER PAYMENT
     // =====================================================
     public async Task<BookingDto> ConfirmAfterPaymentAsync(
-    int bookingId)
+        int bookingId)
     {
         var booking =
             await _bookingRepository
@@ -402,8 +401,7 @@ public class BookingService : IBookingService
                 "Only pending bookings can be confirmed.");
         }
 
-        var utcNow =
-            DateTime.UtcNow;
+        var utcNow = DateTime.UtcNow;
 
         if (booking.HoldExpiresAtUtc <= utcNow)
         {
@@ -491,7 +489,7 @@ public class BookingService : IBookingService
     // EXPIRE PENDING BOOKINGS
     // =====================================================
     public async Task<int> ExpirePendingBookingsAsync(
-    DateTime utcNow)
+        DateTime utcNow)
     {
         var expiredBookings =
             await _bookingRepository
