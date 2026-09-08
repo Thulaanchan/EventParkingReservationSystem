@@ -23,6 +23,7 @@ public class SeatSectionConfiguration
         builder.Property(x => x.DisplayOrder)
             .IsRequired();
 
+        // Section code must be unique inside an event.
         builder.HasIndex(x => new
         {
             x.EventId,
@@ -30,16 +31,25 @@ public class SeatSectionConfiguration
         })
         .IsUnique();
 
+        // =====================================================
+        // EVENT ↔ SEAT SECTION
+        // =====================================================
         builder.HasOne(x => x.Event)
             .WithMany()
             .HasForeignKey(x => x.EventId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
+        // =====================================================
+        // EVENT SEAT CATEGORY ↔ SEAT SECTION
+        // =====================================================
         builder.HasOne(x => x.SeatCategory)
             .WithMany(x => x.Sections)
             .HasForeignKey(x => x.EventSeatCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // =====================================================
+        // SEAT SECTION ↔ SEATS
+        // =====================================================
         builder.HasMany(x => x.Seats)
             .WithOne(x => x.Section)
             .HasForeignKey(x => x.SeatSectionId)

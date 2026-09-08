@@ -19,4 +19,11 @@ public interface IBookingRepository
     Task<Booking> AddAsync(Booking booking);
 
     Task UpdateAsync(Booking booking);
+    Task<bool> TryConfirmPendingAsync(
+    int bookingId,
+    DateTime utcNow);
+
+    Task<bool> TryExpirePendingAsync(
+        int bookingId,
+        DateTime utcNow);
 }

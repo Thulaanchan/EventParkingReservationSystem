@@ -92,10 +92,17 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // =====================================================
+        // LOAD ALL IEntityTypeConfiguration<T> FILES
+        // =====================================================
+
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(ApplicationDbContext).Assembly);
+
 
         // =====================================================
-        // MEMBER 1
         // CUSTOMER
+        // No separate CustomerConfiguration currently exists.
         // =====================================================
 
         modelBuilder.Entity<Customer>()
@@ -104,8 +111,8 @@ public class ApplicationDbContext : DbContext
 
 
         // =====================================================
-        // MEMBER 1
         // BOOKING
+        // No separate BookingConfiguration currently exists.
         // =====================================================
 
         modelBuilder.Entity<Booking>()
@@ -126,262 +133,8 @@ public class ApplicationDbContext : DbContext
 
 
         // =====================================================
-        // MEMBER 1 + MEMBER 3
-        // BOOKING ↔ BOOKING SEAT ↔ SEAT
-        // =====================================================
-
-        modelBuilder.Entity<BookingSeat>()
-            .HasOne(bs => bs.Booking)
-            .WithMany()
-            .HasForeignKey(bs => bs.BookingId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<BookingSeat>()
-            .HasOne(bs => bs.Seat)
-            .WithMany()
-            .HasForeignKey(bs => bs.SeatId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<BookingSeat>()
-            .HasIndex(bs => new
-            {
-                bs.BookingId,
-                bs.SeatId
-            })
-            .IsUnique();
-
-        modelBuilder.Entity<BookingSeat>()
-            .Property(bs => bs.PriceSnapshot)
-            .HasPrecision(18, 2);
-
-
-        // =====================================================
-        // MEMBER 2
-        // VENUE ↔ EVENT
-        // =====================================================
-
-        modelBuilder.Entity<Event>()
-            .HasOne(e => e.Venue)
-            .WithMany(v => v.Events)
-            .HasForeignKey(e => e.VenueId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 2
-        // EVENT CATEGORY ↔ EVENT
-        // =====================================================
-
-        modelBuilder.Entity<Event>()
-            .HasOne(e => e.Category)
-            .WithMany(c => c.Events)
-            .HasForeignKey(e => e.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 2
-        // EVENT DECIMAL PRECISION
-        // =====================================================
-
-        modelBuilder.Entity<Event>()
-            .Property(e => e.TicketPrice)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Event>()
-            .Property(e => e.ChildDiscountPercent)
-            .HasPrecision(5, 2);
-
-        // =====================================================
-        // MEMBER 2 + MEMBER 3
-        // EVENT ↔ EVENT SEAT CATEGORY
-        // =====================================================
-
-        modelBuilder.Entity<EventSeatCategory>()
-            .HasOne(esc => esc.Event)
-            .WithMany()
-            .HasForeignKey(esc => esc.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<EventSeatCategory>()
-            .Property(esc => esc.AdultPrice)
-            .HasPrecision(18, 2);
-
-
-        // =====================================================
-        // MEMBER 3
-        // EVENT ↔ SEAT SECTION
-        // =====================================================
-
-        modelBuilder.Entity<SeatSection>()
-            .HasOne(ss => ss.Event)
-            .WithMany()
-            .HasForeignKey(ss => ss.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 2 + MEMBER 3
-        // EVENT SEAT CATEGORY ↔ SEAT SECTION
-        // =====================================================
-
-        modelBuilder.Entity<SeatSection>()
-            .HasOne(ss => ss.SeatCategory)
-            .WithMany(esc => esc.Sections)
-            .HasForeignKey(ss => ss.EventSeatCategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 3
-        // EVENT ↔ SEAT
-        // =====================================================
-
-        modelBuilder.Entity<Seat>()
-            .HasOne(s => s.Event)
-            .WithMany()
-            .HasForeignKey(s => s.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 3
-        // SEAT SECTION ↔ SEAT
-        // =====================================================
-
-        modelBuilder.Entity<Seat>()
-            .HasOne(s => s.Section)
-            .WithMany(ss => ss.Seats)
-            .HasForeignKey(s => s.SeatSectionId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Seat>()
-            .HasIndex(s => new
-            {
-                s.EventId,
-                s.SeatCode
-            })
-            .IsUnique();
-
-        modelBuilder.Entity<Seat>()
-            .Property(s => s.PositionX)
-            .HasPrecision(10, 2);
-
-        modelBuilder.Entity<Seat>()
-            .Property(s => s.PositionY)
-            .HasPrecision(10, 2);
-
-
-        // =====================================================
-        // MEMBER 3
-        // EVENT ↔ PARKING ZONE
-        // =====================================================
-
-        modelBuilder.Entity<ParkingZone>()
-            .HasOne(pz => pz.Event)
-            .WithMany()
-            .HasForeignKey(pz => pz.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ParkingZone>()
-            .Property(pz => pz.Fee)
-            .HasPrecision(18, 2);
-
-
-        // =====================================================
-        // MEMBER 3
-        // EVENT ↔ PARKING SLOT
-        // =====================================================
-
-        modelBuilder.Entity<ParkingSlot>()
-            .HasOne(ps => ps.Event)
-            .WithMany()
-            .HasForeignKey(ps => ps.EventId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 3
-        // PARKING ZONE ↔ PARKING SLOT
-        // =====================================================
-
-        modelBuilder.Entity<ParkingSlot>()
-            .HasOne(ps => ps.ParkingZone)
-            .WithMany(pz => pz.ParkingSlots)
-            .HasForeignKey(ps => ps.ParkingZoneId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ParkingSlot>()
-            .HasIndex(ps => new
-            {
-                ps.EventId,
-                ps.SlotCode
-            })
-            .IsUnique();
-
-        modelBuilder.Entity<ParkingSlot>()
-            .Property(ps => ps.PositionX)
-            .HasPrecision(10, 2);
-
-        modelBuilder.Entity<ParkingSlot>()
-            .Property(ps => ps.PositionY)
-            .HasPrecision(10, 2);
-
-
-        // =====================================================
-        // MEMBER 1 + MEMBER 3
-        // BOOKING ↔ PARKING RESERVATION
-        // =====================================================
-
-        modelBuilder.Entity<ParkingReservation>()
-            .HasOne(pr => pr.Booking)
-            .WithMany()
-            .HasForeignKey(pr => pr.BookingId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 3
-        // PARKING SLOT ↔ PARKING RESERVATION
-        // =====================================================
-
-        modelBuilder.Entity<ParkingReservation>()
-            .HasOne(pr => pr.ParkingSlot)
-            .WithMany()
-            .HasForeignKey(pr => pr.ParkingSlotId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<ParkingReservation>()
-            .Property(pr => pr.FeeSnapshot)
-            .HasPrecision(18, 2);
-
-        // Finalized flow allows at most one parking
-        // reservation for a booking.
-        modelBuilder.Entity<ParkingReservation>()
-            .HasIndex(pr => pr.BookingId)
-            .IsUnique();
-
-
-        // =====================================================
-        // MEMBER 4
-        // BOOKING ↔ PAYMENT
-        // =====================================================
-
-        modelBuilder.Entity<Payment>()
-            .Property(p => p.Amount)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Payment>()
-            .HasOne<Booking>()
-            .WithOne()
-            .HasForeignKey<Payment>(
-                p => p.BookingId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-
-        // =====================================================
-        // MEMBER 4
-        // CUSTOMER ↔ NOTIFICATION
+        // NOTIFICATION
+        // No separate NotificationConfiguration currently exists.
         // =====================================================
 
         modelBuilder.Entity<Notification>()

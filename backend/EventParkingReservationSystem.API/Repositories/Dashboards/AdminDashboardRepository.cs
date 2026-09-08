@@ -134,17 +134,25 @@ public sealed class AdminDashboardRepository(
             {
                 BookingId = x.BookingId,
                 BookingNumber = x.BookingNumber,
-                CustomerName = x.Customer.CustomerName,
+
+                CustomerName =
+                    x.Customer.FirstName + " " +
+                    x.Customer.LastName,
+
                 EventName = x.Event.Name,
+
                 CreatedAt = x.CreatedAt,
-                Status = x.Status.ToString(),
+
+                Status =
+                    x.BookingStatus.ToString(),
 
                 Amount =
                     _context.Payments
                         .Where(p =>
-                            p.BookingId == x.Id &&
+                            p.BookingId == x.BookingId &&
                             p.Status == PaymentStatus.Completed)
-                        .Select(p => (decimal?)p.Amount)
+                        .Select(p =>
+                            (decimal?)p.Amount)
                         .FirstOrDefault()
                     ?? 0m
             })
