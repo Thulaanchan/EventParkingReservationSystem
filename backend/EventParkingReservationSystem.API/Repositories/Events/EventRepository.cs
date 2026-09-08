@@ -165,10 +165,10 @@ public sealed class EventRepository(
     CancellationToken cancellationToken = default)
     {
         return _context.Bookings.CountAsync(
-            x =>
-                x.EventId == eventId &&
-                x.Status != BookingStatus.Cancelled &&
-                x.Status != BookingStatus.Expired,
-            cancellationToken);
+    x =>
+        x.EventId == eventId &&
+        x.BookingStatus != BookingStatus.Cancelled &&
+        x.BookingStatus != BookingStatus.Expired,
+    cancellationToken);
     }
 }
