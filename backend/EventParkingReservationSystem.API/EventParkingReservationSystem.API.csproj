@@ -67,9 +67,7 @@
     <Folder Include="Mappings\Categories\" />
     <Folder Include="Mappings\Customers\" />
     <Folder Include="Mappings\Events\" />
-    <Folder Include="Mappings\Notifications\" />
     <Folder Include="Mappings\Parking\" />
-    <Folder Include="Mappings\Payments\" />
     <Folder Include="Mappings\Seats\" />
     <Folder Include="Mappings\Venues\" />
     <Folder Include="Middleware\ExceptionHandling\" />
