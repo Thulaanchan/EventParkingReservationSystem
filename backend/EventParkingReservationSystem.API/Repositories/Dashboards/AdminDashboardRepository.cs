@@ -1,4 +1,5 @@
 ﻿using EventParkingReservationSystem.API.Data.Context;
+using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Enums.Payments;
 using EventParkingReservationSystem.API.Enums.Seats;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Dashboards;
@@ -94,6 +95,20 @@ public sealed class AdminDashboardRepository(
                         x.EventId == item.Id &&
                         x.Status == SeatStatus.Booked,
                     cancellationToken);
+            var available =
+                await _context.Seats.CountAsync(
+                    x =>
+                        x.EventId == item.Id &&
+                        x.Status == SeatStatus.Available,
+                    cancellationToken);
+
+            var bookingCount =
+                await _context.Bookings.CountAsync(
+                    x =>
+                        x.EventId == item.Id &&
+                        x.Status != BookingStatus.Cancelled &&
+                        x.Status != BookingStatus.Expired,
+                    cancellationToken);
 
             result.Add(
                 new UpcomingEventDto
@@ -104,7 +119,10 @@ public sealed class AdminDashboardRepository(
                     EventDate = item.EventDate,
                     StartTime = item.StartTime,
 
+                    BookingCount = bookingCount,
+
                     TotalSeats = total,
+                    AvailableSeats = available,
                     BookedSeats = booked,
 
                     OccupancyPercentage =

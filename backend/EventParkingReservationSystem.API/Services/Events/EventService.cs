@@ -92,6 +92,11 @@ public sealed class EventService(
                 id,
                 cancellationToken);
 
+        var bookingCount =
+            await _eventRepository.GetActiveBookingCountAsync(
+                 id,
+                 cancellationToken);
+
         var hasBookings =
             await _eventRepository.HasActiveBookingsAsync(
                 id,
@@ -101,6 +106,7 @@ public sealed class EventService(
             stats.Total,
             stats.Available,
             stats.Booked,
+            bookingCount,
             hasBookings);
     }
 
@@ -254,10 +260,10 @@ public sealed class EventService(
                     id,
                     cancellationToken);
 
-        /*
-         * BRD safeguard:
-         * price must not change after bookings exist.
-         */
+        
+         // BRD safeguard:
+         // price must not change after bookings exist.
+         
         if (hasBookings &&
             request.TicketPrice != entity.TicketPrice)
         {
@@ -265,9 +271,9 @@ public sealed class EventService(
                 "Ticket price cannot be changed because this event already has active bookings.");
         }
 
-        /*
-         * Finalized-screen safeguard.
-         */
+        
+        // Finalized-screen safeguard.
+          
         if (hasBookings &&
             request.Capacity != entity.Capacity)
         {

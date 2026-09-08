@@ -160,4 +160,15 @@ public sealed class EventRepository(
         return _context.SaveChangesAsync(
             cancellationToken);
     }
+    public Task<int> GetActiveBookingCountAsync(
+    int eventId,
+    CancellationToken cancellationToken = default)
+    {
+        return _context.Bookings.CountAsync(
+            x =>
+                x.EventId == eventId &&
+                x.Status != BookingStatus.Cancelled &&
+                x.Status != BookingStatus.Expired,
+            cancellationToken);
+    }
 }
