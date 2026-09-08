@@ -12,6 +12,8 @@ using EventParkingReservationSystem.API.Interfaces.Services.Bookings;
 using EventParkingReservationSystem.API.Interfaces.Services.Notifications;
 using EventParkingReservationSystem.API.Interfaces.Services.Payments;
 
+using EventParkingReservationSystem.API.Mappings.Payments;
+
 using EventParkingReservationSystem.API.Models.DTOs.Bookings;
 using EventParkingReservationSystem.API.Models.DTOs.Payments;
 using EventParkingReservationSystem.API.Models.Entities.Payments;
@@ -91,26 +93,9 @@ namespace EventParkingReservationSystem.API.Services.Payments
             var calculatedTotal =
                 seatAmount + parkingAmount;
 
-            return new BookingPaymentDto
-            {
-                BookingId = booking.BookingId,
-                BookingNumber = booking.BookingNumber,
-
-                AmountDue =
-                    payment?.Amount ?? calculatedTotal,
-
-                Currency =
-                    payment?.Currency ?? "LKR",
-
-                PaymentStatus =
-                    payment?.Status ?? PaymentStatus.Pending,
-
-                BookingStatus =
-                    booking.BookingStatus,
-
-                HoldExpiresAtUtc =
-                    booking.HoldExpiresAtUtc
-            };
+            return booking.ToBookingPaymentDto(
+                payment,
+                calculatedTotal);
         }
 
         public async Task<PaymentResultDto> ProcessPaymentAsync(
@@ -200,33 +185,16 @@ namespace EventParkingReservationSystem.API.Services.Payments
             var payment = new Payment
             {
                 BookingId = booking.BookingId,
-
-                Amount =
-                    totalAmount,
-
-                Currency =
-                    "LKR",
-
-                PaymentMethod =
-                    request.PaymentMethod,
-
-                Status =
-                    PaymentStatus.Completed,
-
-                PaidAtUtc =
-                    paidAtUtc,
-
-                CreatedAtUtc =
-                    paidAtUtc
+                Amount = totalAmount,
+                Currency = "LKR",
+                PaymentMethod = request.PaymentMethod,
+                Status = PaymentStatus.Completed,
+                PaidAtUtc = paidAtUtc,
+                CreatedAtUtc = paidAtUtc
             };
 
-            /*
-             * AddAsync tracks the payment entity.
-             *
-             * ConfirmAfterPaymentAsync confirms the booking
-             * after successful payment processing.
-             */
-            await _paymentRepository.AddAsync(payment);
+            await _paymentRepository
+                .AddAsync(payment);
 
             BookingDto confirmedBooking;
 
@@ -247,10 +215,6 @@ namespace EventParkingReservationSystem.API.Services.Payments
                     ex);
             }
 
-            /*
-             * Notification failure must not make a successful
-             * payment appear as failed.
-             */
             try
             {
                 await _notificationService
@@ -269,42 +233,21 @@ namespace EventParkingReservationSystem.API.Services.Payments
                     payment.PaymentId);
             }
 
-            return new PaymentResultDto
-            {
-                PaymentId =
-                    payment.PaymentId,
+            /*
+             * Synchronize the booking entity status with the
+             * result returned by BookingService before mapping.
+             */
+            booking.BookingStatus =
+                confirmedBooking.BookingStatus;
 
-                BookingId =
-                    booking.BookingId,
-
-                BookingNumber =
-                    booking.BookingNumber,
-
-                AmountPaid =
-                    payment.Amount,
-
-                Currency =
-                    payment.Currency,
-
-                PaymentMethod =
-                    payment.PaymentMethod,
-
-                PaymentStatus =
-                    payment.Status,
-
-                BookingStatus =
-                    confirmedBooking.BookingStatus,
-
-                PaidAtUtc =
-                    payment.PaidAtUtc ?? paidAtUtc,
-
-                Message =
-                    "Payment completed successfully."
-            };
+            return payment.ToResultDto(
+                booking,
+                "Payment completed successfully.");
         }
 
         public async Task<IEnumerable<PaymentHistoryDto>>
-            GetCustomerPaymentHistoryAsync(int customerId)
+            GetCustomerPaymentHistoryAsync(
+                int customerId)
         {
             var payments =
                 await _paymentRepository
@@ -399,51 +342,17 @@ namespace EventParkingReservationSystem.API.Services.Payments
                 eventEntity.EventDate.ToDateTime(
                     eventEntity.StartTime);
 
-            return new PaymentReceiptDto
-            {
-                PaymentId =
-                    payment.PaymentId,
+            var customerName =
+                $"{customer.FirstName} {customer.LastName}".Trim();
 
-                BookingId =
-                    booking.BookingId,
-
-                BookingNumber =
-                    booking.BookingNumber,
-
-                CustomerName =
-                    $"{customer.FirstName} {customer.LastName}".Trim(),
-
-                EventName =
-                    eventEntity.Name,
-
-                EventDateTime =
-                    eventDateTime,
-
-                VenueName =
-                    venue?.Name ?? string.Empty,
-
-                SeatAmount =
-                    seatAmount,
-
-                ParkingAmount =
-                    parkingAmount,
-
-                TotalAmount =
-                    payment.Amount,
-
-                Currency =
-                    payment.Currency,
-
-                PaymentMethod =
-                    payment.PaymentMethod,
-
-                PaymentStatus =
-                    payment.Status,
-
-                PaidAtUtc =
-                    payment.PaidAtUtc
-                    ?? payment.CreatedAtUtc
-            };
+            return payment.ToReceiptDto(
+                booking.BookingNumber,
+                customerName,
+                eventEntity.Name,
+                eventDateTime,
+                venue?.Name ?? string.Empty,
+                seatAmount,
+                parkingAmount);
         }
 
         public async Task<IEnumerable<PaymentHistoryDto>>
@@ -487,36 +396,9 @@ namespace EventParkingReservationSystem.API.Services.Payments
                 await _eventRepository
                     .GetByIdAsync(booking.EventId);
 
-            return new PaymentHistoryDto
-            {
-                PaymentId =
-                    payment.PaymentId,
-
-                BookingId =
-                    payment.BookingId,
-
-                BookingNumber =
-                    booking.BookingNumber,
-
-                EventName =
-                    eventEntity?.Name ?? string.Empty,
-
-                Amount =
-                    payment.Amount,
-
-                Currency =
-                    payment.Currency,
-
-                PaymentMethod =
-                    payment.PaymentMethod,
-
-                Status =
-                    payment.Status,
-
-                PaidAtUtc =
-                    payment.PaidAtUtc
-                    ?? payment.CreatedAtUtc
-            };
+            return payment.ToHistoryDto(
+                booking.BookingNumber,
+                eventEntity?.Name ?? string.Empty);
         }
 
         private static void ValidatePaymentRequest(
@@ -531,10 +413,6 @@ namespace EventParkingReservationSystem.API.Services.Payments
                     nameof(request.PaymentMethod));
             }
 
-            /*
-             * Card details are required only when
-             * simulated Card payment is selected.
-             */
             if (request.PaymentMethod !=
                 PaymentMethod.Card)
             {
