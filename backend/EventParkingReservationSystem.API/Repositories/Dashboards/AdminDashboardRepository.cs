@@ -1,4 +1,5 @@
 ﻿using EventParkingReservationSystem.API.Data.Context;
+using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Enums.Payments;
 using EventParkingReservationSystem.API.Enums.Seats;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Dashboards;
@@ -94,6 +95,20 @@ public sealed class AdminDashboardRepository(
                         x.EventId == item.Id &&
                         x.Status == SeatStatus.Booked,
                     cancellationToken);
+            var available =
+                await _context.Seats.CountAsync(
+                    x =>
+                        x.EventId == item.Id &&
+                        x.Status == SeatStatus.Available,
+                    cancellationToken);
+
+            var bookingCount =
+                await _context.Bookings.CountAsync(
+                    x =>
+                        x.EventId == item.Id &&
+                        x.BookingStatus != BookingStatus.Cancelled &&
+                        x.BookingStatus != BookingStatus.Expired,
+                    cancellationToken);
 
             result.Add(
                 new UpcomingEventDto
@@ -104,7 +119,10 @@ public sealed class AdminDashboardRepository(
                     EventDate = item.EventDate,
                     StartTime = item.StartTime,
 
+                    BookingCount = bookingCount,
+
                     TotalSeats = total,
+                    AvailableSeats = available,
                     BookedSeats = booked,
 
                     OccupancyPercentage =
@@ -134,17 +152,25 @@ public sealed class AdminDashboardRepository(
             {
                 BookingId = x.BookingId,
                 BookingNumber = x.BookingNumber,
-                CustomerName = x.Customer.CustomerName,
+
+                CustomerName =
+                    x.Customer.FirstName + " " +
+                    x.Customer.LastName,
+
                 EventName = x.Event.Name,
+
                 CreatedAt = x.CreatedAt,
-                Status = x.Status.ToString(),
+
+                Status =
+                    x.BookingStatus.ToString(),
 
                 Amount =
                     _context.Payments
                         .Where(p =>
-                            p.BookingId == x.Id &&
+                            p.BookingId == x.BookingId &&
                             p.Status == PaymentStatus.Completed)
-                        .Select(p => (decimal?)p.Amount)
+                        .Select(p =>
+                            (decimal?)p.Amount)
                         .FirstOrDefault()
                     ?? 0m
             })

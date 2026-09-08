@@ -2,6 +2,7 @@
 using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 using EventParkingReservationSystem.API.Models.Entities.Events;
+using EventParkingReservationSystem.API.Models.Entities.ParkingReservations;
 
 namespace EventParkingReservationSystem.API.Models.Entities.Bookings;
 
@@ -11,15 +12,18 @@ public class Booking
 
     [Required]
     [MaxLength(30)]
-    public string BookingNumber { get; set; } = string.Empty;
+    public string BookingNumber { get; set; }
+        = string.Empty;
 
     public int CustomerId { get; set; }
 
-    public Customer Customer { get; set; } = null!;
+    public Customer Customer { get; set; }
+        = null!;
 
     public int EventId { get; set; }
 
-    public Event Event { get; set; } = null!;
+    public Event Event { get; set; }
+        = null!;
 
     public BookingStatus BookingStatus { get; set; }
         = BookingStatus.Pending;
@@ -30,6 +34,12 @@ public class Booking
         = DateTime.UtcNow;
 
     public DateTime? UpdatedAt { get; set; }
-    public BookingStatus Status { get; set; } = BookingStatus.Pending;
-    public int Id { get; internal set; }
+
+    // One booking can contain one or more seats.
+    public ICollection<BookingSeat> BookingSeats { get; set; }
+        = new List<BookingSeat>();
+
+    // Parking is optional and a booking can have
+    // at most one parking reservation.
+    public ParkingReservation? ParkingReservation { get; set; }
 }

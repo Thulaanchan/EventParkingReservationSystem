@@ -129,14 +129,14 @@ public sealed class EventRepository(
     }
 
     public Task<bool> HasActiveBookingsAsync(
-        int eventId,
-        CancellationToken cancellationToken = default)
+    int eventId,
+    CancellationToken cancellationToken = default)
     {
         return _context.Bookings.AnyAsync(
             x =>
                 x.EventId == eventId &&
-                x.Status != BookingStatus.Cancelled &&
-                x.Status != BookingStatus.Expired,
+                x.BookingStatus != BookingStatus.Cancelled &&
+                x.BookingStatus != BookingStatus.Expired,
             cancellationToken);
     }
 
@@ -158,6 +158,17 @@ public sealed class EventRepository(
         CancellationToken cancellationToken = default)
     {
         return _context.SaveChangesAsync(
+            cancellationToken);
+    }
+    public Task<int> GetActiveBookingCountAsync(
+    int eventId,
+    CancellationToken cancellationToken = default)
+    {
+        return _context.Bookings.CountAsync(
+            x =>
+                x.EventId == eventId &&
+                x.BookingStatus != BookingStatus.Cancelled &&
+                x.BookingStatus != BookingStatus.Expired,
             cancellationToken);
     }
 }
