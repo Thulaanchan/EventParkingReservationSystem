@@ -33,6 +33,9 @@ public class SeatService : ISeatService
         _context = context;
     }
 
+    // =====================================================
+    // GET EVENT SEATS
+    // =====================================================
     public async Task<IReadOnlyList<SeatAvailabilityDto>>
         GetEventSeatsAsync(
             int eventId,
@@ -57,6 +60,9 @@ public class SeatService : ISeatService
             .ToList();
     }
 
+    // =====================================================
+    // GET SEAT BY ID
+    // =====================================================
     public async Task<SeatDto> GetByIdAsync(
         int seatId,
         CancellationToken cancellationToken = default)
@@ -76,6 +82,9 @@ public class SeatService : ISeatService
             seat.Event.ChildDiscountPercent);
     }
 
+    // =====================================================
+    // CREATE SEAT
+    // =====================================================
     public async Task<SeatDto> CreateAsync(
         int eventId,
         CreateSeatRequest request,
@@ -115,19 +124,25 @@ public class SeatService : ISeatService
         var seat = new Seat
         {
             EventId = eventId,
+
             SeatSectionId =
                 request.SeatSectionId,
 
             RowLabel = rowLabel,
+
             Number = request.Number,
 
-            Status = SeatStatus.Available,
+            Status =
+                SeatStatus.Available,
 
             DisplayOrder =
                 request.DisplayOrder,
 
-            PositionX = request.PositionX,
-            PositionY = request.PositionY
+            PositionX =
+                request.PositionX,
+
+            PositionY =
+                request.PositionY
         };
 
         await _seatRepository.AddAsync(
@@ -138,9 +153,9 @@ public class SeatService : ISeatService
             cancellationToken);
 
         var created =
-    await _seatRepository.GetByIdAsync(
-        seat.Id,
-        cancellationToken);
+            await _seatRepository.GetByIdAsync(
+                seat.Id,
+                cancellationToken);
 
         if (created is null)
         {
@@ -152,6 +167,9 @@ public class SeatService : ISeatService
             created.Event.ChildDiscountPercent);
     }
 
+    // =====================================================
+    // UPDATE SEAT
+    // =====================================================
     public async Task<SeatDto> UpdateAsync(
         int seatId,
         UpdateSeatRequest request,
@@ -168,7 +186,8 @@ public class SeatService : ISeatService
                 "Seat was not found.");
         }
 
-        if (seat.Status != SeatStatus.Available)
+        if (seat.Status !=
+            SeatStatus.Available)
         {
             throw new InvalidOperationException(
                 "Held or booked seats cannot be edited.");
@@ -208,14 +227,20 @@ public class SeatService : ISeatService
         seat.SeatSectionId =
             request.SeatSectionId;
 
-        seat.RowLabel = rowLabel;
-        seat.Number = request.Number;
+        seat.RowLabel =
+            rowLabel;
+
+        seat.Number =
+            request.Number;
 
         seat.DisplayOrder =
             request.DisplayOrder;
 
-        seat.PositionX = request.PositionX;
-        seat.PositionY = request.PositionY;
+        seat.PositionX =
+            request.PositionX;
+
+        seat.PositionY =
+            request.PositionY;
 
         await _seatRepository.SaveChangesAsync(
             cancellationToken);
@@ -235,6 +260,9 @@ public class SeatService : ISeatService
             updated.Event.ChildDiscountPercent);
     }
 
+    // =====================================================
+    // DELETE SEAT
+    // =====================================================
     public async Task DeleteAsync(
         int seatId,
         CancellationToken cancellationToken = default)
@@ -250,18 +278,23 @@ public class SeatService : ISeatService
                 "Seat was not found.");
         }
 
-        if (seat.Status != SeatStatus.Available)
+        if (seat.Status !=
+            SeatStatus.Available)
         {
             throw new InvalidOperationException(
                 "Held or booked seats cannot be deleted.");
         }
 
-        _seatRepository.Remove(seat);
+        _seatRepository.Remove(
+            seat);
 
         await _seatRepository.SaveChangesAsync(
             cancellationToken);
     }
 
+    // =====================================================
+    // HOLD SEATS FOR BOOKING
+    // =====================================================
     public async Task<SeatHoldResult>
         HoldSeatsForBookingAsync(
             int bookingId,
@@ -273,8 +306,8 @@ public class SeatService : ISeatService
             request);
 
         var booking =
-          await _bookingRepository.GetByIdAsync(
-            bookingId);
+            await _bookingRepository.GetByIdAsync(
+                bookingId);
 
         if (booking is null)
         {
@@ -282,13 +315,15 @@ public class SeatService : ISeatService
                 "Booking was not found.");
         }
 
-        if (booking.CustomerId != customerId)
+        if (booking.CustomerId !=
+            customerId)
         {
             throw new UnauthorizedAccessException(
                 "You cannot modify another customer's booking.");
         }
 
-        if (booking.BookingStatus != BookingStatus.Pending)
+        if (booking.BookingStatus !=
+            BookingStatus.Pending)
         {
             throw new InvalidOperationException(
                 "Only pending bookings may hold seats.");
@@ -300,162 +335,250 @@ public class SeatService : ISeatService
                 .Distinct()
                 .ToArray();
 
-        await using var transaction =
-            await _context.Database
-                .BeginTransactionAsync(
-                    IsolationLevel.Serializable,
-                    cancellationToken);
+        // =====================================================
+        // TRANSACTION OWNERSHIP
+        // =====================================================
+        //
+        // If BookingService already started a transaction,
+        // reuse that transaction.
+        //
+        // If this method is called independently,
+        // SeatService creates its own Serializable transaction.
+        //
+        var transaction =
+            _context.Database.CurrentTransaction;
 
-        var seats =
-            await _seatRepository.GetByIdsAsync(
-                seatIds,
-                cancellationToken);
+        var ownsTransaction =
+            transaction is null;
 
-        if (seats.Count != seatIds.Length)
+        if (ownsTransaction)
         {
-            await transaction.RollbackAsync(
-                cancellationToken);
-
-            throw new KeyNotFoundException(
-                "One or more selected seats were not found.");
+            transaction =
+                await _context.Database
+                    .BeginTransactionAsync(
+                        IsolationLevel.Serializable,
+                        cancellationToken);
         }
 
-        if (seats.Any(
-            x => x.EventId != booking.EventId))
+        try
         {
-            await transaction.RollbackAsync(
-                cancellationToken);
-
-            throw new InvalidOperationException(
-                "One or more seats do not belong to the booking event.");
-        }
-
-        if (seats.Any(
-            x => !x.Section
-                .SeatCategory
-                .IsPubliclyBookable))
-        {
-            await transaction.RollbackAsync(
-                cancellationToken);
-
-            throw new InvalidOperationException(
-                "One or more seats are not publicly bookable.");
-        }
-
-        var unavailable =
-            seats
-                .Where(x =>
-                    x.Status !=
-                    SeatStatus.Available)
-                .Select(x => x.Id)
-                .ToArray();
-
-        if (unavailable.Length > 0)
-        {
-            await transaction.RollbackAsync(
-                cancellationToken);
-
-            return new SeatHoldResult(
-                false,
-                "Seat availability changed.",
-                unavailable);
-        }
-
-        var changed =
-            await _seatRepository
-                .TryChangeStatusAsync(
+            var seats =
+                await _seatRepository.GetByIdsAsync(
                     seatIds,
-                    SeatStatus.Available,
-                    SeatStatus.Held,
                     cancellationToken);
 
-        if (changed != seatIds.Length)
-        {
-            await transaction.RollbackAsync(
-                cancellationToken);
+            if (seats.Count !=
+                seatIds.Length)
+            {
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
 
-            var conflicts =
+                throw new KeyNotFoundException(
+                    "One or more selected seats were not found.");
+            }
+
+            if (seats.Any(
+                x =>
+                    x.EventId !=
+                    booking.EventId))
+            {
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
+
+                throw new InvalidOperationException(
+                    "One or more seats do not belong to the booking event.");
+            }
+
+            if (seats.Any(
+                x =>
+                    !x.Section
+                        .SeatCategory
+                        .IsPubliclyBookable))
+            {
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
+
+                throw new InvalidOperationException(
+                    "One or more seats are not publicly bookable.");
+            }
+
+            var unavailable =
+                seats
+                    .Where(x =>
+                        x.Status !=
+                        SeatStatus.Available)
+                    .Select(x => x.Id)
+                    .ToArray();
+
+            if (unavailable.Length > 0)
+            {
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
+
+                return new SeatHoldResult(
+                    false,
+                    "Seat availability changed.",
+                    unavailable);
+            }
+
+            var changed =
                 await _seatRepository
-                    .GetUnavailableSeatIdsAsync(
+                    .TryChangeStatusAsync(
                         seatIds,
+                        SeatStatus.Available,
+                        SeatStatus.Held,
                         cancellationToken);
 
-            return new SeatHoldResult(
-                false,
-                "One or more seats were taken by another customer.",
-                conflicts);
-        }
+            if (changed !=
+                seatIds.Length)
+            {
+                var conflicts =
+                    await _seatRepository
+                        .GetUnavailableSeatIdsAsync(
+                            seatIds,
+                            cancellationToken);
 
-        foreach (var requestedSeat in request.Seats)
-        {
-            var seat =
-                seats.Single(
-                    x =>
-                    x.Id ==
-                    requestedSeat.SeatId);
-
-            var adultPrice =
-                seat.Section
-                    .SeatCategory
-                    .AdultPrice;
-
-            var priceSnapshot =
-                requestedSeat.AttendeeType ==
-                AttendeeType.Child
-
-                    ? adultPrice *
-                      (1m -
-                       seat.Event
-                           .ChildDiscountPercent /
-                       100m)
-
-                    : adultPrice;
-
-            var bookingSeat =
-                new BookingSeat
+                if (ownsTransaction &&
+                    transaction is not null)
                 {
-                    BookingId = bookingId,
-                    SeatId = seat.Id,
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
 
-                    AttendeeName =
-                        requestedSeat.AttendeeName.Trim(),
+                return new SeatHoldResult(
+                    false,
+                    "One or more seats were taken by another customer.",
+                    conflicts);
+            }
 
-                    AttendeeType =
-                        requestedSeat.AttendeeType,
+            foreach (var requestedSeat
+                in request.Seats)
+            {
+                var seat =
+                    seats.Single(
+                        x =>
+                            x.Id ==
+                            requestedSeat.SeatId);
 
-                    PriceSnapshot =
-                        priceSnapshot
-                };
+                var adultPrice =
+                    seat.Section
+                        .SeatCategory
+                        .AdultPrice;
 
-            await _context
-                .Set<BookingSeat>()
-                .AddAsync(
-                    bookingSeat,
+                var priceSnapshot =
+                    requestedSeat.AttendeeType ==
+                    AttendeeType.Child
+
+                        ? adultPrice *
+                          (1m -
+                           seat.Event
+                               .ChildDiscountPercent /
+                           100m)
+
+                        : adultPrice;
+
+                var bookingSeat =
+                    new BookingSeat
+                    {
+                        BookingId =
+                            bookingId,
+
+                        SeatId =
+                            seat.Id,
+
+                        AttendeeName =
+                            requestedSeat
+                                .AttendeeName
+                                .Trim(),
+
+                        AttendeeType =
+                            requestedSeat
+                                .AttendeeType,
+
+                        PriceSnapshot =
+                            priceSnapshot
+                    };
+
+                await _context
+                    .Set<BookingSeat>()
+                    .AddAsync(
+                        bookingSeat,
+                        cancellationToken);
+            }
+
+            await _context.SaveChangesAsync(
+                cancellationToken);
+
+            // Commit only if SeatService created
+            // the transaction itself.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.CommitAsync(
                     cancellationToken);
+            }
+
+            return new SeatHoldResult(
+                true,
+                "Seats held successfully.",
+                Array.Empty<int>());
         }
+        catch
+        {
+            // Do not rollback a transaction that belongs
+            // to BookingService or another caller.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+            }
 
-        await _context.SaveChangesAsync(
-            cancellationToken);
-
-        await transaction.CommitAsync(
-            cancellationToken);
-
-        return new SeatHoldResult(
-            true,
-            "Seats held successfully.",
-            Array.Empty<int>());
+            throw;
+        }
+        finally
+        {
+            // Dispose only the transaction
+            // created by SeatService itself.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.DisposeAsync();
+            }
+        }
     }
 
+    // =====================================================
+    // CONFIRM SEATS FOR BOOKING
+    // =====================================================
     public async Task ConfirmSeatsForBookingAsync(
         int bookingId,
         CancellationToken cancellationToken = default)
     {
         var seatIds =
-            await _context.Set<BookingSeat>()
+            await _context
+                .Set<BookingSeat>()
                 .AsNoTracking()
                 .Where(x =>
                     x.BookingId == bookingId)
-                .Select(x => x.SeatId)
+                .Select(x =>
+                    x.SeatId)
                 .ToListAsync(
                     cancellationToken);
 
@@ -472,16 +595,21 @@ public class SeatService : ISeatService
                 cancellationToken);
     }
 
+    // =====================================================
+    // RELEASE SEATS FOR BOOKING
+    // =====================================================
     public async Task ReleaseSeatsForBookingAsync(
         int bookingId,
         CancellationToken cancellationToken = default)
     {
         var seatIds =
-            await _context.Set<BookingSeat>()
+            await _context
+                .Set<BookingSeat>()
                 .AsNoTracking()
                 .Where(x =>
                     x.BookingId == bookingId)
-                .Select(x => x.SeatId)
+                .Select(x =>
+                    x.SeatId)
                 .ToListAsync(
                     cancellationToken);
 
