@@ -26,4 +26,7 @@ public interface IBookingRepository
     Task<bool> TryExpirePendingAsync(
         int bookingId,
         DateTime utcNow);
+    Task<bool> TryCancelAsync(
+        int bookingId,
+        DateTime utcNow);
 }

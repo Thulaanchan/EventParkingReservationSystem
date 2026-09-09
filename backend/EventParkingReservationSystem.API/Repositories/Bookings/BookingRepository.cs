@@ -183,6 +183,33 @@ public class BookingRepository : IBookingRepository
 
         return affectedRows == 1;
     }
+    public async Task<bool> TryCancelAsync(
+    int bookingId,
+    DateTime utcNow)
+    {
+        var affectedRows =
+            await _context.Bookings
+                .Where(booking =>
+                    booking.BookingId == bookingId &&
+                    (
+                        booking.BookingStatus ==
+                            BookingStatus.Pending ||
+                        booking.BookingStatus ==
+                            BookingStatus.Confirmed
+                    ))
+                .ExecuteUpdateAsync(setters =>
+                    setters
+                        .SetProperty(
+                            booking =>
+                                booking.BookingStatus,
+                            BookingStatus.Cancelled)
+                        .SetProperty(
+                            booking =>
+                                booking.UpdatedAt,
+                            utcNow));
+
+        return affectedRows == 1;
+    }
 
     // =====================================================
     // CUSTOMER BOOKING COUNT

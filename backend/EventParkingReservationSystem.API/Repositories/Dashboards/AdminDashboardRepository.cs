@@ -107,7 +107,7 @@ public sealed class AdminDashboardRepository(
                     x =>
                         x.EventId == item.Id &&
                         x.BookingStatus != BookingStatus.Cancelled &&
-                            x.BookingStatus != BookingStatus.Expired,
+                        x.BookingStatus != BookingStatus.Expired,
                     cancellationToken);
 
             result.Add(
