@@ -167,8 +167,8 @@ public sealed class EventRepository(
         return _context.Bookings.CountAsync(
             x =>
                 x.EventId == eventId &&
-                x.Status != BookingStatus.Cancelled &&
-                x.Status != BookingStatus.Expired,
+                x.BookingStatus != BookingStatus.Cancelled &&
+                x.BookingStatus != BookingStatus.Expired,
             cancellationToken);
     }
 }

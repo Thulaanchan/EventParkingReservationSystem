@@ -253,8 +253,8 @@ public class BookingService : IBookingService
     // CANCEL BOOKING
     // =====================================================
     public async Task<CancelBookingResponseDto?> CancelAsync(
-        int bookingId,
-        int customerId)
+    int bookingId,
+    int customerId)
     {
         var booking =
             await _bookingRepository
@@ -298,12 +298,39 @@ public class BookingService : IBookingService
                 "An expired booking cannot be cancelled.");
         }
 
+        var utcNow =
+            DateTime.UtcNow;
+
         await using var transaction =
             await _context.Database
                 .BeginTransactionAsync();
 
         try
         {
+            // =====================================
+            // ATOMIC STATUS TRANSITION
+            // Pending / Confirmed -> Cancelled
+            // =====================================
+            var cancelled =
+                await _bookingRepository
+                    .TryCancelAsync(
+                        booking.BookingId,
+                        utcNow);
+
+            if (!cancelled)
+            {
+                throw new InvalidOperationException(
+                    "The booking could not be cancelled because its status changed.");
+            }
+
+            // ExecuteUpdateAsync bypasses the tracked
+            // Booking entity, so synchronize it.
+            await _context.Entry(booking)
+                .ReloadAsync();
+
+            // =====================================
+            // RELEASE RESERVED RESOURCES
+            // =====================================
             await _seatService
                 .ReleaseSeatsForBookingAsync(
                     booking.BookingId);
@@ -312,16 +339,9 @@ public class BookingService : IBookingService
                 .ReleaseParkingForBookingAsync(
                     booking.BookingId);
 
-            booking.BookingStatus =
-                BookingStatus.Cancelled;
-
-            booking.UpdatedAt =
-                DateTime.UtcNow;
-
-            await _bookingRepository
-                .UpdateAsync(
-                    booking);
-
+            // =====================================
+            // CREATE NOTIFICATION
+            // =====================================
             await _notificationService
                 .CreateNotificationAsync(
                     booking.CustomerId,

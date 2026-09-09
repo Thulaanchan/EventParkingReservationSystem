@@ -106,8 +106,8 @@ public sealed class AdminDashboardRepository(
                 await _context.Bookings.CountAsync(
                     x =>
                         x.EventId == item.Id &&
-                        x.Status != BookingStatus.Cancelled &&
-                        x.Status != BookingStatus.Expired,
+                        x.BookingStatus != BookingStatus.Cancelled &&
+                        x.BookingStatus != BookingStatus.Expired,
                     cancellationToken);
 
             result.Add(
