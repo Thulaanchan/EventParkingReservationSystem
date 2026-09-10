@@ -16,20 +16,11 @@ namespace EventParkingReservationSystem.API.Services.Parking;
 
 public class ParkingService : IParkingService
 {
-    private readonly IParkingSlotRepository
-        _slotRepository;
-
-    private readonly IParkingZoneRepository
-        _zoneRepository;
-
-    private readonly IParkingReservationRepository
-        _reservationRepository;
-
-    private readonly IBookingRepository
-        _bookingRepository;
-
-    private readonly ApplicationDbContext
-        _context;
+    private readonly IParkingSlotRepository _slotRepository;
+    private readonly IParkingZoneRepository _zoneRepository;
+    private readonly IParkingReservationRepository _reservationRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly ApplicationDbContext _context;
 
     public ParkingService(
         IParkingSlotRepository slotRepository,
@@ -40,15 +31,15 @@ public class ParkingService : IParkingService
     {
         _slotRepository = slotRepository;
         _zoneRepository = zoneRepository;
-        _reservationRepository =
-            reservationRepository;
-
+        _reservationRepository = reservationRepository;
         _bookingRepository = bookingRepository;
         _context = context;
     }
 
-    public async Task<
-        IReadOnlyList<ParkingAvailabilityDto>>
+    // =====================================================
+    // GET EVENT PARKING
+    // =====================================================
+    public async Task<IReadOnlyList<ParkingAvailabilityDto>>
         GetEventParkingAsync(
             int eventId,
             CancellationToken cancellationToken = default)
@@ -60,11 +51,13 @@ public class ParkingService : IParkingService
                     cancellationToken);
 
         return slots
-            .Select(x =>
-                x.ToAvailabilityDto())
+            .Select(x => x.ToAvailabilityDto())
             .ToList();
     }
 
+    // =====================================================
+    // GET PARKING SLOT BY ID
+    // =====================================================
     public async Task<ParkingSlotDto>
         GetByIdAsync(
             int slotId,
@@ -84,6 +77,9 @@ public class ParkingService : IParkingService
         return slot.ToDto();
     }
 
+    // =====================================================
+    // CREATE PARKING SLOT
+    // =====================================================
     public async Task<ParkingSlotDto>
         CreateSlotAsync(
             int eventId,
@@ -103,9 +99,8 @@ public class ParkingService : IParkingService
         }
 
         var slotCode =
-            ParkingValidator
-                .NormalizeSlotCode(
-                    request.SlotCode);
+            ParkingValidator.NormalizeSlotCode(
+                request.SlotCode);
 
         var exists =
             await _slotRepository
@@ -128,7 +123,8 @@ public class ParkingService : IParkingService
             ParkingZoneId =
                 request.ParkingZoneId,
 
-            SlotCode = slotCode,
+            SlotCode =
+                slotCode,
 
             Status =
                 ParkingStatus.Available,
@@ -155,9 +151,18 @@ public class ParkingService : IParkingService
                 slot.Id,
                 cancellationToken);
 
-        return created!.ToDto();
+        if (created is null)
+        {
+            throw new InvalidOperationException(
+                "The parking slot was created but could not be loaded.");
+        }
+
+        return created.ToDto();
     }
 
+    // =====================================================
+    // UPDATE PARKING SLOT
+    // =====================================================
     public async Task<ParkingSlotDto>
         UpdateSlotAsync(
             int slotId,
@@ -195,9 +200,8 @@ public class ParkingService : IParkingService
         }
 
         var slotCode =
-            ParkingValidator
-                .NormalizeSlotCode(
-                    request.SlotCode);
+            ParkingValidator.NormalizeSlotCode(
+                request.SlotCode);
 
         var exists =
             await _slotRepository
@@ -216,7 +220,8 @@ public class ParkingService : IParkingService
         slot.ParkingZoneId =
             request.ParkingZoneId;
 
-        slot.SlotCode = slotCode;
+        slot.SlotCode =
+            slotCode;
 
         slot.DisplayOrder =
             request.DisplayOrder;
@@ -235,9 +240,18 @@ public class ParkingService : IParkingService
                 slot.Id,
                 cancellationToken);
 
-        return updated!.ToDto();
+        if (updated is null)
+        {
+            throw new InvalidOperationException(
+                "The parking slot was updated but could not be loaded.");
+        }
+
+        return updated.ToDto();
     }
 
+    // =====================================================
+    // DELETE PARKING SLOT
+    // =====================================================
     public async Task DeleteSlotAsync(
         int slotId,
         CancellationToken cancellationToken = default)
@@ -260,12 +274,16 @@ public class ParkingService : IParkingService
                 "Held or occupied parking slots cannot be deleted.");
         }
 
-        _slotRepository.Remove(slot);
+        _slotRepository.Remove(
+            slot);
 
         await _slotRepository.SaveChangesAsync(
             cancellationToken);
     }
 
+    // =====================================================
+    // RESERVE PARKING FOR BOOKING
+    // =====================================================
     public async Task<ParkingReserveResult>
         ReserveParkingAsync(
             int bookingId,
@@ -273,13 +291,13 @@ public class ParkingService : IParkingService
             ReserveParkingRequest request,
             CancellationToken cancellationToken = default)
     {
-        ParkingValidator
-            .ValidateReserveRequest(
-                request);
+        ParkingValidator.ValidateReserveRequest(
+            request);
 
         var booking =
-             await _bookingRepository
-              .GetByIdAsync(bookingId);
+            await _bookingRepository
+                .GetByIdAsync(
+                    bookingId);
 
         if (booking is null)
         {
@@ -287,13 +305,15 @@ public class ParkingService : IParkingService
                 "Booking was not found.");
         }
 
-        if (booking.CustomerId != customerId)
+        if (booking.CustomerId !=
+            customerId)
         {
             throw new UnauthorizedAccessException(
                 "You cannot modify another customer's booking.");
         }
 
-        if (booking.BookingStatus != BookingStatus.Pending)
+        if (booking.BookingStatus !=
+            BookingStatus.Pending)
         {
             throw new InvalidOperationException(
                 "Parking may only be added to a pending booking.");
@@ -310,7 +330,8 @@ public class ParkingService : IParkingService
                 "Parking slot was not found.");
         }
 
-        if (slot.EventId != booking.EventId)
+        if (slot.EventId !=
+            booking.EventId)
         {
             throw new InvalidOperationException(
                 "The parking slot does not belong to the booking event.");
@@ -323,86 +344,149 @@ public class ParkingService : IParkingService
                 "This parking zone is not available for online booking.");
         }
 
-        await using var transaction =
-            await _context.Database
-                .BeginTransactionAsync(
-                    IsolationLevel.Serializable,
-                    cancellationToken);
+        // =====================================================
+        // TRANSACTION OWNERSHIP
+        // =====================================================
+        //
+        // BookingService may already own an outer transaction.
+        // In that case, reuse it.
+        //
+        // If called independently, ParkingService creates
+        // its own Serializable transaction.
+        //
+        var transaction =
+            _context.Database.CurrentTransaction;
 
-        var existing =
-            await _reservationRepository
-                .GetByBookingIdAsync(
-                    bookingId,
-                    cancellationToken);
+        var ownsTransaction =
+            transaction is null;
 
-        if (existing is not null)
+        if (ownsTransaction)
         {
-            await transaction.RollbackAsync(
-                cancellationToken);
-
-            return new ParkingReserveResult(
-                false,
-                "This booking already has a parking reservation.",
-                existing.ParkingSlotId);
+            transaction =
+                await _context.Database
+                    .BeginTransactionAsync(
+                        IsolationLevel.Serializable,
+                        cancellationToken);
         }
 
-        var changed =
-            await _slotRepository
-                .TryChangeStatusAsync(
-                    slot.Id,
-                    ParkingStatus.Available,
-                    ParkingStatus.Held,
-                    cancellationToken);
-
-        if (changed != 1)
+        try
         {
-            await transaction.RollbackAsync(
-                cancellationToken);
+            var existing =
+                await _reservationRepository
+                    .GetByBookingIdAsync(
+                        bookingId,
+                        cancellationToken);
 
-            return new ParkingReserveResult(
-                false,
-                "The parking slot was taken by another customer.",
-                slot.Id);
-        }
-
-        var reservation =
-            new ParkingReservation
+            if (existing is not null)
             {
-                BookingId = bookingId,
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
 
-                ParkingSlotId =
-                    slot.Id,
+                return new ParkingReserveResult(
+                    false,
+                    "This booking already has a parking reservation.",
+                    existing.ParkingSlotId);
+            }
 
-                FeeSnapshot =
-                    slot.ParkingZone.Fee,
+            var changed =
+                await _slotRepository
+                    .TryChangeStatusAsync(
+                        slot.Id,
+                        ParkingStatus.Available,
+                        ParkingStatus.Held,
+                        cancellationToken);
 
-                VehicleTypeSnapshot =
-                    slot.ParkingZone.VehicleType,
+            if (changed != 1)
+            {
+                if (ownsTransaction &&
+                    transaction is not null)
+                {
+                    await transaction.RollbackAsync(
+                        cancellationToken);
+                }
 
-                ZoneNameSnapshot =
-                    slot.ParkingZone.Name,
+                return new ParkingReserveResult(
+                    false,
+                    "The parking slot was taken by another customer.",
+                    slot.Id);
+            }
 
-                ReservedAtUtc =
-                    DateTime.UtcNow
-            };
+            var reservation =
+                new ParkingReservation
+                {
+                    BookingId =
+                        bookingId,
 
-        await _reservationRepository
-            .AddAsync(
-                reservation,
+                    ParkingSlotId =
+                        slot.Id,
+
+                    FeeSnapshot =
+                        slot.ParkingZone.Fee,
+
+                    VehicleTypeSnapshot =
+                        slot.ParkingZone.VehicleType,
+
+                    ZoneNameSnapshot =
+                        slot.ParkingZone.Name,
+
+                    ReservedAtUtc =
+                        DateTime.UtcNow
+                };
+
+            await _reservationRepository
+                .AddAsync(
+                    reservation,
+                    cancellationToken);
+
+            await _context.SaveChangesAsync(
                 cancellationToken);
 
-        await _context.SaveChangesAsync(
-            cancellationToken);
+            // Commit only when this service
+            // created the transaction.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.CommitAsync(
+                    cancellationToken);
+            }
 
-        await transaction.CommitAsync(
-            cancellationToken);
+            return new ParkingReserveResult(
+                true,
+                "Parking slot held successfully.",
+                null);
+        }
+        catch
+        {
+            // Never rollback an outer transaction
+            // owned by BookingService.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+            }
 
-        return new ParkingReserveResult(
-            true,
-            "Parking slot held successfully.",
-            null);
+            throw;
+        }
+        finally
+        {
+            // Dispose only a transaction created
+            // by ParkingService.
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.DisposeAsync();
+            }
+        }
     }
 
+    // =====================================================
+    // REMOVE PARKING FROM PENDING BOOKING
+    // =====================================================
     public async Task RemoveParkingAsync(
         int bookingId,
         int customerId,
@@ -410,7 +494,8 @@ public class ParkingService : IParkingService
     {
         var booking =
             await _bookingRepository
-                .GetByIdAsync(bookingId);
+                .GetByIdAsync(
+                    bookingId);
 
         if (booking is null)
         {
@@ -418,13 +503,15 @@ public class ParkingService : IParkingService
                 "Booking was not found.");
         }
 
-        if (booking.CustomerId != customerId)
+        if (booking.CustomerId !=
+            customerId)
         {
             throw new UnauthorizedAccessException(
                 "You cannot modify another customer's booking.");
         }
 
-        if (booking.BookingStatus != BookingStatus.Pending)
+        if (booking.BookingStatus !=
+            BookingStatus.Pending)
         {
             throw new InvalidOperationException(
                 "Parking can only be removed from a pending booking.");
@@ -441,28 +528,67 @@ public class ParkingService : IParkingService
             return;
         }
 
-        await using var transaction =
-            await _context.Database
-                .BeginTransactionAsync(
+        // Reuse caller transaction when one already exists.
+        var transaction =
+            _context.Database.CurrentTransaction;
+
+        var ownsTransaction =
+            transaction is null;
+
+        if (ownsTransaction)
+        {
+            transaction =
+                await _context.Database
+                    .BeginTransactionAsync(
+                        cancellationToken);
+        }
+
+        try
+        {
+            await _slotRepository
+                .TryChangeStatusAsync(
+                    reservation.ParkingSlotId,
+                    ParkingStatus.Held,
+                    ParkingStatus.Available,
                     cancellationToken);
 
-        await _slotRepository
-            .TryChangeStatusAsync(
-                reservation.ParkingSlotId,
-                ParkingStatus.Held,
-                ParkingStatus.Available,
+            _reservationRepository.Remove(
+                reservation);
+
+            await _context.SaveChangesAsync(
                 cancellationToken);
 
-        _reservationRepository.Remove(
-            reservation);
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.CommitAsync(
+                    cancellationToken);
+            }
+        }
+        catch
+        {
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+            }
 
-        await _context.SaveChangesAsync(
-            cancellationToken);
-
-        await transaction.CommitAsync(
-            cancellationToken);
+            throw;
+        }
+        finally
+        {
+            if (ownsTransaction &&
+                transaction is not null)
+            {
+                await transaction.DisposeAsync();
+            }
+        }
     }
 
+    // =====================================================
+    // CONFIRM PARKING AFTER PAYMENT
+    // =====================================================
     public async Task ConfirmParkingForBookingAsync(
         int bookingId,
         CancellationToken cancellationToken = default)
@@ -486,6 +612,9 @@ public class ParkingService : IParkingService
                 cancellationToken);
     }
 
+    // =====================================================
+    // RELEASE PARKING FOR CANCEL / EXPIRY
+    // =====================================================
     public async Task ReleaseParkingForBookingAsync(
         int bookingId,
         CancellationToken cancellationToken = default)
