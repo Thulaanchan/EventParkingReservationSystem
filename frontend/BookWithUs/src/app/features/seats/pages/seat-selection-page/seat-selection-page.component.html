@@ -1,0 +1,227 @@
+<div class="seat-selection-page">
+  <!-- Page Top Navigation Header -->
+  <header class="page-top-bar">
+    <div class="page-container top-bar-content">
+      <button class="back-link-btn" type="button" (click)="onBack()" aria-label="Back to event details">
+        <span class="back-arrow" aria-hidden="true">&larr;</span>
+        <span>Back to Event Details</span>
+      </button>
+
+      <!-- Step Indicator Wizard -->
+      <nav class="step-wizard" aria-label="Reservation Progress">
+        <ol class="step-list">
+          <li class="step-item active" aria-current="step">
+            <span class="step-badge">1</span>
+            <span class="step-title">Seats</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">2</span>
+            <span class="step-title">Parking</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">3</span>
+            <span class="step-title">Review</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">4</span>
+            <span class="step-title">Payment</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main page-container">
+    <!-- Page Header Heading -->
+    <section class="page-heading">
+      <h1 class="page-title">Select Your Seats</h1>
+      <p class="page-subtitle">Choose your preferred seats on the interactive map</p>
+    </section>
+
+    <!-- State 1: Loading -->
+    <div class="state-card loading-state" *ngIf="isLoading" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <h2 class="state-title">Loading Seating Layout</h2>
+      <p class="state-desc">Fetching real-time seat availability for this event...</p>
+    </div>
+
+    <!-- State 2: Error with Retry -->
+    <div class="state-card error-state" *ngIf="!isLoading && errorMessage" role="alert">
+      <div class="error-badge-icon" aria-hidden="true">!</div>
+      <h2 class="state-title">Unable to Load Seats</h2>
+      <p class="state-desc">{{ errorMessage }}</p>
+      <div class="state-actions">
+        <button class="btn btn-primary retry-btn" type="button" (click)="reloadSeats()">
+          Try Again
+        </button>
+        <button class="btn btn-secondary back-btn" type="button" (click)="onBack()">
+          Back to Event
+        </button>
+      </div>
+    </div>
+
+    <!-- State 3: Empty -->
+    <div class="state-card empty-state" *ngIf="!isLoading && !errorMessage && seats.length === 0" role="status">
+      <div class="empty-badge-icon" aria-hidden="true">&#x1F4BA;</div>
+      <h2 class="state-title">No Seats Available</h2>
+      <p class="state-desc">There are currently no seats configured or available for this event layout.</p>
+      <div class="state-actions">
+        <button class="btn btn-secondary back-btn" type="button" (click)="onBack()">
+          Back to Event Details
+        </button>
+      </div>
+    </div>
+
+    <!-- State 4: Main Seat Selection Workflow -->
+    <div class="selection-workflow" *ngIf="!isLoading && !errorMessage && seats.length > 0">
+      <!-- In-Page Alert: Concurrency Conflict -->
+      <div class="banner banner-warning" *ngIf="conflictMessage" role="alert">
+        <div class="banner-content">
+          <span class="banner-icon" aria-hidden="true">&#9888;</span>
+          <p class="banner-message">{{ conflictMessage }}</p>
+        </div>
+        <button class="banner-close-btn" type="button" aria-label="Dismiss alert" (click)="conflictMessage = null">
+          &times;
+        </button>
+      </div>
+
+      <!-- In-Page Alert: User Guidance Notification -->
+      <div class="banner banner-info" *ngIf="notificationMessage" role="alert">
+        <div class="banner-content">
+          <span class="banner-icon" aria-hidden="true">&#9432;</span>
+          <p class="banner-message">{{ notificationMessage }}</p>
+        </div>
+        <button class="banner-close-btn" type="button" aria-label="Dismiss alert" (click)="notificationMessage = null">
+          &times;
+        </button>
+      </div>
+
+      <!-- Step 1: Ticket Requirements Component -->
+      <section class="requirements-section" aria-label="Ticket Requirements">
+        <app-ticket-requirements
+          [adultCount]="adultCount"
+          [childCount]="childCount"
+          [childDiscountPercent]="childDiscountPercent"
+          (adultCountChange)="onAdultCountChange($event)"
+          (childCountChange)="onChildCountChange($event)"
+        ></app-ticket-requirements>
+      </section>
+
+      <!-- Main Two-Column Layout -->
+      <div class="selection-grid">
+        <!-- Left Column: Map Card -->
+        <div class="map-column">
+          <section class="map-card" aria-label="Seating Map">
+            <header class="map-card-header">
+              <div class="map-title-wrap">
+                <h2 class="map-heading">Arena Layout</h2>
+                <span class="map-availability-pill">
+                  {{ availableSeatsCount }} of {{ totalSeatsCount }} available
+                </span>
+              </div>
+
+              <!-- Map Toolbar (Zoom / Reset) -->
+              <app-seat-map-toolbar
+                [canZoomIn]="canZoomIn"
+                [canZoomOut]="canZoomOut"
+                [canReset]="canResetZoom"
+                (zoomIn)="onZoomIn()"
+                (zoomOut)="onZoomOut()"
+                (resetMap)="onResetZoom()"
+                (fitMap)="onFitMap()"
+              ></app-seat-map-toolbar>
+            </header>
+
+            <!-- Scaled Interactive Viewport -->
+            <div class="map-viewport-wrapper">
+              <div
+                class="map-zoom-stage"
+                [style.transform]="'scale(' + mapZoom + ')'"
+                [style.transform-origin]="'top center'"
+              >
+                <app-seat-map
+                  [seats]="seats"
+                  [sections]="sections"
+                  [categories]="categories"
+                  [selectedSeatIds]="selectedSeatIds"
+                  [showLegend]="false"
+                  (seatSelect)="onSeatSelect($event)"
+                ></app-seat-map>
+              </div>
+            </div>
+
+            <footer class="map-card-footer">
+              <span class="footer-tip-icon" aria-hidden="true">&#9432;</span>
+              <p class="footer-tip-text">
+                Click an available seat to select it. Click a selected seat again to deselect.
+              </p>
+            </footer>
+          </section>
+        </div>
+
+        <!-- Right Column: Sticky Reservation Sidebar -->
+        <aside class="sidebar-column" aria-label="Booking Summary and Legend">
+          <!-- Selected Seats Summary -->
+          <div class="sidebar-card">
+            <app-selected-seats-summary
+              [selectedSeats]="selectedSeats"
+              [totalRequired]="totalRequiredSeats"
+              (removeSeat)="onRemoveSeat($event)"
+              (clearAll)="onClearAll()"
+            ></app-selected-seats-summary>
+          </div>
+
+          <!-- Price Summary -->
+          <div class="sidebar-card">
+            <app-seat-price-summary
+              [selectedSeats]="selectedSeats"
+              [subtotal]="displaySubtotal"
+              [discountNote]="childDiscountPercent ? ('Children tickets receive a ' + childDiscountPercent + '% discount.') : null"
+            ></app-seat-price-summary>
+          </div>
+
+          <!-- Continue to Parking Action Card -->
+          <div class="sidebar-card action-card">
+            <button
+              class="btn btn-primary continue-btn"
+              type="button"
+              [disabled]="!canContinue"
+              (click)="onContinueToParking()"
+              aria-label="Continue to Parking selection"
+            >
+              <span>Continue to Parking</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+
+            <!-- Helper Guidance Under CTA -->
+            <p class="continue-hint" *ngIf="totalRequiredSeats === 0">
+              Please specify your adult or child ticket quantities above.
+            </p>
+            <p class="continue-hint" *ngIf="totalRequiredSeats > 0 && selectedSeats.length < totalRequiredSeats">
+              Please select {{ totalRequiredSeats - selectedSeats.length }} more seat{{ totalRequiredSeats - selectedSeats.length === 1 ? '' : 's' }} to continue.
+            </p>
+            <p class="continue-hint ready-hint" *ngIf="canContinue">
+              &check; All {{ totalRequiredSeats }} required seat{{ totalRequiredSeats === 1 ? '' : 's' }} selected. Ready to proceed!
+            </p>
+          </div>
+
+          <!-- Seating Legend -->
+          <div class="sidebar-card">
+            <app-seat-legend [categories]="categories"></app-seat-legend>
+          </div>
+
+          <!-- Section Summary -->
+          <div class="sidebar-card">
+            <app-seat-section-summary
+              [sections]="sections"
+              [categories]="categories"
+            ></app-seat-section-summary>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>

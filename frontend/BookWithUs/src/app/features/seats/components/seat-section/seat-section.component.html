@@ -1,0 +1,31 @@
+<section class="seat-section-container" [attr.aria-label]="section.name || section.code">
+  <div class="section-header">
+    <div class="section-title-group">
+      <h4 class="section-title">{{ section.name }}</h4>
+      <span class="section-code-badge">{{ section.code }}</span>
+    </div>
+
+    @if (section.categoryName) {
+      <span class="section-category-tag">{{ section.categoryName }}</span>
+    }
+  </div>
+
+  @if (seats.length > 0) {
+    <div class="section-seats-grid" role="list">
+      @for (seat of seats; track seat.id) {
+        <div class="section-seat-wrapper" role="listitem">
+          <app-seat-item
+            [seat]="seat"
+            [selected]="isSeatSelected(seat.id)"
+            [selectedIndex]="getSelectedIndex(seat.id)"
+            (seatSelect)="onSeatSelect($event)"
+          ></app-seat-item>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="section-empty">
+      <span class="section-empty-text">No seats in this section.</span>
+    </div>
+  }
+</section>

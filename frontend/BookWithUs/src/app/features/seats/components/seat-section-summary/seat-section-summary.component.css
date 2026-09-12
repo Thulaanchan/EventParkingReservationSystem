@@ -1,0 +1,168 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.seat-section-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.summary-header {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.summary-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.empty-sections {
+  padding: 1rem;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.375rem 0;
+}
+
+.section-info-left {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.category-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.category-dot.dot-platinum {
+  background-color: #7c3aed;
+}
+
+.category-dot.dot-gold {
+  background-color: #f59e0b;
+}
+
+.category-dot.dot-silver {
+  background-color: #94a3b8;
+}
+
+.category-dot.dot-vip {
+  background-color: #0f172a;
+  color: #fbbf24;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.category-dot.dot-default {
+  background-color: #6366f1;
+}
+
+.star-icon {
+  font-size: 0.5rem;
+  line-height: 1;
+}
+
+.section-names {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.section-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.section-code {
+  font-size: 0.6875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.section-info-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.section-price {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.section-vip-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #fbbf24;
+  background-color: #0f172a;
+  padding: 0.0625rem 0.3125rem;
+  border-radius: 0.25rem;
+}
+
+.section-seat-count {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-total-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.625rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.total-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.total-count {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}

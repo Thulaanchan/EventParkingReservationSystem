@@ -1,0 +1,52 @@
+<section class="seat-section-summary-card" aria-label="Venue Sections Summary">
+  <div class="summary-header">
+    <h4 class="summary-title">Sections</h4>
+  </div>
+
+  @if (sections.length === 0) {
+    <div class="empty-sections" role="status">
+      <p class="empty-text">No section details available.</p>
+    </div>
+  } @else {
+    <div class="sections-list" role="list">
+      @for (section of sections; track section.id) {
+        <div class="section-row" role="listitem">
+          <div class="section-info-left">
+            <span
+              class="category-dot"
+              [ngClass]="getCategoryDotClass(section.categoryName || section.name || section.code)"
+              aria-hidden="true"
+            >
+              @if ((section.categoryName || section.name || '').toLowerCase().includes('vip')) {
+                <span class="star-icon">&#9733;</span>
+              }
+            </span>
+            <div class="section-names">
+              <span class="section-name">{{ section.name }}</span>
+              @if (section.code && section.code !== section.name) {
+                <span class="section-code">{{ section.code }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="section-info-right">
+            @if (getCategoryForSection(section); as cat) {
+              @if (cat.isPubliclyBookable) {
+                <span class="section-price">LKR {{ cat.adultPrice | number:'1.0-0' }}</span>
+              } @else {
+                <span class="section-vip-badge">VIP</span>
+              }
+            }
+            <span class="section-seat-count">{{ section.seatCount }} Seats</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Total Row matching screen-09.png -->
+    <div class="summary-total-footer">
+      <span class="total-label">Total</span>
+      <span class="total-count">{{ totalSeats }} Seats</span>
+    </div>
+  }
+</section>
