@@ -1,0 +1,8 @@
+<div class="booking-grid" role="region" aria-label="Bookings List">
+  @for (booking of bookings; track booking.bookingId) {
+    <app-booking-card
+      [booking]="booking"
+      (viewDetails)="onViewDetails($event)"
+    />
+  }
+</div>

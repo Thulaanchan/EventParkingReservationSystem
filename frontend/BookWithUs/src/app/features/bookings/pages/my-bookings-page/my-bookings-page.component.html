@@ -1,0 +1,125 @@
+<div class="my-bookings-container">
+  <!-- Page Header matching finalized screen-14 design -->
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">My Bookings</h1>
+      <p class="page-subtitle">Manage and review your event reservations.</p>
+    </div>
+    <div class="count-badge">
+      <span class="count-text">{{ countLabel() }}</span>
+    </div>
+  </header>
+
+  <!-- Filter Tabs -->
+  <section class="filters-section" aria-label="Filter bookings by status">
+    <app-booking-filter-tabs
+      [activeTab]="activeFilter()"
+      [counts]="tabCounts()"
+      (tabChange)="onFilterChanged($event)"
+    />
+  </section>
+
+  <!-- Main View Area (Mutually Exclusive States) -->
+  <main class="bookings-content" aria-live="polite">
+
+    <!-- 1. LOADING STATE -->
+    @if (viewState() === 'loading') {
+      <div class="loading-grid" role="status" aria-label="Loading your bookings">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-main">
+              <div class="skeleton-poster"></div>
+              <div class="skeleton-details">
+                <div class="skeleton-badge"></div>
+                <div class="skeleton-line wide"></div>
+                <div class="skeleton-line medium"></div>
+                <div class="skeleton-line small"></div>
+              </div>
+            </div>
+            <div class="skeleton-footer">
+              <div class="skeleton-ref"></div>
+              <div class="skeleton-btn"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 2. ERROR STATE -->
+    @else if (viewState() === 'error') {
+      <section class="state-card error-card" role="alert">
+        <div class="icon-bubble error-bubble">
+          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h2 class="state-title">Unable to Load Bookings</h2>
+        <p class="state-description">{{ errorMessage() }}</p>
+        <div class="state-actions">
+          @if (isSessionExpired()) {
+            <button type="button" class="btn btn-primary" (click)="onGoToLogin()">
+              Sign In Again
+            </button>
+          } @else {
+            <button type="button" class="btn btn-primary" (click)="onRetry()">
+              <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+              </svg>
+              Try Again
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- 3. EMPTY STATE -->
+    @else if (viewState() === 'empty') {
+      <section class="state-card empty-card">
+        <div class="icon-bubble empty-bubble">
+          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+        </div>
+        <h2 class="state-title">
+          @if (activeFilter() === 'All') {
+            No bookings yet
+          } @else {
+            No {{ activeFilter().toLowerCase() }} bookings found
+          }
+        </h2>
+        <p class="state-description">
+          @if (activeFilter() === 'All') {
+            You haven't made any reservations yet. Discover upcoming concerts, movies, expos, and cultural shows to book your experience!
+          } @else {
+            You don't have any bookings matching the "{{ activeFilter() }}" status filter.
+          }
+        </p>
+        <div class="state-actions">
+          @if (activeFilter() !== 'All') {
+            <button type="button" class="btn btn-outline" (click)="onFilterChanged('All')">
+              Show All Bookings
+            </button>
+          }
+          <a routerLink="/events" class="btn btn-primary">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+            </svg>
+            Explore Events
+          </a>
+        </div>
+      </section>
+    }
+
+    <!-- 4. DATA STATE -->
+    @else if (viewState() === 'data') {
+      <app-booking-card-list
+        [bookings]="filteredBookings()"
+        (viewDetails)="onViewDetails($event)"
+      />
+    }
+
+  </main>
+</div>
