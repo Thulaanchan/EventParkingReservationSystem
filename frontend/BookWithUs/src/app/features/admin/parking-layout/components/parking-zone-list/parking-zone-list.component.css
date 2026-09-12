@@ -1,0 +1,295 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.zone-list-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+/* Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.header-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 1px;
+}
+
+/* Empty State */
+.empty-state-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  gap: 8px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 28px;
+  height: 28px;
+  color: #9ca3af;
+}
+
+.empty-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Zones Container */
+.zones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.zone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: #fcfcfd;
+  border: 1px solid #f0f1f3;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+}
+
+.zone-row:hover {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.zone-main-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.zone-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.zone-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Vehicle Icon Themes */
+.icon-three-wheeler {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.icon-car {
+  background-color: #f5f3ff;
+  color: #7c3aed;
+}
+
+.icon-van {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+.icon-motorbike {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+.icon-default {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.zone-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.zone-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zone-subline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.vehicle-type-label {
+  font-weight: 500;
+}
+
+.bullet-separator {
+  color: #d1d5db;
+}
+
+.zone-fee {
+  font-weight: 700;
+  color: #4b5563;
+}
+
+/* Metrics & Status */
+.zone-metrics {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.slot-count-badge {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.online-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-online {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.status-online .status-indicator-dot {
+  background-color: #10b981;
+}
+
+.status-offline {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-offline .status-indicator-dot {
+  background-color: #9ca3af;
+}
+
+/* Summary Footer */
+.zone-summary-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1.5px dashed #e5e7eb;
+}
+
+.footer-label-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #6d28d9;
+}
+
+.footer-subtext {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+
+.total-slots-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #7c3aed;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .zone-list-card {
+    padding: 16px;
+  }
+
+  .zone-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .zone-metrics {
+    align-items: flex-start;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

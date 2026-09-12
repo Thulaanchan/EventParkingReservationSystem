@@ -1,0 +1,136 @@
+<div class="parking-actions-bar" role="toolbar" aria-label="Parking Map Controls and Legend">
+  <!-- Status Legend -->
+  <div class="legend-container" role="region" aria-label="Parking Status Legend">
+    <div class="legend-title-group">
+      <span class="legend-heading">Arena Parking Layout</span>
+      <span class="legend-subheading">View slot status and manage parking availability</span>
+    </div>
+
+    <div class="legend-items-list">
+      @for (item of legendItems; track item.id) {
+        <div class="legend-item" [attr.aria-label]="item.label + ': ' + item.description">
+          <div class="legend-marker" [ngClass]="item.visualClass" aria-hidden="true">
+            @if (item.id === 'available') {
+              <span class="marker-dot-available"></span>
+            } @else if (item.id === 'held') {
+              <svg class="marker-icon-held" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <rect x="4" y="10" width="16" height="12" rx="2" />
+                <path d="M8 10V6a4 4 0 018 0v4" />
+              </svg>
+            } @else if (item.id === 'occupied') {
+              <svg class="marker-icon-occupied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            } @else if (item.id === 'selected') {
+              <span class="marker-dot-selected"></span>
+            }
+          </div>
+          <div class="legend-text">
+            <span class="legend-label">{{ item.label }}</span>
+            <span class="legend-desc">{{ item.description }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Map Toolbar Controls -->
+  <div class="toolbar-controls-group">
+    <div class="zoom-indicator" aria-live="polite" title="Current Zoom Level">
+      <span class="zoom-value">{{ clampedZoomPercent }}%</span>
+    </div>
+
+    <div class="canvas-btn-group">
+      <button
+        type="button"
+        class="toolbar-btn"
+        (click)="onResetView()"
+        [disabled]="disabled"
+        title="Reset View"
+        aria-label="Reset View">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span class="btn-text">Reset View</span>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        (click)="onZoomIn()"
+        [disabled]="disabled"
+        title="Zoom In"
+        aria-label="Zoom In">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <line x1="11" y1="8" x2="11" y2="14" />
+          <line x1="8" y1="11" x2="14" y2="11" />
+        </svg>
+        <span class="btn-text">Zoom In</span>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        (click)="onZoomOut()"
+        [disabled]="disabled"
+        title="Zoom Out"
+        aria-label="Zoom Out">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <line x1="8" y1="11" x2="14" y2="11" />
+        </svg>
+        <span class="btn-text">Zoom Out</span>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        (click)="onFitToScreen()"
+        [disabled]="disabled"
+        title="Fit to Screen"
+        aria-label="Fit to Screen">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+        </svg>
+        <span class="btn-text">Fit</span>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn"
+        [class.btn-active]="slotListOpen"
+        (click)="onToggleSlotList()"
+        [disabled]="disabled"
+        title="Toggle Slot List"
+        [attr.aria-pressed]="slotListOpen"
+        aria-label="Toggle Slot List">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+        <span class="btn-text">Slot List</span>
+      </button>
+
+      <button
+        type="button"
+        class="toolbar-btn btn-refresh"
+        (click)="onRefreshStatuses()"
+        [disabled]="disabled || refreshing"
+        title="Refresh Slot Status"
+        aria-label="Refresh Slot Status">
+        <svg class="btn-icon" [class.spinning]="refreshing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span class="btn-text">{{ refreshing ? 'Refreshing...' : 'Refresh' }}</span>
+      </button>
+    </div>
+  </div>
+</div>
