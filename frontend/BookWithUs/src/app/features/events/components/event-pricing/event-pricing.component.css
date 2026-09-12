@@ -1,0 +1,172 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pricing-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.pricing-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.pricing-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: #f3e8ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pricing-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.pricing-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.pricing-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+.pricing-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tier Card */
+.price-tier-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+  border: 1px solid #ede9fe;
+  border-radius: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tier-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tier-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tier-description {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.tier-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.price-currency {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.price-number {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.price-free {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+/* Discount Banner */
+.discount-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+}
+
+.discount-badge-box {
+  flex-shrink: 0;
+}
+
+.discount-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #059669;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  border-radius: 8px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.discount-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.discount-title {
+  font-size: 0.9375rem;
+  color: #065f46;
+  font-weight: 700;
+}
+
+.discount-subtext {
+  font-size: 0.8125rem;
+  color: #047857;
+}
+
+@media (max-width: 640px) {
+  .pricing-card {
+    padding: 20px;
+  }
+
+  .price-tier-card {
+    padding: 16px;
+  }
+
+  .discount-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
