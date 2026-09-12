@@ -1,0 +1,222 @@
+<div class="category-form-container">
+  <!-- Left Column: Form & How it works -->
+  <div class="form-main-column">
+    <!-- Category Information Card -->
+    <div class="card form-card">
+      <div class="card-header">
+        <div class="header-icon-circle">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h2 class="card-title">Category Information</h2>
+          <p class="card-subtitle">
+            Enter the category name that will be available during event creation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Server Error Banner -->
+      @if (serverError) {
+        <div class="error-banner" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ serverError }}</span>
+        </div>
+      }
+
+      <form #categoryForm="ngForm" (ngSubmit)="onSubmit(categoryForm)" novalidate>
+        <div class="form-group">
+          <label for="categoryName" class="form-label">
+            Category Name <span class="required-star">*</span>
+          </label>
+          <input
+            type="text"
+            id="categoryName"
+            name="categoryName"
+            class="form-control"
+            [class.is-invalid]="categoryNameInput.invalid && (categoryNameInput.touched || categoryForm.submitted)"
+            [(ngModel)]="categoryName"
+            #categoryNameInput="ngModel"
+            required
+            maxlength="100"
+            placeholder="Enter category name"
+            [disabled]="submitting"
+            autocomplete="off"
+          />
+
+          @if (categoryNameInput.invalid && (categoryNameInput.touched || categoryForm.submitted)) {
+            <div class="field-error">
+              @if (categoryNameInput.errors?.['required']) {
+                <span>Category name is required.</span>
+              }
+              @if (categoryNameInput.errors?.['maxlength']) {
+                <span>Category name cannot exceed 100 characters.</span>
+              }
+            </div>
+          }
+
+          <p class="helper-text">
+            Use a clear and reusable name for organizing events.
+          </p>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            (click)="onCancel()"
+            [disabled]="submitting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="categoryForm.invalid || submitting || !categoryName.trim()"
+          >
+            @if (submitting) {
+              <span class="spinner"></span>
+              <span>Saving...</span>
+            } @else {
+              @if (!isEditMode) {
+                <span class="btn-icon">+</span>
+                <span>Add Category</span>
+              } @else {
+                <span>Save Changes</span>
+              }
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- How it works Card -->
+    <div class="card how-it-works-card">
+      <div class="how-it-works-content">
+        <div class="info-icon-wrapper">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="how-it-works-text">
+          <h3 class="how-it-works-title">How it works</h3>
+          <p class="how-it-works-description">
+            After creation, this category becomes available in the Category dropdown when creating or editing an event.
+          </p>
+        </div>
+      </div>
+
+      <div class="mockup-preview">
+        <span class="mockup-label">Category <span class="required-star">*</span></span>
+        <div class="mockup-select">
+          <span>Select Category</span>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Category Guidelines -->
+  <div class="form-sidebar-column">
+    <div class="card guidelines-card">
+      <div class="guidelines-header">
+        <div class="header-icon-circle">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+        </div>
+        <h3 class="guidelines-title">Category Guidelines</h3>
+      </div>
+
+      <div class="guideline-items">
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Category Name</h4>
+            <p class="guideline-body">
+              Use a clear name that administrators and customers can easily understand.
+            </p>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Used in Events</h4>
+            <p class="guideline-body">
+              This category will become available in the Create Event category dropdown.
+            </p>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Manage Existing Categories</h4>
+            <p class="guideline-body">
+              Edit or delete existing categories from Category Management.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deletion Safeguard Highlight Box -->
+      <div class="safeguard-box">
+        <div class="safeguard-icon-wrapper">
+          <svg class="safeguard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="safeguard-content">
+          <h5 class="safeguard-title">Important</h5>
+          <p class="safeguard-text">
+            Categories assigned to existing events cannot be deleted.
+          </p>
+        </div>
+      </div>
+
+      <div class="guidelines-footer">
+        <a routerLink="/admin/categories" class="manage-link" (click)="onCancel()">
+          <span>Manage Existing Categories</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
