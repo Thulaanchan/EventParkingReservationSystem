@@ -1,0 +1,276 @@
+<aside class="admin-event-detail-panel" aria-labelledby="eventDetailPanelTitle">
+  <!-- Panel Header -->
+  <div class="panel-header">
+    <h2 id="eventDetailPanelTitle" class="panel-title">Event Details</h2>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="onClose()"
+      aria-label="Close event details panel"
+    >
+      <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  @if (event) {
+    <div class="panel-body">
+      <!-- Event Identity Header Card -->
+      <div class="event-identity-card">
+        <div class="identity-media">
+          @if (resolvedPosterUrl) {
+            <img
+              [src]="resolvedPosterUrl"
+              [alt]="event.name + ' poster'"
+              class="identity-poster"
+              (error)="onImageError()"
+            />
+          } @else {
+            <div class="identity-icon-box" aria-hidden="true">
+              <svg class="identity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+          }
+        </div>
+        <div class="identity-details">
+          <h3 class="event-headline" [title]="event.name">{{ event.name }}</h3>
+          <div class="identity-badge-row">
+            @if (isUpcoming()) {
+              <span class="status-badge status-upcoming">Upcoming</span>
+            } @else {
+              <span class="status-badge status-past">Past</span>
+            }
+            <span class="category-pill">{{ event.categoryName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attributes Key-Value List -->
+      <div class="attributes-list">
+        <div class="attribute-row">
+          <span class="attribute-label">Event Name:</span>
+          <span class="attribute-value">{{ event.name }}</span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Venue:</span>
+          <span class="attribute-value">{{ event.venueName }}</span>
+        </div>
+
+        @if (event.venueAddress && event.venueAddress.trim()) {
+          <div class="attribute-row">
+            <span class="attribute-label">Address:</span>
+            <span class="attribute-value">{{ event.venueAddress }}</span>
+          </div>
+        }
+
+        <div class="attribute-row">
+          <span class="attribute-label">Category:</span>
+          <span class="attribute-value">{{ event.categoryName }}</span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Event Date:</span>
+          <span class="attribute-value">{{ event.eventDate | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Time:</span>
+          <span class="attribute-value">{{ event.startTime }} – {{ event.endTime }}</span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Ticket Price:</span>
+          <span class="attribute-value">
+            {{ event.ticketPrice === 0 ? 'Free' : ('LKR ' + (event.ticketPrice | number:'1.2-2')) }}
+          </span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Capacity:</span>
+          <span class="attribute-value">
+            {{ event.capacity !== null && event.capacity !== undefined ? (event.capacity | number) + ' seats' : '—' }}
+          </span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Bookings:</span>
+          <span class="attribute-value">{{ event.bookingCount | number }}</span>
+        </div>
+
+        <div class="attribute-row">
+          <span class="attribute-label">Available Seats:</span>
+          <span class="attribute-value">{{ event.availableSeats | number }}</span>
+        </div>
+
+        @if (event.stageLayout && event.stageLayout.trim()) {
+          <div class="attribute-row">
+            <span class="attribute-label">Stage Layout:</span>
+            <span class="attribute-value">{{ event.stageLayout }}</span>
+          </div>
+        }
+
+        @if (event.description && event.description.trim()) {
+          <div class="attribute-column">
+            <span class="attribute-label">Description:</span>
+            <p class="description-text">{{ event.description }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Capacity Overview (Matching as-05) -->
+      <div class="capacity-overview-section">
+        <h4 class="section-title">Capacity Overview</h4>
+        <div class="capacity-overview-grid">
+          <div class="overview-box">
+            <span class="box-label">BOOKED</span>
+            <span class="box-value">{{ event.bookedSeats | number }}</span>
+          </div>
+          <div class="overview-box">
+            <span class="box-label">AVAILABLE</span>
+            <span class="box-value">{{ event.availableSeats | number }}</span>
+          </div>
+          <div class="overview-box">
+            <span class="box-label">TOTAL CAPACITY</span>
+            <span class="box-value">{{ event.totalSeats | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Validation Note (Matching as-05) -->
+      <div class="schedule-validated-banner" role="status">
+        <div class="check-icon-circle">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="schedule-text">
+          <strong class="schedule-headline">Venue schedule validated</strong>
+          <span class="schedule-subtext">No overlapping event is scheduled at this venue for the selected time.</span>
+        </div>
+      </div>
+
+      <!-- Booking Lock Warning (Matching as-05) -->
+      @if (event.hasBookings) {
+        <div class="booking-lock-banner" role="alert">
+          <div class="warning-icon-box">
+            <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="lock-details">
+            <strong class="lock-title">This event has existing bookings.</strong>
+            <p class="lock-explanation">
+              Ticket price, seat configuration and capacity changes may be restricted.
+            </p>
+            <ul class="lock-flags-list">
+              @if (!event.canEditTicketPrice) {
+                <li>Ticket price is locked and cannot be modified.</li>
+              }
+              @if (!event.canEditCapacity) {
+                <li>Capacity is locked and cannot be decreased.</li>
+              }
+              @if (!event.canEditStageLayout) {
+                <li>Stage layout is locked and cannot be changed.</li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+
+      <!-- Event Actions Section (Matching as-05) -->
+      <div class="actions-section">
+        <h4 class="section-title">Event Actions</h4>
+
+        <!-- Primary Edit Button -->
+        <button
+          type="button"
+          class="btn-primary-action"
+          (click)="onEdit()"
+          [attr.aria-label]="'Edit ' + event.name"
+        >
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Edit Event</span>
+        </button>
+
+        <!-- Manage Seats Link Card -->
+        <button
+          type="button"
+          class="action-nav-card"
+          (click)="onManageSeats()"
+          [attr.aria-label]="'Manage seats for ' + event.name"
+        >
+          <div class="action-nav-icon-box">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+              <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </div>
+          <div class="action-nav-text">
+            <strong class="action-nav-title">Manage Seats</strong>
+            <span class="action-nav-subtext">View or configure the event seat map</span>
+          </div>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Manage Parking Link Card -->
+        <button
+          type="button"
+          class="action-nav-card"
+          (click)="onManageParking()"
+          [attr.aria-label]="'Manage parking for ' + event.name"
+        >
+          <div class="action-nav-icon-box">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+          </div>
+          <div class="action-nav-text">
+            <strong class="action-nav-title">Manage Parking</strong>
+            <span class="action-nav-subtext">View or configure parking slots and fee</span>
+          </div>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Delete Action & Safeguard Note -->
+        <button
+          type="button"
+          class="btn-delete-action"
+          (click)="onDelete()"
+          [disabled]="!event.canDelete"
+          [attr.aria-label]="event.canDelete ? 'Delete event' : 'Cannot delete event with existing bookings'"
+        >
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Delete Event</span>
+        </button>
+
+        @if (!event.canDelete) {
+          <p class="delete-safeguard-hint">
+            This event has existing bookings and cannot be deleted without satisfying booking safeguards.
+          </p>
+        }
+      </div>
+    </div>
+  }
+</aside>
