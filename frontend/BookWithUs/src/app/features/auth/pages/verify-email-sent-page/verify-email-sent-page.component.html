@@ -1,0 +1,171 @@
+<div class="verify-layout">
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <a routerLink="/auth/login" class="back-link">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back</span>
+    </a>
+  </div>
+
+  <div class="verify-container">
+    <div class="auth-card">
+      <!-- Icon Badge Header -->
+      <div class="badge-wrapper">
+        @if (isVerified) {
+          <div class="badge-icon success-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        } @else if (isVerifying) {
+          <div class="badge-icon verifying-badge">
+            <span class="badge-spinner" aria-hidden="true"></span>
+          </div>
+        } @else {
+          <div class="badge-icon default-badge">
+            <div class="envelope-container">
+              <svg class="envelope-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <div class="badge-mini-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Title & Subtitle -->
+      <div class="text-header">
+        @if (isVerifying) {
+          <h1 class="card-title">Verifying Your Email...</h1>
+          <p class="card-subtitle">Please wait while we validate your verification token.</p>
+        } @else if (isVerified) {
+          <h1 class="card-title">Email Verified!</h1>
+          <p class="card-subtitle">Your email has been confirmed. You can now access all EventFlow features.</p>
+        } @else {
+          <h1 class="card-title">Verify Your Email</h1>
+          <p class="card-subtitle">We've sent a verification link to:</p>
+        }
+      </div>
+
+      <!-- Alerts -->
+      @if (errorMessage) {
+        <div class="alert alert-error" role="alert" aria-live="polite">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <div class="alert-content">
+            <span class="alert-title">Verification Issue</span>
+            <span class="alert-message">{{ errorMessage }}</span>
+          </div>
+        </div>
+      }
+
+      @if (successMessage && !isVerified) {
+        <div class="alert alert-success" role="alert" aria-live="polite">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <div class="alert-content">
+            <span class="alert-title">Link Sent</span>
+            <span class="alert-message">{{ successMessage }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Email Display & Details (when not yet verified) -->
+      @if (!isVerified && !isVerifying) {
+        <div class="email-section">
+          @if (email && !isEditingEmail) {
+            <div class="email-pill">
+              <span class="email-address">{{ maskedEmail }}</span>
+              <button type="button" class="edit-link" (click)="toggleEditEmail()" aria-label="Change email address">
+                Change
+              </button>
+            </div>
+          } @else {
+            <div class="email-edit-wrapper">
+              <input
+                type="email"
+                [(ngModel)]="email"
+                placeholder="Enter your email address"
+                class="form-input"
+                [disabled]="isResending"
+                aria-label="Email address"
+              />
+              @if (isEditingEmail) {
+                <button type="button" class="cancel-edit-btn" (click)="toggleEditEmail()">
+                  Cancel
+                </button>
+              }
+            </div>
+          }
+
+          <p class="instruction-text">
+            Please open your inbox and click the verification link to activate your EventFlow account.
+          </p>
+        </div>
+
+        <!-- Action Button: Resend -->
+        <button
+          type="button"
+          class="action-btn"
+          (click)="onResend()"
+          [disabled]="isResending || cooldownSeconds > 0 || !email"
+        >
+          @if (isResending) {
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Sending verification link...</span>
+          } @else if (cooldownSeconds > 0) {
+            <span>Resend in {{ cooldownSeconds }}s</span>
+          } @else {
+            <span>Resend Verification Email</span>
+          }
+        </button>
+
+        <p class="helper-text">
+          Didn't receive it? Check your spam folder, or resend the email.
+        </p>
+
+        <p class="security-note">
+          Verification links are secure, single-use, and time-limited.
+        </p>
+      }
+
+      <!-- Action Button: When Verified -->
+      @if (isVerified) {
+        <div class="verified-action-wrapper">
+          <a routerLink="/auth/login" class="action-btn sign-in-btn">
+            <span>Continue to Sign In</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      }
+
+      <!-- Bottom Information Banner -->
+      <div class="bottom-info-banner">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>
+          Once verified, you can
+          <a routerLink="/auth/login" class="info-link">continue to sign in</a>.
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
