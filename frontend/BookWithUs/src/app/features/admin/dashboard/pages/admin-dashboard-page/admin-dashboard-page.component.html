@@ -1,0 +1,75 @@
+<main class="dashboard-page-container" aria-label="Admin Dashboard">
+  <!-- Page Header -->
+  <header class="dashboard-header">
+    <div class="header-titles">
+      <h1 class="page-title">Welcome back!</h1>
+      <p class="page-subtitle">Here's what's happening across BookWithUs today.</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        class="btn-primary-create"
+        (click)="onCreateEvent()"
+        aria-label="Create a new event">
+        <svg class="plus-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+        </svg>
+        <span>Create Event</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Error Banner with Retry -->
+  @if (errorMessage) {
+    <div class="dashboard-error-banner" role="alert">
+      <div class="error-message-content">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+      <button type="button" class="btn-retry" (click)="loadDashboardData()">
+        Try Again
+      </button>
+    </div>
+  }
+
+  <!-- Section 1: KPI Stat Grid -->
+  <section class="dashboard-section" aria-label="Overview Statistics">
+    <app-dashboard-stat-grid [summary]="summary"></app-dashboard-stat-grid>
+  </section>
+
+  <!-- Section 2: Main Content Row (Upcoming Events + Recent Bookings) -->
+  <section class="dashboard-main-grid" aria-label="Upcoming Events and Recent Activity">
+    <div class="main-table-column">
+      <app-upcoming-events-table
+        [events]="upcomingEvents"
+        [loading]="loading"
+        (viewEvent)="onViewUpcomingEvent($event)"
+        (viewAll)="onViewAllUpcomingEvents()">
+      </app-upcoming-events-table>
+    </div>
+
+    <div class="side-panel-column">
+      <app-recent-bookings-panel
+        [bookings]="recentBookings"
+        [loading]="loading"
+        (viewBooking)="onViewBooking($event)"
+        (viewAll)="onViewAllBookings()">
+      </app-recent-bookings-panel>
+    </div>
+  </section>
+
+  <!-- Section 3: Administrative Quick Actions -->
+  <section class="dashboard-section" aria-label="Administrative Quick Actions">
+    <app-admin-quick-actions
+      (createEvent)="onCreateEvent()"
+      (manageEvents)="onManageEvents()"
+      (manageVenues)="onManageVenues()"
+      (manageCategories)="onManageCategories()">
+    </app-admin-quick-actions>
+  </section>
+</main>
