@@ -21,8 +21,17 @@ export const CHECKOUT_ROUTES: Routes = [
       },
       {
         path: 'review',
-        // Placeholder for upcoming booking-review page component
-        children: []
+        loadComponent: () =>
+          import('./pages/booking-review-page/booking-review-page.component').then(
+            (m) => m.BookingReviewPageComponent
+          )
+      },
+      {
+        path: 'payment',
+        loadChildren: () =>
+          import('../payments/payments.routes').then(
+            (m) => m.PAYMENTS_ROUTES
+          )
       }
     ]
   }

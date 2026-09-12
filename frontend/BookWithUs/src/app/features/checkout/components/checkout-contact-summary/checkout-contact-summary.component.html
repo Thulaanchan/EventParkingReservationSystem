@@ -1,0 +1,91 @@
+<div class="contact-card">
+  <div class="card-header">
+    <div class="header-titles">
+      <div class="header-icon-wrap">
+        <svg class="header-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="card-title">Contact Information</h3>
+        <p class="card-subtitle">Reservation confirmation and e-tickets will be sent to this customer account.</p>
+      </div>
+    </div>
+
+    @if (contact && editRequested.observed) {
+      <button
+        type="button"
+        class="btn-edit"
+        (click)="editRequested.emit()"
+        aria-label="Edit contact information"
+      >
+        <svg class="edit-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+        </svg>
+        <span>Edit</span>
+      </button>
+    }
+  </div>
+
+  @if (contact) {
+    <div class="contact-body">
+      <!-- Customer Avatar & Name Profile -->
+      <div class="customer-profile">
+        <div class="avatar-circle">
+          <span>{{ initials }}</span>
+        </div>
+        <div class="customer-info">
+          <h4 class="customer-name">{{ fullName }}</h4>
+          <span class="account-tag">Primary Account</span>
+        </div>
+      </div>
+
+      <!-- Contact Fields Grid -->
+      <div class="contact-details-grid">
+        <!-- Email Field -->
+        <div class="detail-item">
+          <span class="detail-label">Email Address</span>
+          <div class="detail-value-wrap">
+            <svg class="detail-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+            </svg>
+            <span class="detail-value email-value">{{ contact.email }}</span>
+            @if (contact.isEmailVerified) {
+              <span class="verified-badge">
+                <svg class="verified-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Verified
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Phone Field (if present) -->
+        @if (contact.phone) {
+          <div class="detail-item">
+            <span class="detail-label">Phone Number</span>
+            <div class="detail-value-wrap">
+              <svg class="detail-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              <span class="detail-value">{{ contact.phone }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-icon-wrap">
+        <svg class="empty-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <p class="empty-title">No contact details loaded</p>
+      <p class="empty-subtitle">Please ensure you are signed in so booking confirmations can be delivered.</p>
+    </div>
+  }
+</div>

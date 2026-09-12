@@ -1,0 +1,221 @@
+<div class="payment-page-container">
+
+  <!-- Stepper / Progress Bar -->
+  <nav class="checkout-stepper" aria-label="Checkout Steps">
+    <div class="stepper-step completed">
+      <div class="step-circle">
+        <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+      </div>
+      <span class="step-label">Event</span>
+      <span class="step-status">Done</span>
+    </div>
+    <div class="stepper-line completed"></div>
+    <div class="stepper-step completed">
+      <div class="step-circle"><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></div>
+      <span class="step-label">Seats</span>
+      <span class="step-status">Done</span>
+    </div>
+    <div class="stepper-line completed"></div>
+    <div class="stepper-step completed">
+      <div class="step-circle"><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></div>
+      <span class="step-label">Review</span>
+      <span class="step-status">Done</span>
+    </div>
+    <div class="stepper-line" [class.completed]="!!paymentResult()" [class.in-progress]="!paymentResult()"></div>
+    <div class="stepper-step" [class.active]="!paymentResult()" [class.completed]="!!paymentResult()">
+      <div class="step-circle">
+        @if (paymentResult()) {
+          <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+        } @else {
+          5
+        }
+      </div>
+      <span class="step-label">Payment</span>
+      <span class="step-status" [class.in-progress]="!paymentResult()">{{ paymentResult() ? 'Done' : 'In Progress' }}</span>
+    </div>
+    <div class="stepper-line" [class.completed]="!!paymentResult()"></div>
+    <div class="stepper-step" [class.active]="!!paymentResult()" [class.upcoming]="!paymentResult()">
+      <div class="step-circle">
+        @if (paymentResult()) {
+          <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+        } @else {
+          6
+        }
+      </div>
+      <span class="step-label">Confirmation</span>
+      <span class="step-status" [class.in-progress]="!!paymentResult()">{{ paymentResult() ? 'Confirmed' : 'Upcoming' }}</span>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">{{ paymentResult() ? 'Payment Confirmed!' : 'Complete Payment' }}</h2>
+      <p class="page-subtitle">
+        {{ paymentResult()
+            ? 'Your booking has been confirmed and payment processed.'
+            : 'Review your total and choose your preferred payment method.' }}
+      </p>
+    </div>
+  </header>
+
+  <!-- Load Error State -->
+  @if (loadError()) {
+    <div class="alert alert-danger" role="alert">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="alert-title">Unable to load payment details</p>
+        <p class="alert-message">{{ loadError() }}</p>
+        <a routerLink="/customer-dashboard" class="btn btn-sm btn-outline" style="margin-top:0.5rem">Go to Dashboard</a>
+      </div>
+    </div>
+  }
+
+  <!-- Loading Skeleton -->
+  @if (isLoadingPaymentDue()) {
+    <div class="loading-skeleton">
+      <div class="skeleton-line wide"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line narrow"></div>
+    </div>
+  }
+
+  <!-- Submission Error -->
+  @if (submissionError()) {
+    <div class="alert alert-danger" role="alert">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <p class="alert-title">Payment Failed</p>
+        <p class="alert-message">{{ submissionError() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- === SUCCESS CONFIRMATION VIEW === -->
+  @if (paymentResult(); as result) {
+    <section class="confirmation-card">
+      <div class="success-icon-wrap">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 class="conf-title">Payment Successful</h3>
+      <p class="conf-subtitle">Booking <span class="booking-ref">#{{ result.bookingNumber }}</span> has been confirmed.</p>
+
+      <div class="conf-details-grid">
+        <div class="conf-detail">
+          <span class="detail-label">Amount Paid</span>
+          <span class="detail-value">{{ formatCurrency(result.amountPaid, result.currency) }}</span>
+        </div>
+        <div class="conf-detail">
+          <span class="detail-label">Payment Method</span>
+          <span class="detail-value">{{ result.paymentMethod === PaymentMethod.Card ? 'Card' : result.paymentMethod === PaymentMethod.LankaQr ? 'LankaQR' : result.paymentMethod === PaymentMethod.MobileWallet ? 'Mobile Wallet' : 'Net Banking' }}</span>
+        </div>
+        <div class="conf-detail">
+          <span class="detail-label">Payment Status</span>
+          <span class="detail-value status-complete">{{ result.paymentStatus === 1 ? 'Completed' : 'Pending' }}</span>
+        </div>
+        <div class="conf-detail">
+          <span class="detail-label">Booking Status</span>
+          <span class="detail-value">{{ result.bookingStatus }}</span>
+        </div>
+      </div>
+
+      <div class="conf-message">{{ result.message }}</div>
+
+      <div class="conf-actions">
+        <button type="button" class="btn btn-primary" (click)="onGoToDashboard()">
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Go to Dashboard
+        </button>
+        <a routerLink="/events" class="btn btn-outline">Browse More Events</a>
+      </div>
+    </section>
+  }
+
+  <!-- === PAYMENT FORM VIEW === -->
+  @if (!paymentResult() && !isLoadingPaymentDue() && !loadError()) {
+    @if (paymentDue(); as due) {
+      <div class="payment-grid">
+
+        <!-- Left Column: Payment Form -->
+        <div class="form-column">
+          <!-- Simulation Notice -->
+          <app-payment-security-notice />
+
+          <!-- Expired / Not Eligible Warning -->
+          @if (due.isExpired || !due.canPay) {
+            <div class="alert alert-warning">
+              <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <p class="alert-title">{{ due.isExpired ? 'Booking Expired' : 'Payment Not Available' }}</p>
+                <p class="alert-message">{{ due.isExpired ? 'This booking hold has expired. Please start a new booking.' : 'Payment cannot be processed for this booking at this time.' }}</p>
+              </div>
+            </div>
+          }
+
+          @if (due.canPay) {
+            <!-- Method Selector -->
+            <app-payment-method-selector
+              [selectedMethod]="selectedMethod()"
+              (methodSelected)="onMethodSelected($event)"
+            />
+
+            <!-- Card Details (Card method only) -->
+            @if (showCardForm()) {
+              <app-simulated-card-form [formGroup]="cardForm" />
+            }
+
+            <!-- Non-card methods: coming soon notice -->
+            @if (!showCardForm()) {
+              <div class="alt-method-notice">
+                <p class="alt-method-text">
+                  This payment method is available in the full production setup. For the simulation, use the <strong>Credit/Debit Card</strong> method with test credentials.
+                </p>
+              </div>
+            }
+
+            <!-- Submit Action -->
+            <button
+              type="button"
+              class="btn btn-primary btn-pay"
+              [disabled]="isSubmitting()"
+              (click)="onSubmitPayment()"
+            >
+              @if (isSubmitting()) {
+                <span class="spinner" aria-hidden="true"></span>
+                Processing Payment...
+              } @else {
+                <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+                Pay {{ formatCurrency(due.amountDue, due.currency) }}
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Right Column: Order Summary Sidebar -->
+        <aside class="summary-column">
+          <app-payment-booking-summary [paymentDue]="paymentDue()" />
+          <div class="back-link-wrap">
+            <a routerLink="/customer-dashboard" class="back-link">
+              <svg class="back-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+              </svg>
+              Back to Dashboard
+            </a>
+          </div>
+        </aside>
+      </div>
+    }
+  }
+</div>

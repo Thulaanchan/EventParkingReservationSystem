@@ -42,7 +42,17 @@ export const checkoutGuard: CanActivateFn = (
     });
   }
 
-  // 2. Booking selection validation using existing BookingStateService logic
+  // 2. If bookingId query parameter is present, customer is paying for a confirmed backend booking
+  const hasBookingId =
+    route.queryParamMap.has('bookingId') ||
+    route.paramMap.has('bookingId') ||
+    state.url.includes('bookingId=');
+
+  if (hasBookingId) {
+    return true;
+  }
+
+  // 3. Booking selection validation using existing BookingStateService logic
   const isBookingValid =
     bookingStateService.isCheckoutReady() &&
     bookingStateService.hasEventSelected() &&

@@ -1,0 +1,37 @@
+@if (paymentDue) {
+  <div class="summary-card">
+    <div class="card-header">
+      <div class="title-wrap">
+        <svg class="summary-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+        </svg>
+        <h3 class="card-title">Payment Summary</h3>
+      </div>
+      <span class="status-pill" [class.expired]="paymentDue.isExpired">
+        {{ paymentDue.isExpired ? 'Expired' : paymentDue.bookingStatus }}
+      </span>
+    </div>
+
+    <div class="summary-body">
+      <div class="summary-row">
+        <span class="label">Booking Number</span>
+        <span class="value font-mono">#{{ paymentDue.bookingNumber }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="label">Payment Status</span>
+        <span class="value">{{ paymentDue.paymentStatus === 1 ? 'Paid' : 'Pending Payment' }}</span>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="total-row">
+        <div class="total-label-wrap">
+          <span class="total-label">Amount Payable</span>
+          <span class="total-subtext">Includes ticket price & parking</span>
+        </div>
+        <span class="total-amount">{{ formatCurrency(paymentDue.amountDue, paymentDue.currency) }}</span>
+      </div>
+    </div>
+  </div>
+}

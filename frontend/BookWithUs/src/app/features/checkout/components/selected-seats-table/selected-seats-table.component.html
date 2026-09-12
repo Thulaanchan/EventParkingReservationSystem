@@ -1,0 +1,63 @@
+<div class="seats-card">
+  <div class="card-header">
+    <div class="header-titles">
+      <h3 class="card-title">Selected Seats</h3>
+      <span *ngIf="seats && seats.length > 0" class="seats-count-badge">
+        {{ seats.length }} {{ seats.length === 1 ? 'Seat' : 'Seats' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!seats || seats.length === 0" class="empty-state">
+    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 18v3h16v-3M7 14l5-5 5 5M12 9v9"></path>
+    </svg>
+    <p class="empty-message">No seats selected yet.</p>
+  </div>
+
+  <!-- Table View for Seats -->
+  <div *ngIf="seats && seats.length > 0" class="table-responsive">
+    <table class="seats-table">
+      <thead>
+        <tr>
+          <th>Seat</th>
+          <th>Row</th>
+          <th>Section</th>
+          <th>Attendee Name</th>
+          <th>Attendee Type</th>
+          <th class="text-right">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let seat of seats; trackBy: trackBySeatId">
+          <td class="font-bold seat-code-cell">
+            <span class="seat-dot"></span>
+            {{ seat.seatCode }}
+          </td>
+          <td class="text-muted">
+            {{ seat.rowLabel ? 'Row ' + seat.rowLabel : '-' }}
+          </td>
+          <td>
+            <span class="section-tag">{{ seat.sectionName || 'General' }}</span>
+          </td>
+          <td class="attendee-name-cell">
+            <span *ngIf="seat.attendeeName" class="attendee-name">{{ seat.attendeeName }}</span>
+            <span *ngIf="!seat.attendeeName" class="missing-attendee">Name required</span>
+          </td>
+          <td>
+            <span
+              class="attendee-type-badge"
+              [class.child]="seat.attendeeType === 2"
+            >
+              {{ getAttendeeTypeLabel(seat.attendeeType) }}
+            </span>
+          </td>
+          <td class="text-right font-semibold price-cell">
+            {{ formatCurrency(seat.price) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

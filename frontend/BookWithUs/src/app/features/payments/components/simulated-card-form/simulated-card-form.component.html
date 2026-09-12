@@ -1,0 +1,83 @@
+<div class="card-form-card" [formGroup]="formGroup">
+  <h4 class="form-section-title">Card Details</h4>
+
+  <!-- Cardholder Name -->
+  <div class="form-group">
+    <label class="form-label" for="cardholderName">
+      Cardholder Name <span class="required">*</span>
+    </label>
+    <input
+      id="cardholderName"
+      type="text"
+      class="form-input"
+      [class.input-error]="isFieldInvalid('cardholderName')"
+      formControlName="cardholderName"
+      placeholder="Name as on card"
+      autocomplete="cc-name"
+    />
+    @if (isFieldInvalid('cardholderName')) {
+      <span class="field-error">Cardholder name is required</span>
+    }
+  </div>
+
+  <!-- Card Number -->
+  <div class="form-group">
+    <label class="form-label" for="testCardNumber">
+      Card Number <span class="required">*</span>
+    </label>
+    <input
+      id="testCardNumber"
+      type="text"
+      class="form-input font-mono"
+      [class.input-error]="isFieldInvalid('testCardNumber')"
+      formControlName="testCardNumber"
+      placeholder="4242 4242 4242 4242"
+      autocomplete="off"
+      maxlength="19"
+    />
+    @if (isFieldInvalid('testCardNumber')) {
+      <span class="field-error">Enter a valid 13–19 digit card number</span>
+    }
+  </div>
+
+  <!-- Expiry + CVV row -->
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label" for="expiry">
+        Expiry <span class="required">*</span>
+      </label>
+      <input
+        id="expiry"
+        type="text"
+        class="form-input"
+        [class.input-error]="isFieldInvalid('expiry')"
+        formControlName="expiry"
+        placeholder="MM/YY"
+        autocomplete="off"
+        maxlength="5"
+      />
+      @if (isFieldInvalid('expiry')) {
+        <span class="field-error">Format: MM/YY</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="testCvv">
+        CVV <span class="required">*</span>
+      </label>
+      <input
+        id="testCvv"
+        type="text"
+        class="form-input font-mono"
+        [class.input-error]="isFieldInvalid('testCvv')"
+        formControlName="testCvv"
+        placeholder="123"
+        autocomplete="off"
+        maxlength="3"
+      />
+      @if (isFieldInvalid('testCvv')) {
+        <span class="field-error">3-digit CVV required</span>
+      }
+    </div>
+  </div>
+</div>
