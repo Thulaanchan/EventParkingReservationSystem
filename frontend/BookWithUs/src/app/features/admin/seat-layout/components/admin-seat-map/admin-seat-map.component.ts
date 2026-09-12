@@ -18,7 +18,7 @@ export interface AdminSeatMapItem {
 
 /**
  * Presentational visual component for rendering the admin seat map canvas.
- * Matches ad s 06 m.png arena layout with central stage and concentric sections.
+ * Matches arena layout with central stage and dynamic concentric category badges.
  * Supports viewing any seat regardless of status.
  */
 @Component({
@@ -37,6 +37,20 @@ export class AdminSeatMapComponent {
   @Input() disabled = false;
 
   @Output() seatSelected = new EventEmitter<AdminSeatMapItem>();
+
+  /**
+   * Derives unique category names from real seat items without mutating input.
+   */
+  get dynamicCategories(): readonly string[] {
+    const categories: string[] = [];
+    for (const seat of this.seats) {
+      const name = (seat.categoryName ?? '').trim();
+      if (name && !categories.includes(name)) {
+        categories.push(name);
+      }
+    }
+    return categories;
+  }
 
   get positionedSeats(): AdminSeatMapItem[] {
     return this.seats.filter(
@@ -111,6 +125,20 @@ export class AdminSeatMapComponent {
     const width = Math.max(1200, Math.round(maxX - minX));
     const height = Math.max(900, Math.round(maxY - minY));
     return `${Math.round(minX)} ${Math.round(minY)} ${width} ${height}`;
+  }
+
+  getCategoryBadgeY(index: number, total: number): number {
+    const startY = 165;
+    const spacing = total > 1 ? Math.min(50, 160 / total) : 0;
+    return startY + index * spacing;
+  }
+
+  getCategoryBadgeWidth(categoryName: string): number {
+    return Math.max(76, categoryName.length * 9 + 24);
+  }
+
+  getCategoryColorIndex(index: number): number {
+    return index % 6;
   }
 
   onSeatClick(seat: AdminSeatMapItem): void {

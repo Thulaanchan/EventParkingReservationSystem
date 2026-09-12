@@ -19,13 +19,13 @@
           preserveAspectRatio="xMidYMid meet"
           aria-hidden="true">
           
-          <!-- Background concentric stadium rings matching ad s 06 m.png -->
+          <!-- Background concentric stadium rings matching arena layout -->
           <g class="arena-guidelines">
             <ellipse cx="600" cy="450" rx="480" ry="360" class="arena-ring ring-outer" />
-            <ellipse cx="600" cy="450" rx="410" ry="300" class="arena-ring ring-silver" />
-            <ellipse cx="600" cy="450" rx="340" ry="245" class="arena-ring ring-gold" />
-            <ellipse cx="600" cy="450" rx="270" ry="190" class="arena-ring ring-platinum" />
-            <ellipse cx="600" cy="450" rx="200" ry="135" class="arena-ring ring-vip" />
+            <ellipse cx="600" cy="450" rx="410" ry="300" class="arena-ring ring-level-4" />
+            <ellipse cx="600" cy="450" rx="340" ry="245" class="arena-ring ring-level-3" />
+            <ellipse cx="600" cy="450" rx="270" ry="190" class="arena-ring ring-level-2" />
+            <ellipse cx="600" cy="450" rx="200" ry="135" class="arena-ring ring-level-1" />
           </g>
 
           <!-- Cardinal Section Labels & Markers -->
@@ -74,29 +74,31 @@
             </g>
           </g>
 
-          <!-- Category Section Header Arc Badges (Silver, Gold, Platinum, VIP) -->
-          <g class="tier-badges" transform="translate(600, 0)">
-            <!-- Silver -->
-            <g transform="translate(0, 165)">
-              <rect x="-50" y="-12" width="100" height="22" rx="4" class="tier-rect tier-silver-rect" />
-              <text x="0" y="3" text-anchor="middle" class="tier-label">SILVER</text>
+          <!-- Dynamic Category Header Badges derived from real seats -->
+          @if (dynamicCategories.length > 0) {
+            <g class="tier-badges" transform="translate(600, 0)">
+              @for (category of dynamicCategories; track category; let i = $index) {
+                <g [attr.transform]="'translate(0, ' + getCategoryBadgeY(i, dynamicCategories.length) + ')'">
+                  <rect
+                    [attr.x]="-(getCategoryBadgeWidth(category) / 2)"
+                    [attr.width]="getCategoryBadgeWidth(category)"
+                    y="-12"
+                    height="22"
+                    rx="4"
+                    class="tier-rect"
+                    [class]="'category-badge-' + getCategoryColorIndex(i)" />
+                  <text
+                    x="0"
+                    y="3"
+                    text-anchor="middle"
+                    class="tier-label"
+                    [class]="'category-text-' + getCategoryColorIndex(i)">
+                    {{ category }}
+                  </text>
+                </g>
+              }
             </g>
-            <!-- Gold -->
-            <g transform="translate(0, 215)">
-              <rect x="-46" y="-12" width="92" height="22" rx="4" class="tier-rect tier-gold-rect" />
-              <text x="0" y="3" text-anchor="middle" class="tier-label">GOLD</text>
-            </g>
-            <!-- Platinum -->
-            <g transform="translate(0, 265)">
-              <rect x="-42" y="-12" width="84" height="22" rx="4" class="tier-rect tier-platinum-rect" />
-              <text x="0" y="3" text-anchor="middle" class="tier-label">PLATINUM</text>
-            </g>
-            <!-- VIP -->
-            <g transform="translate(0, 315)">
-              <rect x="-38" y="-12" width="76" height="22" rx="4" class="tier-rect tier-vip-rect" />
-              <text x="0" y="3" text-anchor="middle" class="tier-label">VIP</text>
-            </g>
-          </g>
+          }
 
           <!-- Central STAGE Visual -->
           <g class="central-stage" transform="translate(600, 450)">

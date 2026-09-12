@@ -141,7 +141,7 @@
   fill: #4b5563;
 }
 
-/* Tier Badges (Silver, Gold, Platinum, VIP) */
+/* Dynamic Category Badges */
 .tier-rect {
   stroke-width: 1.5;
 }
@@ -152,40 +152,59 @@
   letter-spacing: 0.05em;
 }
 
-.tier-silver-rect {
-  fill: #f1f5f9;
-  stroke: #94a3b8;
-}
-
-.tier-silver-rect + .tier-label {
-  fill: #475569;
-}
-
-.tier-gold-rect {
-  fill: #fef3c7;
-  stroke: #f59e0b;
-}
-
-.tier-gold-rect + .tier-label {
-  fill: #b45309;
-}
-
-.tier-platinum-rect {
-  fill: #f5f3ff;
-  stroke: #8b5cf6;
-}
-
-.tier-platinum-rect + .tier-label {
-  fill: #6d28d9;
-}
-
-.tier-vip-rect {
+/* Deterministic Palette (UI-Only, matches AdminSeatLegend palette) */
+.category-badge-0 {
   fill: #1e1b4b;
   stroke: #312e81;
 }
 
-.tier-vip-rect + .tier-label {
+.category-text-0 {
   fill: #ffffff;
+}
+
+.category-badge-1 {
+  fill: #f5f3ff;
+  stroke: #8b5cf6;
+}
+
+.category-text-1 {
+  fill: #6d28d9;
+}
+
+.category-badge-2 {
+  fill: #fef3c7;
+  stroke: #f59e0b;
+}
+
+.category-text-2 {
+  fill: #b45309;
+}
+
+.category-badge-3 {
+  fill: #f1f5f9;
+  stroke: #94a3b8;
+}
+
+.category-text-3 {
+  fill: #475569;
+}
+
+.category-badge-4 {
+  fill: #e0f2fe;
+  stroke: #0284c7;
+}
+
+.category-text-4 {
+  fill: #0369a1;
+}
+
+.category-badge-5 {
+  fill: #ccfbf1;
+  stroke: #0d9488;
+}
+
+.category-text-5 {
+  fill: #0f766e;
 }
 
 /* Stage Visuals */
