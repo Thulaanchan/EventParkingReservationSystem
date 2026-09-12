@@ -1,0 +1,276 @@
+<div class="event-management-page">
+  <!-- Success Notification Toast -->
+  @if (successMessage) {
+    <div class="toast-banner toast-banner-success" role="status" aria-live="polite">
+      <div class="toast-content">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span class="toast-text">{{ successMessage }}</span>
+      </div>
+      <button
+        type="button"
+        class="btn-toast-dismiss"
+        (click)="successMessage = null"
+        aria-label="Dismiss notification"
+      >
+        &times;
+      </button>
+    </div>
+  }
+
+  <!-- Detail Error Notification Toast -->
+  @if (detailError) {
+    <div class="toast-banner toast-banner-error" role="alert">
+      <div class="toast-content">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span class="toast-text">{{ detailError }}</span>
+      </div>
+      <button
+        type="button"
+        class="btn-toast-dismiss"
+        (click)="detailError = null"
+        aria-label="Dismiss error"
+      >
+        &times;
+      </button>
+    </div>
+  }
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">Event Management</h1>
+      <p class="page-subtitle">Create and manage BookWithUs events, schedules and booking capacity.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-create-event"
+      (click)="onCreateEvent()"
+      aria-label="Create Event"
+    >
+      <svg class="btn-plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>Create Event</span>
+    </button>
+  </header>
+
+  <!-- Main Management Layout (Grid with Optional Detail Drawer) -->
+  <div class="event-management-layout" [class.has-detail-panel]="!!selectedEventDetails || detailLoading">
+    <!-- Main Content Column -->
+    <div class="main-content-column">
+      <!-- Admin Stats Component -->
+      <app-event-admin-stats
+        [totalEvents]="totalEvents"
+        [upcomingEvents]="upcomingEvents"
+        [totalBookings]="totalBookings"
+      ></app-event-admin-stats>
+
+      <!-- Admin Event Filter Component -->
+      <app-admin-event-filter
+        [filter]="currentFilter"
+        [venues]="venues"
+        [categories]="categories"
+        [loadingOptions]="loadingOptions"
+        (filterChange)="onFilterChange($event)"
+        (clearFilters)="onClearFilters()"
+      ></app-admin-event-filter>
+
+      <!-- Filter Options Warning Note -->
+      @if (optionsError) {
+        <div class="options-warning-alert" role="status">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ optionsError }}</span>
+        </div>
+      }
+
+      <!-- Page Error State (Table Level) -->
+      @if (errorMessage && events.length === 0 && !loading) {
+        <div class="page-error-state" role="alert">
+          <div class="error-icon-box">
+            <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="error-content">
+            <h3 class="error-title">Failed to load events</h3>
+            <p class="error-message">{{ errorMessage }}</p>
+            <button type="button" class="btn btn-retry" (click)="reloadEvents()">
+              Try Again
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Events Table Card Container -->
+        <div class="table-container-card">
+          <app-admin-event-table
+            [events]="events"
+            [loading]="loading"
+            (viewEvent)="onViewEvent($event)"
+            (editEvent)="onEditEvent($event)"
+            (deleteEvent)="onPromptDelete($event)"
+            (manageSeats)="onManageSeats($event)"
+            (manageParking)="onManageParking($event)"
+          ></app-admin-event-table>
+
+          <!-- Server-Side Pagination Bar -->
+          @if (!loading && events.length > 0) {
+            <div class="pagination-footer">
+              <span class="pagination-count">
+                Showing {{ paginationStart }}–{{ paginationEnd }} of {{ totalCount }} events
+              </span>
+
+              <nav class="pagination-controls" aria-label="Event list pagination">
+                <button
+                  type="button"
+                  class="btn-page-step"
+                  [disabled]="page <= 1"
+                  (click)="prevPage()"
+                  aria-label="Go to previous page"
+                >
+                  Previous
+                </button>
+
+                <div class="page-numbers-group">
+                  @for (p of pageNumbers; track p) {
+                    <button
+                      type="button"
+                      class="btn-page-number"
+                      [class.active]="p === page"
+                      [attr.aria-current]="p === page ? 'page' : null"
+                      (click)="goToPage(p)"
+                    >
+                      {{ p }}
+                    </button>
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-page-step"
+                  [disabled]="page >= totalPages"
+                  (click)="nextPage()"
+                  aria-label="Go to next page"
+                >
+                  <span>Next</span>
+                  <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Detail Panel Column (Drawer) -->
+    @if (selectedEventDetails || detailLoading) {
+      <aside class="detail-panel-column">
+        @if (detailLoading) {
+          <div class="detail-loading-card" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <span class="loading-label">Loading event details...</span>
+          </div>
+        } @else if (selectedEventDetails) {
+          <app-admin-event-detail-panel
+            [event]="selectedEventDetails"
+            (closePanel)="onCloseDetail()"
+            (editEvent)="onEditEvent($event)"
+            (manageSeats)="onManageSeats($event)"
+            (manageParking)="onManageParking($event)"
+            (deleteEvent)="onPromptDelete($event)"
+          ></app-admin-event-detail-panel>
+        }
+      </aside>
+    }
+  </div>
+
+  <!-- Delete Confirmation Modal Dialog -->
+  @if (showDeleteConfirm && eventToDelete) {
+    <div class="modal-backdrop" (click)="onCancelDelete()" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-warning-badge">
+            <svg class="modal-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="modal-header-text">
+            <h3 id="deleteModalTitle" class="modal-title">Delete Event</h3>
+            <p class="modal-subtitle">Confirm event cancellation & deletion</p>
+          </div>
+          <button
+            type="button"
+            class="modal-btn-close"
+            (click)="onCancelDelete()"
+            [disabled]="deleting"
+            aria-label="Close modal"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-confirm-text">
+            Are you sure you want to delete <strong>{{ eventToDelete.name }}</strong>?
+          </p>
+          <p class="modal-subtext">
+            This action cannot be undone. Only events without active booking dependencies may be safely removed.
+          </p>
+
+          @if (deleteErrorMessage) {
+            <div class="modal-alert-error" role="alert">
+              <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ deleteErrorMessage }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-modal-cancel"
+            (click)="onCancelDelete()"
+            [disabled]="deleting"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-modal-delete"
+            (click)="onConfirmDelete()"
+            [disabled]="deleting"
+          >
+            @if (deleting) {
+              <span class="btn-spinner"></span>
+              <span>Deleting...</span>
+            } @else {
+              <span>Delete Event</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
