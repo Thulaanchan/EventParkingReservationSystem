@@ -1,0 +1,65 @@
+<div class="summary-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="header-left">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+        <line x1="2" y1="10" x2="22" y2="10"></line>
+      </svg>
+      <h3 class="card-title">Booking Summary</h3>
+    </div>
+    <span class="status-pill" [ngClass]="getStatusClass()">
+      {{ booking.bookingStatus }}
+    </span>
+  </div>
+
+  <!-- Breakdown List -->
+  <div class="breakdown-list">
+    <div class="breakdown-row">
+      <span class="row-label">Ticket Total ({{ booking.seats.length }} {{ booking.seats.length === 1 ? 'seat' : 'seats' }})</span>
+      <span class="row-value">{{ formatCurrency(getTicketTotal()) }}</span>
+    </div>
+
+    @if (booking.parking) {
+      <div class="breakdown-row">
+        <span class="row-label">Parking ({{ booking.parking.zoneName }} &bull; {{ booking.parking.slotCode }})</span>
+        <span class="row-value">{{ formatCurrency(getParkingFee()) }}</span>
+      </div>
+    }
+
+    <div class="summary-divider"></div>
+
+    <!-- Grand Total -->
+    <div class="breakdown-row grand-total-row">
+      <div class="total-label-wrap">
+        <span class="grand-total-label">Grand Total</span>
+        <span class="total-subtext">All taxes and fees included</span>
+      </div>
+      <span class="grand-total-value">{{ formatCurrency(booking.totalAmount) }}</span>
+    </div>
+  </div>
+
+  <!-- Booking Timeline Info -->
+  <div class="timeline-info">
+    <div class="timeline-row">
+      <span class="timeline-label">Booking Reference</span>
+      <span class="timeline-value font-mono">#{{ booking.bookingNumber }}</span>
+    </div>
+    <div class="timeline-row">
+      <span class="timeline-label">Booked At</span>
+      <span class="timeline-value">{{ booking.createdAt | date:'mediumDate' }} &bull; {{ booking.createdAt | date:'shortTime' }}</span>
+    </div>
+    @if (booking.updatedAt) {
+      <div class="timeline-row">
+        <span class="timeline-label">Last Updated</span>
+        <span class="timeline-value">{{ booking.updatedAt | date:'mediumDate' }} &bull; {{ booking.updatedAt | date:'shortTime' }}</span>
+      </div>
+    }
+    @if (booking.holdExpiresAtUtc && booking.bookingStatus === 'Pending') {
+      <div class="timeline-row hold-warning">
+        <span class="timeline-label">Hold Expiration</span>
+        <span class="timeline-value text-amber">{{ booking.holdExpiresAtUtc | date:'shortTime' }}</span>
+      </div>
+    }
+  </div>
+</div>

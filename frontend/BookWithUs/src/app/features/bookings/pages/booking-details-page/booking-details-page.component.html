@@ -1,0 +1,176 @@
+<div class="booking-details-container">
+
+  <!-- 1. LOADING STATE -->
+  @if (viewState() === 'loading') {
+    <div class="skeleton-container" role="status" aria-label="Loading booking details">
+      <div class="skeleton-header"></div>
+      <div class="skeleton-hero"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-column">
+          <div class="skeleton-box tall"></div>
+          <div class="skeleton-box"></div>
+        </div>
+        <div class="skeleton-column">
+          <div class="skeleton-box tall"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 2. NOT FOUND (404) STATE -->
+  @else if (viewState() === 'not-found') {
+    <section class="state-card not-found-card" role="alert">
+      <div class="icon-bubble not-found-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="state-title">Booking Not Found</h2>
+      <p class="state-description">
+        We could not find the reservation you requested. It may have been cancelled or the link is invalid.
+      </p>
+      <div class="state-actions">
+        <a routerLink="/bookings" class="btn btn-primary">
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+          </svg>
+          Back to My Bookings
+        </a>
+        <a routerLink="/events" class="btn btn-outline">Explore Events</a>
+      </div>
+    </section>
+  }
+
+  <!-- 3. ACCESS DENIED (403) STATE -->
+  @else if (viewState() === 'access-denied') {
+    <section class="state-card denied-card" role="alert">
+      <div class="icon-bubble denied-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h2 class="state-title">Access Restricted</h2>
+      <p class="state-description">
+        You do not have permission to view this booking reservation. Customer bookings are private to their account owner.
+      </p>
+      <div class="state-actions">
+        <a routerLink="/bookings" class="btn btn-primary">View My Bookings</a>
+      </div>
+    </section>
+  }
+
+  <!-- 4. GENERIC ERROR STATE -->
+  @else if (viewState() === 'error') {
+    <section class="state-card error-card" role="alert">
+      <div class="icon-bubble error-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="state-title">Unable to Load Booking</h2>
+      <p class="state-description">{{ errorMessage() }}</p>
+      <div class="state-actions">
+        @if (isSessionExpired()) {
+          <button type="button" class="btn btn-primary" (click)="onGoToLogin()">
+            Sign In Again
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary" (click)="onRetry()">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Try Again
+          </button>
+        }
+        <a routerLink="/bookings" class="btn btn-outline">Back to My Bookings</a>
+      </div>
+    </section>
+  }
+
+  <!-- 5. SUCCESS DATA STATE matching screen-15 design -->
+  @else if (viewState() === 'data' && booking(); as b) {
+    <!-- Top Header -->
+    <app-booking-details-header
+      [bookingNumber]="b.bookingNumber"
+      [bookingStatus]="b.bookingStatus"
+    />
+
+    <!-- Event Banner / Hero Card -->
+    <app-booking-event-details
+      [event]="b.event"
+      [bookingNumber]="b.bookingNumber"
+      [bookingStatus]="b.bookingStatus"
+      [createdAt]="b.createdAt"
+      [holdExpiresAtUtc]="b.holdExpiresAtUtc"
+      [seatCount]="b.seats.length"
+      [parkingInfo]="parkingSummaryText()"
+    />
+
+    <!-- Two-Column Content Grid -->
+    <div class="details-grid">
+      <!-- Left Column: Seat Details & Parking & Customer Info -->
+      <div class="left-column">
+        <!-- Seats Card -->
+        <app-booking-seat-details [seats]="b.seats" />
+
+        <!-- Optional Parking Card -->
+        @if (b.parking) {
+          <app-booking-parking-details [parking]="b.parking" />
+        }
+
+        <!-- Customer Information Card -->
+        <div class="customer-card">
+          <div class="card-header">
+            <div class="header-left">
+              <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <h3 class="card-title">Customer Information</h3>
+            </div>
+          </div>
+          <div class="customer-body">
+            <div class="customer-name">{{ currentUser()?.displayName || 'Customer' }}</div>
+            <div class="customer-email">{{ currentUser()?.email || 'N/A' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Booking Totals & Entry Pass -->
+      <div class="right-column">
+        <!-- Totals & Status Summary Card -->
+        <app-booking-status-summary [booking]="b" />
+
+        <!-- Event Entry Pass Card (matching screen-15) -->
+        <!-- Event Entry Pass Component (matching screen-15) -->
+        <app-eventflow-pass
+          [bookingNumber]="b.bookingNumber"
+          [bookingStatus]="b.bookingStatus"
+          [bookingId]="b.bookingId"
+        />
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <a routerLink="/bookings" class="btn btn-outline">
+        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+        </svg>
+        Back to My Bookings
+      </a>
+      <a routerLink="/events" class="btn btn-primary">
+        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+        Browse More Events
+      </a>
+    </div>
+  }
+
+</div>

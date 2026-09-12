@@ -1,0 +1,164 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #4f46e5;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.badge-confirmed {
+  background-color: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.badge-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.badge-cancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge-expired {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.row-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.row-value {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 0.5rem 0;
+}
+
+.grand-total-row {
+  align-items: baseline;
+}
+
+.total-label-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.grand-total-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.total-subtext {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+.grand-total-value {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #4f46e5;
+  letter-spacing: -0.02em;
+}
+
+/* Timeline */
+.timeline-info {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-label {
+  color: #64748b;
+}
+
+.timeline-value {
+  color: #334155;
+  font-weight: 600;
+}
+
+.font-mono {
+  font-family: monospace;
+}
+
+.text-amber {
+  color: #d97706;
+}
