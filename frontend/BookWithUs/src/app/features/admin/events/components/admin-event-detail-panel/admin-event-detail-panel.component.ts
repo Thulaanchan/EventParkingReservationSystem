@@ -10,6 +10,11 @@ import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { environment } from '../../../../../../environments/environment';
 import { EventDetails } from '../../../../../../core/models/events/event-details.model';
 
+/**
+ * Admin event detail drawer/panel presentational component.
+ * Displays event details, capacity overview, and booking lock safeguards
+ * bound strictly to backend contract properties.
+ */
 @Component({
   selector: 'app-admin-event-detail-panel',
   standalone: true,

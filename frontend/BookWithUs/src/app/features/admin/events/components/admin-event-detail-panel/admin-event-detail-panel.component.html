@@ -143,19 +143,6 @@
         </div>
       </div>
 
-      <!-- Schedule Validation Note (Matching as-05) -->
-      <div class="schedule-validated-banner" role="status">
-        <div class="check-icon-circle">
-          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </div>
-        <div class="schedule-text">
-          <strong class="schedule-headline">Venue schedule validated</strong>
-          <span class="schedule-subtext">No overlapping event is scheduled at this venue for the selected time.</span>
-        </div>
-      </div>
-
       <!-- Booking Lock Warning (Matching as-05) -->
       @if (event.hasBookings) {
         <div class="booking-lock-banner" role="alert">
@@ -173,13 +160,13 @@
             </p>
             <ul class="lock-flags-list">
               @if (!event.canEditTicketPrice) {
-                <li>Ticket price is locked and cannot be modified.</li>
+                <li>Ticket price is locked.</li>
               }
               @if (!event.canEditCapacity) {
-                <li>Capacity is locked and cannot be decreased.</li>
+                <li>Capacity is locked because this event has existing bookings.</li>
               }
               @if (!event.canEditStageLayout) {
-                <li>Stage layout is locked and cannot be changed.</li>
+                <li>Stage layout is locked.</li>
               }
             </ul>
           </div>
@@ -267,7 +254,7 @@
 
         @if (!event.canDelete) {
           <p class="delete-safeguard-hint">
-            This event has existing bookings and cannot be deleted without satisfying booking safeguards.
+            Event cannot be deleted because active bookings prevent deletion.
           </p>
         }
       </div>

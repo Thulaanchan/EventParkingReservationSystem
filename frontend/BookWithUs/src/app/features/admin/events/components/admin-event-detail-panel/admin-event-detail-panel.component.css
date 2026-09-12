@@ -237,52 +237,6 @@
   line-height: 1.2;
 }
 
-/* Schedule Validated Banner */
-.schedule-validated-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 14px;
-  background-color: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  border-radius: 8px;
-}
-
-.check-icon-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #059669;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.check-icon {
-  width: 12px;
-  height: 12px;
-}
-
-.schedule-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.schedule-headline {
-  font-size: 0.8125rem;
-  color: #065f46;
-  font-weight: 700;
-}
-
-.schedule-subtext {
-  font-size: 0.75rem;
-  color: #047857;
-  line-height: 1.4;
-}
 
 /* Booking Lock Warning */
 .booking-lock-banner {
