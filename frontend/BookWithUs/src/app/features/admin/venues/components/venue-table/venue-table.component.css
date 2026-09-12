@@ -67,19 +67,20 @@ th {
 }
 
 .th-address {
-  width: 25%;
+  width: 23%;
 }
 
 .th-capacity {
-  width: 15%;
+  width: 14%;
 }
 
 .th-events {
-  width: 15%;
+  width: 14%;
 }
 
 .th-availability {
-  width: 10%;
+  width: 14%;
+  cursor: help;
 }
 
 .th-action {
@@ -138,22 +139,8 @@ td {
   font-weight: 500;
 }
 
-/* Availability Badges */
-.badge-available {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background-color: #ecfdf5;
-  color: #059669;
-  border: 1px solid #a7f3d0;
-  white-space: nowrap;
-}
-
-.badge-in-use {
+/* Availability Badges: Neutral/informative badges accurately reflecting upcoming event counts */
+.badge-has-events {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -162,9 +149,25 @@ td {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: #fffbeb;
-  color: #d97706;
+  color: #b45309;
   border: 1px solid #fde68a;
   white-space: nowrap;
+  cursor: help;
+}
+
+.badge-no-events {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  white-space: nowrap;
+  cursor: help;
 }
 
 /* Action Cell */

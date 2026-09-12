@@ -45,7 +45,7 @@
             <th scope="col" class="th-address">ADDRESS</th>
             <th scope="col" class="th-capacity">TOTAL CAPACITY</th>
             <th scope="col" class="th-events">UPCOMING EVENTS</th>
-            <th scope="col" class="th-availability">AVAILABILITY</th>
+            <th scope="col" class="th-availability" title="Exact availability is checked by date and time in Venue Details">AVAILABILITY</th>
             <th scope="col" class="th-action">ACTION</th>
           </tr>
         </thead>
@@ -86,15 +86,21 @@
                 <span class="events-text">{{ venue.upcomingEventCount }}</span>
               </td>
 
-              <!-- Availability Status -->
+              <!-- Availability Column: Corrected wording based on upcomingEventCount with detail hint -->
               <td class="td-availability">
                 @if (venue.upcomingEventCount > 0) {
-                  <span class="badge-in-use" title="Venue is currently in use for upcoming events">
-                    In Use
+                  <span
+                    class="badge-has-events"
+                    title="Venue has scheduled upcoming events. Exact availability is checked by date and time in Venue Details."
+                  >
+                    Has Upcoming Events
                   </span>
                 } @else {
-                  <span class="badge-available" title="Venue is available for booking">
-                    Available
+                  <span
+                    class="badge-no-events"
+                    title="No upcoming events scheduled. Exact availability is checked by date and time in Venue Details."
+                  >
+                    No Upcoming Events
                   </span>
                 }
               </td>

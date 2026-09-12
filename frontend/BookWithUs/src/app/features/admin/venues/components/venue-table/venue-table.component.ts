@@ -11,6 +11,11 @@ import {
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Venue } from '../../../../../core/models/venues/venue.model';
 
+/**
+ * VenueTableComponent renders the admin venue listing with client pagination
+ * and row actions. Upcoming event status indicates scheduled events, while
+ * exact date/time schedule availability is verified via Venue Details.
+ */
 @Component({
   selector: 'app-venue-table',
   standalone: true,
