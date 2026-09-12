@@ -13,6 +13,21 @@
   box-sizing: border-box;
 }
 
+/* Header & Actions Row */
+.top-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-action-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 /* Two-column layout */
 .details-grid {
   display: grid;

@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BookingDetails } from '../../../../core/models/bookings/booking-details.model';
+import { CancelBookingResponse } from '../../../../core/models/bookings/booking.model';
 import { BookingStatus } from '../../../../core/models/bookings/booking-status.model';
 import { AuthSessionService } from '../../../../core/services/auth/auth-session.service';
 import { BookingService } from '../../../../core/services/bookings/booking.service';
@@ -12,6 +13,7 @@ import { BookingEventDetailsComponent } from '../../components/booking-event-det
 import { BookingParkingDetailsComponent } from '../../components/booking-parking-details/booking-parking-details.component';
 import { BookingSeatDetailsComponent } from '../../components/booking-seat-details/booking-seat-details.component';
 import { BookingStatusSummaryComponent } from '../../components/booking-status-summary/booking-status-summary.component';
+import { CancelBookingActionComponent } from '../../components/cancel-booking-action/cancel-booking-action.component';
 import { EventflowPassComponent } from '../../components/eventflow-pass/eventflow-pass.component';
 
 export type BookingDetailsState = 'loading' | 'error' | 'not-found' | 'access-denied' | 'data';
@@ -27,7 +29,8 @@ export type BookingDetailsState = 'loading' | 'error' | 'not-found' | 'access-de
     BookingSeatDetailsComponent,
     BookingParkingDetailsComponent,
     BookingStatusSummaryComponent,
-    EventflowPassComponent
+    EventflowPassComponent,
+    CancelBookingActionComponent
   ],
   templateUrl: './booking-details-page.component.html',
   styleUrl: './booking-details-page.component.css'
@@ -102,6 +105,22 @@ export class BookingDetailsPageComponent implements OnInit, OnDestroy {
     const id = this.bookingId();
     const redirectUrl = id ? `/bookings/${id}` : '/bookings';
     this.router.navigate(['/auth/login'], { queryParams: { redirectUrl } });
+  }
+
+  onCancellationCompleted(_response: CancelBookingResponse): void {
+    // Authoritatively re-fetch the booking from the backend
+    const id = this.bookingId();
+    if (id) {
+      this.fetchBooking(id);
+    }
+  }
+
+  onBookingRefreshRequested(): void {
+    // Authoritatively re-fetch the booking from the backend
+    const id = this.bookingId();
+    if (id) {
+      this.fetchBooking(id);
+    }
   }
 
   private extractRouteParamAndLoad(): void {

@@ -94,11 +94,22 @@
 
   <!-- 5. SUCCESS DATA STATE matching screen-15 design -->
   @else if (viewState() === 'data' && booking(); as b) {
-    <!-- Top Header -->
-    <app-booking-details-header
-      [bookingNumber]="b.bookingNumber"
-      [bookingStatus]="b.bookingStatus"
-    />
+    <!-- Top Header & Action Row -->
+    <div class="top-header-row">
+      <app-booking-details-header
+        [bookingNumber]="b.bookingNumber"
+        [bookingStatus]="b.bookingStatus"
+      />
+      <div class="header-action-container">
+        <app-cancel-booking-action
+          [bookingId]="b.bookingId"
+          [bookingStatus]="b.bookingStatus"
+          [bookingNumber]="b.bookingNumber"
+          (cancellationCompleted)="onCancellationCompleted($event)"
+          (bookingRefreshRequested)="onBookingRefreshRequested()"
+        />
+      </div>
+    </div>
 
     <!-- Event Banner / Hero Card -->
     <app-booking-event-details

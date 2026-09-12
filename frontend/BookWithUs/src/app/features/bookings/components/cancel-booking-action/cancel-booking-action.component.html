@@ -1,0 +1,97 @@
+<!-- Cancel Action Trigger (Available only for non-terminal statuses) -->
+@if (canCancel()) {
+  <div class="cancel-action-wrap">
+    <button
+      type="button"
+      class="btn btn-cancel-trigger"
+      [disabled]="isSubmitting()"
+      (click)="onOpenConfirmation()"
+      aria-haspopup="dialog"
+      aria-label="Cancel this booking reservation"
+    >
+      <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+      <span>Cancel Booking</span>
+    </button>
+  </div>
+}
+
+<!-- Feedback Messages (Error or Success notice) -->
+@if (errorMessage()) {
+  <div class="alert alert-danger" role="alert">
+    <div class="alert-content">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <span class="alert-message">{{ errorMessage() }}</span>
+    </div>
+    <button type="button" class="alert-close-btn" (click)="onCloseNotice()" aria-label="Close error message">&times;</button>
+  </div>
+}
+
+@if (successMessage()) {
+  <div class="alert alert-success" role="status">
+    <div class="alert-content">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      <span class="alert-message">{{ successMessage() }}</span>
+    </div>
+    <button type="button" class="alert-close-btn" (click)="onCloseNotice()" aria-label="Close success message">&times;</button>
+  </div>
+}
+
+<!-- Accessible Confirmation Modal -->
+@if (state() === 'confirming' || state() === 'submitting') {
+  <div class="modal-backdrop" (click)="onDismissConfirmation()" aria-hidden="true"></div>
+
+  <div
+    class="modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-cancel-title"
+    aria-describedby="modal-cancel-desc"
+  >
+    <!-- Modal Icon -->
+    <div class="modal-icon-wrap" aria-hidden="true">
+      <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+    </div>
+
+    <h2 id="modal-cancel-title" class="modal-title">Cancel Reservation?</h2>
+
+    <p id="modal-cancel-desc" class="modal-description">
+      Are you sure you want to cancel booking <strong>#{{ bookingNumber }}</strong>? Cancelling this booking will release your reserved seats and any associated parking slot according to event policies.
+    </p>
+
+    <!-- Modal Actions -->
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        [disabled]="isSubmitting()"
+        (click)="onDismissConfirmation()"
+      >
+        Keep Booking
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        [disabled]="isSubmitting()"
+        (click)="onConfirmCancellation()"
+      >
+        @if (isSubmitting()) {
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span>Cancelling...</span>
+        } @else {
+          <span>Cancel Booking</span>
+        }
+      </button>
+    </div>
+  </div>
+}
