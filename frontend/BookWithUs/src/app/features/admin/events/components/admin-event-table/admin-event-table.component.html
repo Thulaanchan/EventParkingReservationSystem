@@ -1,0 +1,236 @@
+<div class="admin-event-table-card">
+  <!-- Table Header Bar -->
+  <div class="table-header-bar">
+    <div class="table-title-group">
+      <h2 class="table-title">Events</h2>
+      <span class="event-count-badge">
+        {{ events.length }} {{ events.length === 1 ? 'total event' : 'total events' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading events...</span>
+    </div>
+  } @else if (events.length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-icon-circle">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h3 class="empty-title">No events found</h3>
+      <p class="empty-subtitle">
+        No events match your search criteria or none have been scheduled yet.
+      </p>
+    </div>
+  } @else {
+    <!-- Table Content -->
+    <div class="table-responsive">
+      <table class="event-table" aria-label="Event Management Table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-event">EVENT</th>
+            <th scope="col" class="th-venue">VENUE</th>
+            <th scope="col" class="th-category">CATEGORY</th>
+            <th scope="col" class="th-datetime">DATE & TIME</th>
+            <th scope="col" class="th-price">TICKET PRICE</th>
+            <th scope="col" class="th-capacity">CAPACITY</th>
+            <th scope="col" class="th-status">STATUS</th>
+            <th scope="col" class="th-action">ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of events; track event.id) {
+            <tr class="event-row">
+              <!-- Event Cell -->
+              <td class="td-event">
+                <div class="event-cell">
+                  <div class="event-icon-box">
+                    <svg class="event-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </div>
+                  <span class="event-name" [title]="event.name">{{ event.name }}</span>
+                </div>
+              </td>
+
+              <!-- Venue -->
+              <td class="td-venue">
+                <span class="venue-text">{{ event.venueName }}</span>
+              </td>
+
+              <!-- Category -->
+              <td class="td-category">
+                <span class="category-text">{{ event.categoryName }}</span>
+              </td>
+
+              <!-- Date & Time -->
+              <td class="td-datetime">
+                <div class="datetime-cell">
+                  <span class="date-text">{{ event.eventDate | date:'mediumDate' }}</span>
+                  <span class="time-text">• {{ event.startTime }}</span>
+                </div>
+              </td>
+
+              <!-- Ticket Price -->
+              <td class="td-price">
+                <span class="price-text">
+                  {{ event.ticketPrice === 0 ? 'Free' : ('LKR ' + (event.ticketPrice | number:'1.2-2')) }}
+                </span>
+              </td>
+
+              <!-- Capacity -->
+              <td class="td-capacity">
+                <span class="capacity-text">
+                  {{ event.capacity !== null && event.capacity !== undefined ? (event.capacity | number) : '—' }}
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td class="td-status">
+                @if (isUpcoming(event)) {
+                  <span class="status-badge status-upcoming">Upcoming</span>
+                } @else {
+                  <span class="status-badge status-past">Past</span>
+                }
+              </td>
+
+              <!-- Action (View + Kebab Dropdown) -->
+              <td class="td-action">
+                <div class="action-cell">
+                  <button
+                    type="button"
+                    class="btn-view"
+                    (click)="onView(event)"
+                    [attr.aria-label]="'View details for ' + event.name"
+                  >
+                    View
+                  </button>
+
+                  <div class="action-menu-wrapper">
+                    <button
+                      type="button"
+                      class="btn-kebab"
+                      (click)="toggleMenu(event.id, $event)"
+                      [attr.aria-label]="'Open actions menu for ' + event.name"
+                      [attr.aria-expanded]="activeMenuEventId === event.id"
+                    >
+                      <svg class="kebab-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <circle cx="12" cy="5" r="2"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <circle cx="12" cy="19" r="2"></circle>
+                      </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    @if (activeMenuEventId === event.id) {
+                      <div class="dropdown-menu" role="menu">
+                        <button
+                          type="button"
+                          class="dropdown-item"
+                          (click)="onView(event)"
+                          role="menuitem"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                          <span>View Details</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="dropdown-item"
+                          (click)="onEdit(event)"
+                          role="menuitem"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                          <span>Edit Event</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="dropdown-item"
+                          (click)="onManageSeats(event)"
+                          role="menuitem"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+                            <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                          <span>Manage Seats</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="dropdown-item"
+                          (click)="onManageParking(event)"
+                          role="menuitem"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="1" y="3" width="15" height="13"></rect>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                          </svg>
+                          <span>Manage Parking</span>
+                        </button>
+
+                        <div class="dropdown-divider"></div>
+
+                        <!-- Delete with safeguard -->
+                        @if (event.canDelete) {
+                          <button
+                            type="button"
+                            class="dropdown-item delete-item"
+                            (click)="onDelete(event)"
+                            role="menuitem"
+                          >
+                            <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Delete Event</span>
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            class="dropdown-item delete-item disabled"
+                            disabled
+                            role="menuitem"
+                            title="Active bookings prevent deletion."
+                          >
+                            <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Delete Event</span>
+                            <span class="item-badge" title="Active bookings prevent deletion">Protected</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
