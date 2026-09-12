@@ -1,0 +1,255 @@
+<div class="venue-form-container">
+  <!-- Left Column: Form -->
+  <div class="form-main-column">
+    <div class="card form-card">
+      <div class="card-header">
+        <div class="header-icon-circle">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h2 class="card-title">Venue Information</h2>
+          <p class="card-subtitle">
+            Enter the basic venue details required for event scheduling.
+          </p>
+        </div>
+      </div>
+
+      <!-- Server Error Banner -->
+      @if (serverError) {
+        <div class="error-banner" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ serverError }}</span>
+        </div>
+      }
+
+      <form #venueForm="ngForm" (ngSubmit)="onSubmit(venueForm)" novalidate>
+        <!-- Venue Name Field -->
+        <div class="form-group">
+          <label for="venueName" class="form-label">
+            Venue Name <span class="required-star">*</span>
+          </label>
+          <input
+            type="text"
+            id="venueName"
+            name="venueName"
+            class="form-control"
+            [class.is-invalid]="venueNameInput.invalid && (venueNameInput.touched || venueForm.submitted)"
+            [(ngModel)]="venueName"
+            #venueNameInput="ngModel"
+            required
+            maxlength="150"
+            placeholder="Enter venue name"
+            [disabled]="submitting"
+            autocomplete="off"
+            [attr.aria-invalid]="venueNameInput.invalid && (venueNameInput.touched || venueForm.submitted)"
+          />
+
+          @if (venueNameInput.invalid && (venueNameInput.touched || venueForm.submitted)) {
+            <div class="field-error" role="alert">
+              @if (venueNameInput.errors?.['required']) {
+                <span>Venue name is required.</span>
+              }
+              @if (venueNameInput.errors?.['maxlength']) {
+                <span>Venue name cannot exceed 150 characters.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Address Field -->
+        <div class="form-group">
+          <label for="venueAddress" class="form-label">
+            Address <span class="required-star">*</span>
+          </label>
+          <textarea
+            id="venueAddress"
+            name="venueAddress"
+            class="form-control textarea-control"
+            [class.is-invalid]="addressInput.invalid && (addressInput.touched || venueForm.submitted)"
+            [(ngModel)]="address"
+            #addressInput="ngModel"
+            required
+            maxlength="300"
+            rows="3"
+            placeholder="Enter full venue address"
+            [disabled]="submitting"
+            [attr.aria-invalid]="addressInput.invalid && (addressInput.touched || venueForm.submitted)"
+          ></textarea>
+
+          @if (addressInput.invalid && (addressInput.touched || venueForm.submitted)) {
+            <div class="field-error" role="alert">
+              @if (addressInput.errors?.['required']) {
+                <span>Address is required.</span>
+              }
+              @if (addressInput.errors?.['maxlength']) {
+                <span>Address cannot exceed 300 characters.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Total Capacity Field -->
+        <div class="form-group">
+          <label for="totalCapacity" class="form-label">
+            Total Capacity <span class="required-star">*</span>
+          </label>
+          <input
+            type="number"
+            id="totalCapacity"
+            name="totalCapacity"
+            class="form-control"
+            [class.is-invalid]="capacityInput.invalid && (capacityInput.touched || venueForm.submitted)"
+            [(ngModel)]="totalCapacity"
+            #capacityInput="ngModel"
+            required
+            min="1"
+            step="1"
+            placeholder="Enter total capacity"
+            [disabled]="submitting"
+            [attr.aria-invalid]="capacityInput.invalid && (capacityInput.touched || venueForm.submitted)"
+          />
+
+          @if (capacityInput.invalid && (capacityInput.touched || venueForm.submitted)) {
+            <div class="field-error" role="alert">
+              @if (capacityInput.errors?.['required']) {
+                <span>Total capacity is required.</span>
+              }
+              @if (capacityInput.errors?.['min'] || (totalCapacity !== null && totalCapacity < 1)) {
+                <span>Total capacity must be at least 1.</span>
+              }
+            </div>
+          }
+
+          <p class="helper-text">
+            Maximum number of attendees the venue can accommodate.
+          </p>
+        </div>
+
+        <p class="fields-required-note">
+          Fields marked <span class="required-star">*</span> are required.
+        </p>
+
+        <div class="form-divider"></div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            (click)="onCancel()"
+            [disabled]="submitting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="venueForm.invalid || submitting || !venueName.trim() || !address.trim() || !totalCapacity || totalCapacity < 1"
+          >
+            @if (submitting) {
+              <span class="spinner"></span>
+              <span>Saving...</span>
+            } @else {
+              @if (!isEditMode) {
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Add Venue</span>
+              } @else {
+                <span>Save Changes</span>
+              }
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Column: Guidelines -->
+  <div class="form-sidebar-column">
+    <div class="card guidelines-card">
+      <div class="guidelines-header">
+        <div class="header-icon-circle">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <h3 class="guidelines-title">Venue Guidelines</h3>
+      </div>
+
+      <div class="guideline-items">
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Venue Name</h4>
+            <p class="guideline-body">
+              Use the official venue name that attendees will recognize.
+            </p>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Address</h4>
+            <p class="guideline-body">
+              Provide the complete and accurate venue address.
+            </p>
+          </div>
+        </div>
+
+        <div class="guideline-item">
+          <div class="guideline-icon-box">
+            <svg class="guideline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div class="guideline-text">
+            <h4 class="guideline-heading">Total Capacity</h4>
+            <p class="guideline-body">
+              Enter the maximum number of attendees the venue can hold.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Safeguard note -->
+      <div class="safeguard-box">
+        <div class="safeguard-icon-wrapper">
+          <svg class="safeguard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="safeguard-content">
+          <p class="safeguard-text">
+            Event capacity cannot exceed the configured venue capacity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
