@@ -1,0 +1,159 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card Container */
+.seat-legend-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto 1.35fr;
+  gap: 24px;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Group */
+.legend-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.legend-group-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+
+/* Items List */
+.legend-items-list {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.legend-item-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-item-desc {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.legend-empty-text {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Vertical Divider */
+.legend-divider {
+  width: 1px;
+  height: 36px;
+  background-color: #e5e7eb;
+  align-self: center;
+}
+
+/* Markers */
+.legend-color-marker,
+.legend-status-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Category Color Palette (UI-Only Deterministic) */
+.category-color-0 {
+  background-color: #1e1b4b; /* Deep Navy */
+}
+
+.category-color-1 {
+  background-color: #7c3aed; /* Purple */
+}
+
+.category-color-2 {
+  background-color: #f59e0b; /* Amber */
+}
+
+.category-color-3 {
+  background-color: #64748b; /* Slate */
+}
+
+.category-color-4 {
+  background-color: #0284c7; /* Sky */
+}
+
+.category-color-5 {
+  background-color: #0d9488; /* Teal */
+}
+
+/* Status Markers */
+.status-marker-available {
+  background-color: #ffffff;
+  border: 1.5px solid #9ca3af;
+}
+
+.status-marker-selected {
+  background-color: #7c3aed;
+  border: 1.5px solid #7c3aed;
+}
+
+.status-marker-held {
+  background-color: #f59e0b;
+  border: 1.5px solid #f59e0b;
+}
+
+.status-marker-booked {
+  background-color: #ef4444;
+  border: 1.5px solid #ef4444;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .seat-legend-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .legend-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .seat-legend-card {
+    padding: 14px 16px;
+  }
+
+  .legend-items-list {
+    gap: 12px;
+  }
+}
