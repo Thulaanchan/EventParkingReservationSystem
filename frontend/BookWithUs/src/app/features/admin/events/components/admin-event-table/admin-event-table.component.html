@@ -79,7 +79,7 @@
               <td class="td-datetime">
                 <div class="datetime-cell">
                   <span class="date-text">{{ event.eventDate | date:'mediumDate' }}</span>
-                  <span class="time-text">• {{ event.startTime }}</span>
+                  <span class="time-text">• {{ event.startTime }}{{ event.endTime ? ' - ' + event.endTime : '' }}</span>
                 </div>
               </td>
 
