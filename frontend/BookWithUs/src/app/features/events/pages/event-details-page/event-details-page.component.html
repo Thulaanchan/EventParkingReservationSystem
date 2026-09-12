@@ -1,0 +1,68 @@
+<div class="event-details-page">
+  <!-- Back to Events Navigation -->
+  <nav class="page-top-nav" aria-label="Breadcrumb navigation">
+    <a routerLink="/events" class="back-link">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Events</span>
+    </a>
+  </nav>
+
+  @if (loading) {
+    <!-- Mutually Exclusive Loading State -->
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading event details...</span>
+    </div>
+  } @else if (errorMessage) {
+    <!-- Mutually Exclusive Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="error-title">Event Unavailable</h2>
+      <p class="error-message">{{ errorMessage }}</p>
+      <div class="error-actions">
+        @if (eventId) {
+          <button type="button" class="btn btn-retry" (click)="loadEvent(eventId)">
+            Try Again
+          </button>
+        }
+        <button type="button" class="btn btn-back" (click)="onBackToEvents()">
+          Return to Events
+        </button>
+      </div>
+    </div>
+  } @else if (event) {
+    <!-- Mutually Exclusive Data State -->
+    <div class="event-composition">
+      <!-- 1. Hero Section -->
+      <header class="section-hero">
+        <app-event-details-hero
+          [event]="event"
+          (startBooking)="onStartBooking($event)"
+        ></app-event-details-hero>
+      </header>
+
+      <!-- Main Content Layout Grid -->
+      <div class="content-grid">
+        <!-- 2. Event Information (Left / Main Column) -->
+        <div class="main-column">
+          <app-event-information [event]="event"></app-event-information>
+        </div>
+
+        <!-- 3 & 4. Pricing & Availability (Right / Sidebar Column) -->
+        <aside class="sidebar-column" aria-label="Pricing and availability details">
+          <app-event-pricing [event]="event"></app-event-pricing>
+          <app-event-availability-summary [event]="event"></app-event-availability-summary>
+        </aside>
+      </div>
+    </div>
+  }
+</div>
