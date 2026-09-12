@@ -1,0 +1,61 @@
+<div class="event-form-page">
+  <!-- Page Header / Breadcrumb matching ad screen 12 -->
+  <header class="page-header">
+    <a routerLink="/admin/events" class="back-link" aria-label="Back to Event Management">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Event Management</span>
+    </a>
+
+    <div class="header-titles">
+      <h1 class="page-title">{{ isEditMode ? 'Edit Event' : 'Create Event' }}</h1>
+      <p class="page-subtitle">
+        {{ isEditMode ? 'Edit and update BookWithUs event details.' : 'Create and configure a new BookWithUs event.' }}
+      </p>
+    </div>
+  </header>
+
+  <!-- Mutually exclusive Page States -->
+  @if (loading) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading event details...</span>
+    </div>
+  } @else if (loadError) {
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box" aria-hidden="true">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h2 class="error-title">Failed to load event</h2>
+        <p class="error-message">{{ loadError }}</p>
+        <div class="error-actions">
+          <button type="button" class="btn btn-retry" (click)="loadData()">
+            Try Again
+          </button>
+          <a routerLink="/admin/events" class="btn btn-back">
+            Back to Events
+          </a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Ready State: Render EventFormComponent -->
+    <app-event-form
+      [event]="event"
+      [venues]="venues"
+      [categories]="categories"
+      [stageLayoutOptions]="stageLayoutOptions"
+      [submitting]="submitting"
+      [serverError]="serverError"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    ></app-event-form>
+  }
+</div>
