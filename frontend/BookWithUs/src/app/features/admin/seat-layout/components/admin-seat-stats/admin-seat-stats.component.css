@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 4-card Grid */
+.seat-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Individual Stat Card */
+.stat-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Icon Box */
+.icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Tone Palettes matching ad s 06 m.png */
+.tone-purple .icon-wrapper {
+  background-color: #f5f3ff;
+  color: #7c3aed;
+}
+
+.tone-red .icon-wrapper {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.tone-amber .icon-wrapper {
+  background-color: #fffbeb;
+  color: #d97706;
+}
+
+.tone-green .icon-wrapper {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+/* Text Details */
+.stat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-value {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.stat-helper {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .seat-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .seat-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px 16px;
+    gap: 14px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}

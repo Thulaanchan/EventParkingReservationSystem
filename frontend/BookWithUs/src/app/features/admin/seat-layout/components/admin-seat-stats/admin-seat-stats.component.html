@@ -1,0 +1,48 @@
+<div class="seat-stats-grid" role="region" aria-label="Seat Management Statistics">
+  @for (card of statCards; track card.id) {
+    <div class="stat-card" [ngClass]="'tone-' + card.tone">
+      <!-- Icon Wrapper -->
+      <div class="icon-wrapper" aria-hidden="true">
+        @switch (card.icon) {
+          @case ('total') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+              <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"></path>
+              <path d="M5 18v2"></path>
+              <path d="M19 18v2"></path>
+            </svg>
+          }
+          @case ('booked') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+              <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"></path>
+              <line x1="12" y1="1" x2="12" y2="4"></line>
+            </svg>
+          }
+          @case ('held') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          }
+          @case ('available') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+              <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"></path>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+          }
+        }
+      </div>
+
+      <!-- Text Details -->
+      <div class="stat-details">
+        <span class="stat-label">{{ card.label }}</span>
+        <span class="stat-value">{{ card.value | number }}</span>
+        @if (card.helperText) {
+          <span class="stat-helper">{{ card.helperText }}</span>
+        }
+      </div>
+    </div>
+  }
+</div>
