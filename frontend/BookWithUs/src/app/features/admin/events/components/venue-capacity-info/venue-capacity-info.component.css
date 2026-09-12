@@ -1,0 +1,262 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.venue-capacity-info-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Unselected Venue Notice */
+.unselected-venue-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 0.8125rem;
+}
+
+.notice-icon-box {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notice-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.notice-text {
+  line-height: 1.4;
+}
+
+/* Capacity Details Card */
+.capacity-details-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+/* Summary Header Row */
+.capacity-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.venue-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.venue-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: #f3e8ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.venue-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.venue-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.venue-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.venue-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.capacity-metric-badge {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.metric-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.04em;
+}
+
+.metric-value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Allocation Metrics Row */
+.allocation-metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+}
+
+.allocation-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-label {
+  color: #6b7280;
+}
+
+.item-value {
+  color: #111827;
+  font-weight: 600;
+}
+
+.item-value.is-depleted {
+  color: #d97706;
+}
+
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #7c3aed;
+  border-radius: 9999px;
+  transition: width 0.25s ease;
+}
+
+.progress-fill.is-full {
+  background-color: #059669;
+}
+
+/* Over Capacity Warning Alert */
+.capacity-warning-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.alert-icon-box {
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alert-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.alert-message {
+  flex: 1;
+}
+
+/* Capacity Lock Informational Alert */
+.capacity-lock-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.lock-icon-box {
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lock-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.lock-message {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .capacity-summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .capacity-metric-badge {
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .allocation-metrics-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

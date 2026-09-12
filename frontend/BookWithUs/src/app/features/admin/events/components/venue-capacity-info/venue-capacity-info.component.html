@@ -1,0 +1,102 @@
+<div class="venue-capacity-info-container">
+  <!-- When No Venue is Selected -->
+  @if (!venue) {
+    <div class="unselected-venue-notice" role="status">
+      <div class="notice-icon-box" aria-hidden="true">
+        <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </div>
+      <span class="notice-text">Select a venue to view its capacity limit.</span>
+    </div>
+  } @else {
+    <!-- Capacity Information Card -->
+    <div class="capacity-details-card">
+      <!-- Venue Capacity Summary Header -->
+      <div class="capacity-summary-row">
+        <div class="venue-identity">
+          <div class="venue-icon-box" aria-hidden="true">
+            <svg class="venue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18"></path>
+              <path d="M5 21V7l8-4v18"></path>
+              <path d="M19 21V11l-6-4"></path>
+              <path d="M9 9h1"></path>
+              <path d="M9 13h1"></path>
+              <path d="M9 17h1"></path>
+            </svg>
+          </div>
+          <div class="venue-text-group">
+            <span class="venue-label">Venue Maximum</span>
+            <strong class="venue-name">{{ venue.name }}</strong>
+          </div>
+        </div>
+
+        <div class="capacity-metric-badge">
+          <span class="metric-label">TOTAL CAPACITY</span>
+          <span class="metric-value">{{ venue.totalCapacity | number }} seats</span>
+        </div>
+      </div>
+
+      <!-- Allocation Metrics when eventCapacity is supplied -->
+      @if (hasValidEventCapacity) {
+        <div class="allocation-metrics-row">
+          <div class="allocation-item">
+            <span class="item-label">Requested Capacity:</span>
+            <strong class="item-value">{{ eventCapacity | number }} seats</strong>
+          </div>
+
+          <div class="allocation-item">
+            <span class="item-label">Remaining Venue Space:</span>
+            <strong class="item-value" [class.is-depleted]="remainingCapacity === 0">
+              {{ remainingCapacity | number }} seats
+            </strong>
+          </div>
+        </div>
+
+        <!-- Progress Bar Indicator (Only when not over capacity) -->
+        @if (!isOverCapacity && allocationPercentage !== null) {
+          <div class="progress-container" aria-hidden="true">
+            <div
+              class="progress-fill"
+              [style.width.%]="allocationPercentage"
+              [class.is-full]="allocationPercentage === 100"
+            ></div>
+          </div>
+        }
+      }
+
+      <!-- Over Capacity Warning Alert -->
+      @if (isOverCapacity) {
+        <div class="capacity-warning-alert" role="alert">
+          <div class="alert-icon-box" aria-hidden="true">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <span class="alert-message">
+            Event capacity cannot exceed the selected venue capacity of {{ venue.totalCapacity | number }}.
+          </span>
+        </div>
+      }
+
+      <!-- Capacity Lock Informational Alert -->
+      @if (capacityLocked) {
+        <div class="capacity-lock-alert" role="status">
+          <div class="lock-icon-box" aria-hidden="true">
+            <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <span class="lock-message">
+            Capacity is locked because this event has existing bookings.
+          </span>
+        </div>
+      }
+    </div>
+  }
+</div>
