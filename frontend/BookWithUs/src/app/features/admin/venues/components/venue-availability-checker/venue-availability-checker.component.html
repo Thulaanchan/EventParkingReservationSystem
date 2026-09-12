@@ -1,0 +1,154 @@
+<div class="venue-availability-card">
+  <div class="checker-header">
+    <h3 class="checker-title">Check Venue Availability</h3>
+    <p class="checker-subtitle">
+      Check whether this venue is free for a selected date and time range.
+    </p>
+  </div>
+
+  <form #availForm="ngForm" (ngSubmit)="onSubmit()" class="checker-form" novalidate>
+    <!-- Date Field -->
+    <div class="form-group">
+      <label for="vac-date" class="form-label">
+        Date <span class="required-star">*</span>
+      </label>
+      <div class="input-wrapper">
+        <input
+          type="date"
+          id="vac-date"
+          name="date"
+          class="form-control"
+          [(ngModel)]="date"
+          (ngModelChange)="onInputChange()"
+          required
+          [disabled]="state === 'checking'"
+        />
+      </div>
+    </div>
+
+    <!-- Time Range Fields -->
+    <div class="time-row">
+      <div class="form-group time-group">
+        <label for="vac-start-time" class="form-label">
+          Start Time <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="time"
+            id="vac-start-time"
+            name="startTime"
+            class="form-control"
+            [(ngModel)]="startTime"
+            (ngModelChange)="onInputChange()"
+            required
+            [disabled]="state === 'checking'"
+          />
+        </div>
+      </div>
+
+      <div class="form-group time-group">
+        <label for="vac-end-time" class="form-label">
+          End Time <span class="required-star">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="time"
+            id="vac-end-time"
+            name="endTime"
+            class="form-control"
+            [class.is-invalid]="startTime && endTime && !isTimeRangeValid"
+            [(ngModel)]="endTime"
+            (ngModelChange)="onInputChange()"
+            required
+            [disabled]="state === 'checking'"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Range Validation Error -->
+    @if (startTime && endTime && !isTimeRangeValid) {
+      <div class="time-error-message" role="alert">
+        End time must be after start time.
+      </div>
+    }
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      class="btn-check-availability"
+      [disabled]="!isFormValid || state === 'checking' || !venueId"
+    >
+      @if (state === 'checking') {
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <span>Checking Availability...</span>
+      } @else {
+        <span>Check Availability</span>
+      }
+    </button>
+  </form>
+
+  <!-- Result: Available -->
+  @if (state === 'available') {
+    <div class="availability-result result-available" role="status">
+      <div class="result-icon-box">
+        <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <div class="result-body">
+        <h4 class="result-title">Venue Available</h4>
+        <p class="result-description">
+          Venue is available for the selected date and time.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Result: Unavailable with Conflict Details -->
+  @if (state === 'unavailable') {
+    <div class="availability-result result-unavailable" role="alert">
+      <div class="result-icon-box">
+        <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="result-body">
+        <h4 class="result-title">Venue Unavailable</h4>
+        <p class="result-description">
+          Conflicting bookings found for the selected time range:
+        </p>
+        @if (result?.conflicts && result!.conflicts.length > 0) {
+          <ul class="conflicts-list">
+            @for (conflict of result!.conflicts; track conflict.eventId) {
+              <li class="conflict-item">
+                <span class="conflict-name">{{ conflict.eventName }}</span>
+                <span class="conflict-time">{{ conflict.startTime }} – {{ conflict.endTime }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Result: Error Message -->
+  @if (state === 'error') {
+    <div class="availability-result result-error" role="alert">
+      <div class="result-icon-box">
+        <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <div class="result-body">
+        <h4 class="result-title">Unable to Check Availability</h4>
+        <p class="result-description">{{ errorMessage }}</p>
+      </div>
+    </div>
+  }
+</div>
