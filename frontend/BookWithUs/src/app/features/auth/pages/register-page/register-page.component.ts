@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 import {
   AbstractControl,
   FormBuilder,
@@ -78,7 +79,7 @@ export const passwordMatchValidator: ValidatorFn = (
 })
 export class RegisterPageComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   isSubmitting = false;
@@ -204,8 +205,8 @@ export class RegisterPageComponent {
       confirmPassword: formValue.confirmPassword || ''
     };
 
-    this.http
-      .post<CustomerDto>('/api/customers/register', requestPayload)
+    this.authService
+      .register(requestPayload)
       .subscribe({
         next: () => {
           this.isSubmitting = false;

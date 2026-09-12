@@ -7,8 +7,10 @@ import { ForgotPasswordRequest } from '../../models/auth/forgot-password-request
 import { LoginRequest } from '../../models/auth/login-request.model';
 import { LoginResponse } from '../../models/auth/login-response.model';
 import { ResendVerificationRequest } from '../../models/auth/resend-verification-request.model';
+import { RegisterRequest } from '../../models/auth/register-request.model';
 import { ResetPasswordRequest } from '../../models/auth/reset-password-request.model';
 import { VerifyEmailRequest } from '../../models/auth/verify-email-request.model';
+import { Customer } from '../../models/customers/customer.model';
 import { AuthSessionService } from './auth-session.service';
 
 @Injectable({
@@ -44,6 +46,14 @@ export class AuthService {
       .pipe(
         tap((response) => this.sessionService.setSession(response))
       );
+  }
+
+  /**
+   * Registers a new customer account.
+   * Backend endpoint: POST /api/customers/register
+   */
+  register(request: RegisterRequest): Observable<Customer> {
+    return this.http.post<Customer>('/api/customers/register', request);
   }
 
   /**
