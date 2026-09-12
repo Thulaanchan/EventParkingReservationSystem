@@ -1,0 +1,118 @@
+<div class="event-filter-card">
+  <form class="event-filter-form" (ngSubmit)="$event.preventDefault()" role="search" aria-label="Event search and filters">
+    <div class="filter-grid">
+      <!-- Search Input -->
+      <div class="filter-field field-search">
+        <label for="eventSearchInput" class="filter-label">Search Events</label>
+        <div class="input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            id="eventSearchInput"
+            name="search"
+            class="filter-input search-input"
+            placeholder="Search by event name..."
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchChange($event)"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <!-- Venue Select -->
+      <div class="filter-field field-venue">
+        <label for="eventVenueSelect" class="filter-label">Venue</label>
+        <div class="select-wrapper">
+          <select
+            id="eventVenueSelect"
+            name="venue"
+            class="filter-select"
+            [(ngModel)]="venue"
+            (ngModelChange)="onVenueChange($event)"
+            [disabled]="loadingOptions"
+          >
+            <option [ngValue]="null">All Venues</option>
+            @for (v of venues; track v.id) {
+              <option [ngValue]="v.id">{{ v.name }}</option>
+            }
+          </select>
+          <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Category Select -->
+      <div class="filter-field field-category">
+        <label for="eventCategorySelect" class="filter-label">Category</label>
+        <div class="select-wrapper">
+          <select
+            id="eventCategorySelect"
+            name="category"
+            class="filter-select"
+            [(ngModel)]="category"
+            (ngModelChange)="onCategoryChange($event)"
+            [disabled]="loadingOptions"
+          >
+            <option [ngValue]="null">All Categories</option>
+            @for (c of categories; track c.id) {
+              <option [ngValue]="c.id">{{ c.name }}</option>
+            }
+          </select>
+          <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Date Input -->
+      <div class="filter-field field-date">
+        <label for="eventDateInput" class="filter-label">Date</label>
+        <div class="input-wrapper">
+          <input
+            type="date"
+            id="eventDateInput"
+            name="date"
+            class="filter-input date-input"
+            [(ngModel)]="date"
+            (ngModelChange)="onDateChange($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Time Input -->
+      <div class="filter-field field-time">
+        <label for="eventTimeInput" class="filter-label">Time</label>
+        <div class="input-wrapper">
+          <input
+            type="time"
+            id="eventTimeInput"
+            name="time"
+            class="filter-input time-input"
+            [(ngModel)]="time"
+            (ngModelChange)="onTimeChange($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="filter-actions">
+        <button
+          type="button"
+          class="btn-clear"
+          (click)="onClear()"
+          aria-label="Clear all applied event filters"
+        >
+          <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>Clear Filters</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
