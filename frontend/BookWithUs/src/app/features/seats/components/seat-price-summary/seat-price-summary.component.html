@@ -1,0 +1,19 @@
+<section class="seat-price-summary" aria-label="Seat Price Summary">
+  @if (discountNote) {
+    <p class="discount-note">{{ discountNote }}</p>
+  }
+
+  <div class="summary-total-row">
+    <div class="total-label-group">
+      <span class="total-label">Total</span>
+      @if (seatCount > 0) {
+        <span class="total-seat-count">({{ seatCount }} {{ seatCount === 1 ? 'seat' : 'seats' }})</span>
+      }
+    </div>
+
+    <div class="total-amount-group" role="status" aria-live="polite">
+      <span class="total-currency">LKR</span>
+      <span class="total-amount">{{ displaySubtotal | number:'1.0-0' }}</span>
+    </div>
+  </div>
+</section>

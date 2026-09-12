@@ -1,0 +1,39 @@
+<div class="ticket-requirements-card" role="region" aria-label="Ticket Requirements">
+  <div class="card-header">
+    <h3 class="card-title">Ticket Requirements</h3>
+  </div>
+
+  <div class="card-body">
+    <!-- Adult Selector Wrapper -->
+    <div class="selector-wrapper">
+      <app-attendee-quantity-selector
+        label="Adults"
+        description="Ages 13 or above"
+        iconType="adult"
+        [count]="adultCount"
+        [disabled]="disabled"
+        (countChange)="onAdultCountChange($event)"
+      ></app-attendee-quantity-selector>
+    </div>
+
+    <!-- Child Selector Wrapper -->
+    <div class="selector-wrapper">
+      <app-attendee-quantity-selector
+        label="Children"
+        [description]="childDescription"
+        iconType="child"
+        [count]="childCount"
+        [disabled]="disabled"
+        (countChange)="onChildCountChange($event)"
+      ></app-attendee-quantity-selector>
+    </div>
+
+    <!-- Total Seats Required Indicator (matching screen-09.png) -->
+    <div class="total-seats-wrapper">
+      <div class="total-seats-pill" role="status" aria-live="polite">
+        <span class="total-seats-label">Total Seats Required:</span>
+        <span class="total-seats-count">{{ totalSeats }}</span>
+      </div>
+    </div>
+  </div>
+</div>

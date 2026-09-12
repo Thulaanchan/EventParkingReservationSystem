@@ -1,0 +1,103 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ticket-requirements-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  color: #0f172a; /* slate-900 */
+  margin: 0;
+  line-height: 1.3;
+}
+
+.card-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.selector-wrapper {
+  flex: 1 1 260px;
+  min-width: 240px;
+}
+
+/* Total Seats Required Pill (matching screen-09.png) */
+.total-seats-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.total-seats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1.5px solid #c7d2fe; /* indigo-200 */
+  border-radius: 0.625rem;
+  background-color: #eef2ff; /* indigo-50 */
+  color: #4338ca; /* indigo-700 */
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.total-seats-label {
+  color: #4338ca;
+}
+
+.total-seats-count {
+  font-weight: 800;
+  font-size: 1.125rem;
+  color: #3730a3; /* indigo-800 */
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .ticket-requirements-card {
+    padding: 1rem;
+  }
+
+  .card-body {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .selector-wrapper {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .total-seats-wrapper {
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .total-seats-pill {
+    width: 100%;
+    justify-content: center;
+  }
+}

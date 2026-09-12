@@ -1,0 +1,195 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.selected-seats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-sizing: border-box;
+}
+
+.selected-seats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.selected-seats-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.seat-count-ratio,
+.seat-count-badge {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.clear-all-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.clear-all-btn:hover {
+  color: #4338ca;
+  background-color: #f5f3ff;
+}
+
+.clear-all-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #6366f1;
+}
+
+/* Empty Selection State */
+.empty-selection {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.5rem;
+}
+
+.empty-selection-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+/* List of Selected Seats */
+.selected-seats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.selected-seat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.selected-seat-item:hover {
+  border-color: #cbd5e1;
+  background-color: #fafafa;
+}
+
+.seat-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.category-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.dot-platinum {
+  background-color: #7c3aed;
+}
+
+.dot-gold {
+  background-color: #f59e0b;
+}
+
+.dot-silver {
+  background-color: #94a3b8;
+}
+
+.dot-vip {
+  background-color: #0f172a;
+}
+
+.dot-default {
+  background-color: #6366f1;
+}
+
+.seat-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.seat-name-code {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seat-attendee-type {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.seat-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.seat-price {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.remove-seat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 1.125rem;
+  line-height: 1;
+  border-radius: 9999px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease-in-out;
+}
+
+.remove-seat-btn:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.remove-seat-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ef4444;
+}

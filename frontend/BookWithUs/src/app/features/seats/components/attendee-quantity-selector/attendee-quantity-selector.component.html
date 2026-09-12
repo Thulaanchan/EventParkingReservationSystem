@@ -1,0 +1,64 @@
+<div class="attendee-selector-container">
+  <div class="attendee-info">
+    <div class="attendee-icon" [ngClass]="iconType" aria-hidden="true">
+      @if (iconType === 'adult') {
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      } @else if (iconType === 'child') {
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      }
+    </div>
+    <div class="attendee-text">
+      <span class="attendee-label">{{ label }}</span>
+      @if (description) {
+        <span class="attendee-description">{{ description }}</span>
+      }
+    </div>
+  </div>
+
+  <!-- Stepper Controls -->
+  <div class="stepper-group" role="group" [attr.aria-label]="label + ' ticket quantity selector'">
+    <button
+      type="button"
+      class="stepper-btn stepper-btn-decrement"
+      [disabled]="disabled || count <= 0"
+      [attr.aria-label]="'Decrease ' + label + ' tickets'"
+      (click)="onDecrement()"
+    >
+      <span aria-hidden="true">&minus;</span>
+    </button>
+
+    <span
+      class="stepper-value"
+      role="status"
+      aria-live="polite"
+      [attr.aria-label]="count + ' ' + label + ' tickets'"
+    >
+      {{ count }}
+    </span>
+
+    <button
+      type="button"
+      class="stepper-btn stepper-btn-increment"
+      [disabled]="disabled"
+      [attr.aria-label]="'Increase ' + label + ' tickets'"
+      (click)="onIncrement()"
+    >
+      <span aria-hidden="true">&plus;</span>
+    </button>
+  </div>
+</div>
