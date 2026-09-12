@@ -1,0 +1,100 @@
+<div class="account-actions-container">
+  @if (isActive) {
+    <button
+      type="button"
+      class="btn btn-action-deactivate"
+      [disabled]="isSubmitting()"
+      (click)="onOpenConfirmation()"
+      aria-haspopup="dialog"
+      aria-label="Deactivate customer account"
+    >
+      <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+      </svg>
+      <span>Deactivate</span>
+    </button>
+  } @else {
+    <span class="badge-deactivated" title="Account is inactive (Reactivation is not supported by backend API)">
+      Deactivated
+    </span>
+  }
+</div>
+
+<!-- Feedback Messages -->
+@if (errorMessage()) {
+  <div class="alert alert-danger" role="alert">
+    <div class="alert-content">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+      <span>{{ errorMessage() }}</span>
+    </div>
+    <button type="button" class="alert-close" (click)="onCloseNotice()" aria-label="Close error message">&times;</button>
+  </div>
+}
+
+@if (successMessage()) {
+  <div class="alert alert-success" role="status">
+    <div class="alert-content">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      <span>{{ successMessage() }}</span>
+    </div>
+    <button type="button" class="alert-close" (click)="onCloseNotice()" aria-label="Close success message">&times;</button>
+  </div>
+}
+
+<!-- Deactivation Confirmation Modal -->
+@if (state() === 'confirming' || state() === 'submitting') {
+  <div class="modal-backdrop" (click)="onDismissModal()" aria-hidden="true"></div>
+
+  <div
+    class="modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deactivate-title"
+    aria-describedby="deactivate-desc"
+  >
+    <div class="modal-icon-wrap" aria-hidden="true">
+      <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+    </div>
+
+    <h2 id="deactivate-title" class="modal-title">Deactivate Customer Account?</h2>
+
+    <p id="deactivate-desc" class="modal-description">
+      Are you sure you want to deactivate the account for
+      <strong>{{ customerName || ('Customer #' + customerId) }}</strong>?
+      The customer will no longer be able to sign in or make new reservations.
+    </p>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        [disabled]="isSubmitting()"
+        (click)="onDismissModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        [disabled]="isSubmitting()"
+        (click)="onConfirmDeactivation()"
+      >
+        @if (isSubmitting()) {
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span>Deactivating...</span>
+        } @else {
+          <span>Confirm Deactivation</span>
+        }
+      </button>
+    </div>
+  </div>
+}
