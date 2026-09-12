@@ -1,0 +1,199 @@
+<div class="seat-map-wrapper">
+  @if (seats.length === 0) {
+    <div class="empty-state-card" role="region" aria-label="Seat Map Empty State">
+      <div class="empty-icon-box">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+      <h3 class="empty-title">No Seats Configured</h3>
+      <p class="empty-description">No seats have been configured for this event.</p>
+    </div>
+  } @else {
+    <!-- Main Map Viewport -->
+    <div class="seat-map-viewport" [class.viewport-disabled]="disabled" role="region" aria-label="Interactive Seat Map">
+      <div class="seat-map-layer" [style.transform]="transformStyle">
+        <svg
+          class="seat-map-svg"
+          [attr.viewBox]="viewBox"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true">
+          
+          <!-- Background concentric stadium rings matching ad s 06 m.png -->
+          <g class="arena-guidelines">
+            <ellipse cx="600" cy="450" rx="480" ry="360" class="arena-ring ring-outer" />
+            <ellipse cx="600" cy="450" rx="410" ry="300" class="arena-ring ring-silver" />
+            <ellipse cx="600" cy="450" rx="340" ry="245" class="arena-ring ring-gold" />
+            <ellipse cx="600" cy="450" rx="270" ry="190" class="arena-ring ring-platinum" />
+            <ellipse cx="600" cy="450" rx="200" ry="135" class="arena-ring ring-vip" />
+          </g>
+
+          <!-- Cardinal Section Labels & Markers -->
+          <g class="cardinal-markers">
+            <!-- North -->
+            <g transform="translate(600, 70)" class="marker-group">
+              <rect x="-14" y="-12" width="28" height="24" rx="4" class="marker-badge marker-north" />
+              <text x="0" y="5" text-anchor="middle" class="marker-text">N</text>
+              <text x="0" y="24" text-anchor="middle" class="marker-subtext">N1</text>
+            </g>
+            <!-- North West -->
+            <g transform="translate(260, 150)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">NW</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">NW1</text>
+            </g>
+            <!-- North East -->
+            <g transform="translate(940, 150)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">NE</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">NE1</text>
+            </g>
+            <!-- West -->
+            <g transform="translate(140, 440)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">W</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">W1</text>
+            </g>
+            <!-- East -->
+            <g transform="translate(1060, 440)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">E</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">E1</text>
+            </g>
+            <!-- South West -->
+            <g transform="translate(270, 750)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">SW</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">SW1</text>
+            </g>
+            <!-- South -->
+            <g transform="translate(600, 830)" class="marker-group">
+              <rect x="-14" y="-12" width="28" height="24" rx="4" class="marker-badge marker-south" />
+              <text x="0" y="5" text-anchor="middle" class="marker-text">S</text>
+              <text x="0" y="24" text-anchor="middle" class="marker-subtext">S1</text>
+            </g>
+            <!-- South East -->
+            <g transform="translate(930, 750)" class="marker-group">
+              <text x="0" y="0" text-anchor="middle" class="sector-code">SE</text>
+              <text x="0" y="16" text-anchor="middle" class="sector-subcode">SE1</text>
+            </g>
+          </g>
+
+          <!-- Category Section Header Arc Badges (Silver, Gold, Platinum, VIP) -->
+          <g class="tier-badges" transform="translate(600, 0)">
+            <!-- Silver -->
+            <g transform="translate(0, 165)">
+              <rect x="-50" y="-12" width="100" height="22" rx="4" class="tier-rect tier-silver-rect" />
+              <text x="0" y="3" text-anchor="middle" class="tier-label">SILVER</text>
+            </g>
+            <!-- Gold -->
+            <g transform="translate(0, 215)">
+              <rect x="-46" y="-12" width="92" height="22" rx="4" class="tier-rect tier-gold-rect" />
+              <text x="0" y="3" text-anchor="middle" class="tier-label">GOLD</text>
+            </g>
+            <!-- Platinum -->
+            <g transform="translate(0, 265)">
+              <rect x="-42" y="-12" width="84" height="22" rx="4" class="tier-rect tier-platinum-rect" />
+              <text x="0" y="3" text-anchor="middle" class="tier-label">PLATINUM</text>
+            </g>
+            <!-- VIP -->
+            <g transform="translate(0, 315)">
+              <rect x="-38" y="-12" width="76" height="22" rx="4" class="tier-rect tier-vip-rect" />
+              <text x="0" y="3" text-anchor="middle" class="tier-label">VIP</text>
+            </g>
+          </g>
+
+          <!-- Central STAGE Visual -->
+          <g class="central-stage" transform="translate(600, 450)">
+            <!-- Outer Stage Ring with Star Accents -->
+            <ellipse cx="0" cy="0" rx="170" ry="110" class="stage-outer-ring" />
+            
+            <!-- Star markers around stage -->
+            <text x="-135" y="-30" class="stage-star" text-anchor="middle">★</text>
+            <text x="-145" y="10" class="stage-star" text-anchor="middle">★</text>
+            <text x="-130" y="50" class="stage-star" text-anchor="middle">★</text>
+            <text x="135" y="-30" class="stage-star" text-anchor="middle">★</text>
+            <text x="145" y="10" class="stage-star" text-anchor="middle">★</text>
+            <text x="130" y="50" class="stage-star" text-anchor="middle">★</text>
+            
+            <!-- Stage Center Oval -->
+            <ellipse cx="0" cy="0" rx="115" ry="70" class="stage-core-oval" />
+            <text x="0" y="7" text-anchor="middle" class="stage-core-text">STAGE</text>
+          </g>
+
+          <!-- Positioned Seats -->
+          <g class="seats-layer">
+            @for (seat of positionedSeats; track seat.id) {
+              <g
+                class="seat-node"
+                [class.seat-node-selected]="seat.id === selectedSeatId"
+                [class.seat-node-available]="seat.status === 'Available'"
+                [class.seat-node-held]="seat.status === 'Held'"
+                [class.seat-node-booked]="seat.status === 'Booked'"
+                [attr.transform]="'translate(' + seat.positionX + ',' + seat.positionY + ')'"
+                role="button"
+                tabindex="0"
+                [attr.aria-pressed]="seat.id === selectedSeatId"
+                [attr.aria-label]="getAriaLabel(seat)"
+                (click)="onSeatClick(seat)"
+                (keydown.enter)="onSeatClick(seat)"
+                (keydown.space)="onSeatClick(seat); $event.preventDefault()">
+                <title>{{ getAriaLabel(seat) }}</title>
+
+                <!-- Purple Selection Outer Halo Ring -->
+                @if (seat.id === selectedSeatId) {
+                  <rect x="-15" y="-15" width="30" height="30" rx="6" class="seat-halo-ring" />
+                }
+
+                <!-- Seat Box Rectangle -->
+                <rect x="-11" y="-11" width="22" height="22" rx="4" class="seat-rect" />
+
+                <!-- Non-color status glyph / icon inside seat -->
+                @if (seat.status === 'Held') {
+                  <circle cx="0" cy="0" r="3" class="glyph-held" />
+                } @else if (seat.status === 'Booked') {
+                  <path d="M-3 -3 L3 3 M3 -3 L-3 3" class="glyph-booked" />
+                }
+
+                <!-- Seat code label -->
+                <text x="0" y="17" text-anchor="middle" class="seat-code-label">
+                  {{ seat.seatCode }}
+                </text>
+              </g>
+            }
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Fallback Tray for Unpositioned Seats (missing positionX or positionY) -->
+    @if (unpositionedSeats.length > 0) {
+      <div class="unpositioned-panel" role="region" aria-label="Unpositioned Seats">
+        <div class="unpositioned-panel-header">
+          <div class="unpositioned-title-row">
+            <span class="unpositioned-count-badge">{{ unpositionedSeats.length }}</span>
+            <h4 class="unpositioned-title">Unpositioned Seats</h4>
+          </div>
+          <p class="unpositioned-subtitle">
+            These seats do not have canvas coordinates assigned. Select any seat to view or configure its details.
+          </p>
+        </div>
+
+        <div class="unpositioned-chips-grid">
+          @for (seat of unpositionedSeats; track seat.id) {
+            <button
+              type="button"
+              class="unpositioned-chip"
+              [class.chip-selected]="seat.id === selectedSeatId"
+              [class.chip-available]="seat.status === 'Available'"
+              [class.chip-held]="seat.status === 'Held'"
+              [class.chip-booked]="seat.status === 'Booked'"
+              [attr.aria-pressed]="seat.id === selectedSeatId"
+              [attr.aria-label]="getAriaLabel(seat)"
+              (click)="onSeatClick(seat)"
+              [disabled]="disabled">
+              <span class="status-dot" [class]="getStatusClass(seat.status)"></span>
+              <span class="chip-code">{{ seat.seatCode }}</span>
+              <span class="chip-section">{{ seat.sectionName }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

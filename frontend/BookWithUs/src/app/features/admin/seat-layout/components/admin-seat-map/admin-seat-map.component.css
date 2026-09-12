@@ -1,0 +1,427 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seat-map-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Empty State */
+.empty-state-card {
+  background-color: #ffffff;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.empty-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #f5f3ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.empty-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  max-width: 360px;
+}
+
+/* Canvas Viewport */
+.seat-map-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 560px;
+  height: 640px;
+  background-color: #fafaf9;
+  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+  background-size: 24px 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: auto;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewport-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.seat-map-layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  transition: transform 0.15s ease-out;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.seat-map-svg {
+  width: 1000px;
+  height: 750px;
+  max-width: none;
+  overflow: visible;
+  user-select: none;
+}
+
+/* Arena Concentric Ring Guidelines */
+.arena-ring {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 1.5;
+  stroke-dasharray: 4, 4;
+}
+
+.ring-outer {
+  stroke: #cbd5e1;
+}
+
+/* Cardinal Sector Markers */
+.marker-badge {
+  fill: #ede9fe;
+  stroke: #7c3aed;
+  stroke-width: 1.5;
+}
+
+.marker-text {
+  font-size: 13px;
+  font-weight: 800;
+  fill: #6d28d9;
+}
+
+.marker-subtext {
+  font-size: 10px;
+  font-weight: 700;
+  fill: #4b5563;
+}
+
+.sector-code {
+  font-size: 13px;
+  font-weight: 800;
+  fill: #6366f1;
+}
+
+.sector-subcode {
+  font-size: 10px;
+  font-weight: 600;
+  fill: #4b5563;
+}
+
+/* Tier Badges (Silver, Gold, Platinum, VIP) */
+.tier-rect {
+  stroke-width: 1.5;
+}
+
+.tier-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.tier-silver-rect {
+  fill: #f1f5f9;
+  stroke: #94a3b8;
+}
+
+.tier-silver-rect + .tier-label {
+  fill: #475569;
+}
+
+.tier-gold-rect {
+  fill: #fef3c7;
+  stroke: #f59e0b;
+}
+
+.tier-gold-rect + .tier-label {
+  fill: #b45309;
+}
+
+.tier-platinum-rect {
+  fill: #f5f3ff;
+  stroke: #8b5cf6;
+}
+
+.tier-platinum-rect + .tier-label {
+  fill: #6d28d9;
+}
+
+.tier-vip-rect {
+  fill: #1e1b4b;
+  stroke: #312e81;
+}
+
+.tier-vip-rect + .tier-label {
+  fill: #ffffff;
+}
+
+/* Stage Visuals */
+.stage-outer-ring {
+  fill: #0f172a;
+  stroke: #334155;
+  stroke-width: 2;
+}
+
+.stage-core-oval {
+  fill: #1e1b4b;
+  stroke: #4338ca;
+  stroke-width: 2.5;
+}
+
+.stage-core-text {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  fill: #ffffff;
+}
+
+.stage-star {
+  font-size: 13px;
+  fill: #94a3b8;
+}
+
+/* Seat Nodes in SVG */
+.seat-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.seat-node:focus-visible .seat-rect {
+  stroke: #7c3aed;
+  stroke-width: 2.5;
+}
+
+.seat-rect {
+  transition: all 0.15s ease;
+}
+
+/* Available */
+.seat-node-available .seat-rect {
+  fill: #ffffff;
+  stroke: #9ca3af;
+  stroke-width: 1.5;
+}
+
+.seat-node-available:hover .seat-rect {
+  stroke: #7c3aed;
+  stroke-width: 2;
+}
+
+/* Held */
+.seat-node-held .seat-rect {
+  fill: #f59e0b;
+  stroke: #d97706;
+  stroke-width: 1.5;
+}
+
+.glyph-held {
+  fill: #ffffff;
+}
+
+/* Booked */
+.seat-node-booked .seat-rect {
+  fill: #ef4444;
+  stroke: #dc2626;
+  stroke-width: 1.5;
+}
+
+.glyph-booked {
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Selected */
+.seat-halo-ring {
+  fill: none;
+  stroke: #7c3aed;
+  stroke-width: 2.5;
+  stroke-dasharray: 3, 2;
+}
+
+.seat-node-selected .seat-rect {
+  fill: #7c3aed !important;
+  stroke: #5b21b6 !important;
+  stroke-width: 2 !important;
+}
+
+.seat-node-selected .glyph-held,
+.seat-node-selected .glyph-booked {
+  display: none;
+}
+
+.seat-code-label {
+  font-size: 8px;
+  font-weight: 700;
+  fill: #64748b;
+  user-select: none;
+  pointer-events: none;
+}
+
+.seat-node-selected .seat-code-label {
+  fill: #7c3aed;
+  font-weight: 800;
+}
+
+/* Unpositioned Seats Panel */
+.unpositioned-panel {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.unpositioned-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.unpositioned-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unpositioned-count-badge {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid #d1d5db;
+}
+
+.unpositioned-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.unpositioned-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.unpositioned-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.unpositioned-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  font-size: 0.8125rem;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.unpositioned-chip:hover:not(:disabled) {
+  border-color: #7c3aed;
+  background-color: #fbf9ff;
+}
+
+.unpositioned-chip:focus-visible {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  border-color: #7c3aed;
+}
+
+.chip-selected {
+  background-color: #f5f3ff !important;
+  border-color: #7c3aed !important;
+  color: #6d28d9 !important;
+  font-weight: 700;
+  box-shadow: 0 0 0 1px #7c3aed;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-available {
+  background-color: #ffffff;
+  border: 1.5px solid #9ca3af;
+}
+
+.status-held {
+  background-color: #f59e0b;
+}
+
+.status-booked {
+  background-color: #ef4444;
+}
+
+.chip-code {
+  font-weight: 600;
+}
+
+.chip-section {
+  font-size: 0.6875rem;
+  color: #6b7280;
+}
+
+.unpositioned-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .seat-map-viewport {
+    height: 480px;
+    min-height: 420px;
+  }
+}
