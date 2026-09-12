@@ -1,0 +1,215 @@
+<div class="parking-map-wrapper">
+  @if (zones.length === 0) {
+    <!-- Empty State: No Zones -->
+    <div class="empty-state-card" role="region" aria-label="Empty Parking Map">
+      <div class="empty-icon-box" aria-hidden="true">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M7 8h10M7 12h10M7 16h6" />
+        </svg>
+      </div>
+      <h3 class="empty-title">No Parking Zones</h3>
+      <p class="empty-description">No parking zones have been configured for this event.</p>
+    </div>
+  } @else if (slots.length === 0) {
+    <!-- Empty State: No Slots -->
+    <div class="empty-state-card" role="region" aria-label="Empty Parking Map">
+      <div class="empty-icon-box" aria-hidden="true">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="4" width="16" height="16" rx="3" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </div>
+      <h3 class="empty-title">No Parking Slots</h3>
+      <p class="empty-description">No parking slots have been configured for this event.</p>
+    </div>
+  } @else {
+    <!-- Main Map Viewport -->
+    <div class="parking-map-viewport" [class.viewport-disabled]="disabled" role="region" aria-label="Interactive Parking Layout Map">
+      <div class="parking-map-layer" [style.transform]="transformStyle">
+        <div class="parking-arena-canvas">
+          
+          <!-- Venue Entrance Banner (Orientation Guide) -->
+          <div class="arena-entrance-banner" aria-hidden="true">
+            <svg class="entrance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 21h18M4 18h16M6 14h12M9 10h6M12 3v4" />
+            </svg>
+            <span class="entrance-text">VENUE ENTRANCE</span>
+          </div>
+
+          <!-- Wayfinding Lane Orientation Markers -->
+          <div class="arena-lane-markers" aria-hidden="true">
+            <div class="lane-gate gate-entry">
+              <span class="gate-label">ENTRY</span>
+              <svg class="gate-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5l7 7-7 7M5 12h14" />
+              </svg>
+            </div>
+
+            <div class="lane-gate gate-exit">
+              <span class="gate-label">EXIT</span>
+              <svg class="gate-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5l7 7-7 7M5 12h14" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Dynamic Zones Grid on Canvas -->
+          <div class="dynamic-zones-grid">
+            @for (zone of zones; track zone.id) {
+              <div class="zone-block" [attr.aria-label]="zone.name">
+                <div class="zone-block-header">
+                  <div class="zone-badge-group">
+                    <span class="zone-type-badge">{{ getVehicleTypeDisplay(zone.vehicleType) }}</span>
+                    <h4 class="zone-block-title">{{ zone.name }}</h4>
+                  </div>
+                  <span
+                    class="zone-online-pill"
+                    [class.pill-online]="zone.isOnlineBookable"
+                    [class.pill-offline]="!zone.isOnlineBookable">
+                    {{ zone.isOnlineBookable ? 'Online Booking' : 'Offline / Reserved' }}
+                  </span>
+                </div>
+
+                <!-- Slots for this Zone -->
+                <div class="zone-slots-layout">
+                  @for (slot of getSlotsForZone(zone.id); track slot.id) {
+                    <button
+                      type="button"
+                      class="parking-slot-btn"
+                      [class.slot-selected]="slot.id === selectedSlotId"
+                      [class.slot-available]="slot.status === 'Available'"
+                      [class.slot-held]="slot.status === 'Held'"
+                      [class.slot-occupied]="slot.status === 'Occupied'"
+                      [attr.aria-pressed]="slot.id === selectedSlotId"
+                      [attr.aria-label]="getAriaLabel(slot)"
+                      (click)="onSelectSlot(slot)"
+                      [disabled]="disabled">
+                      
+                      <!-- Status Glyph (Non-color indicator) -->
+                      <div class="slot-glyph" aria-hidden="true">
+                        @if (slot.status === 'Available') {
+                          <span class="glyph-dot-available"></span>
+                        } @else if (slot.status === 'Held') {
+                          <svg class="glyph-icon-held" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="4" y="10" width="16" height="12" rx="2" />
+                            <path d="M8 10V6a4 4 0 018 0v4" />
+                          </svg>
+                        } @else if (slot.status === 'Occupied') {
+                          <svg class="glyph-icon-occupied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                          </svg>
+                        }
+                      </div>
+
+                      <span class="slot-code-text">{{ slot.slotCode }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Positioned Slots Coordinate Overlay (if coordinates present) -->
+          @if (positionedSlots.length > 0) {
+            <div class="positioned-slots-overlay" aria-label="Coordinate Positioned Slots">
+              @for (slot of positionedSlots; track slot.id) {
+                <button
+                  type="button"
+                  class="positioned-slot-btn"
+                  [class.slot-selected]="slot.id === selectedSlotId"
+                  [class.slot-available]="slot.status === 'Available'"
+                  [class.slot-held]="slot.status === 'Held'"
+                  [class.slot-occupied]="slot.status === 'Occupied'"
+                  [style.left.px]="slot.positionX"
+                  [style.top.px]="slot.positionY"
+                  [attr.aria-pressed]="slot.id === selectedSlotId"
+                  [attr.aria-label]="getAriaLabel(slot)"
+                  (click)="onSelectSlot(slot)"
+                  [disabled]="disabled">
+                  
+                  <div class="slot-glyph" aria-hidden="true">
+                    @if (slot.status === 'Available') {
+                      <span class="glyph-dot-available"></span>
+                    } @else if (slot.status === 'Held') {
+                      <svg class="glyph-icon-held" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="4" y="10" width="16" height="12" rx="2" />
+                        <path d="M8 10V6a4 4 0 018 0v4" />
+                      </svg>
+                    } @else if (slot.status === 'Occupied') {
+                      <svg class="glyph-icon-occupied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                      </svg>
+                    }
+                  </div>
+
+                  <span class="slot-code-text">{{ slot.slotCode }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Fallback Tray for Unpositioned Slots -->
+    @if (unpositionedSlots.length > 0) {
+      <div class="unpositioned-tray" role="region" aria-label="Unpositioned Slots">
+        <div class="tray-header">
+          <div class="tray-title-row">
+            <span class="tray-badge">{{ unpositionedSlots.length }}</span>
+            <h4 class="tray-title">Unpositioned Slots</h4>
+          </div>
+          <p class="tray-subtitle">
+            These slots do not have canvas coordinates assigned. Select any slot to view details.
+          </p>
+        </div>
+
+        <div class="tray-zones-list">
+          @for (zone of zones; track zone.id) {
+            @if (getUnpositionedSlotsForZone(zone.id).length > 0) {
+              <div class="tray-zone-group">
+                <div class="tray-zone-header">
+                  <span class="tray-zone-name">{{ zone.name }}</span>
+                  <span class="tray-zone-type">({{ getVehicleTypeDisplay(zone.vehicleType) }})</span>
+                </div>
+
+                <div class="tray-chips-grid">
+                  @for (slot of getUnpositionedSlotsForZone(zone.id); track slot.id) {
+                    <button
+                      type="button"
+                      class="tray-slot-chip"
+                      [class.chip-selected]="slot.id === selectedSlotId"
+                      [class.chip-available]="slot.status === 'Available'"
+                      [class.chip-held]="slot.status === 'Held'"
+                      [class.chip-occupied]="slot.status === 'Occupied'"
+                      [attr.aria-pressed]="slot.id === selectedSlotId"
+                      [attr.aria-label]="getAriaLabel(slot)"
+                      (click)="onSelectSlot(slot)"
+                      [disabled]="disabled">
+                      
+                      <span class="status-indicator-glyph" aria-hidden="true">
+                        @if (slot.status === 'Available') {
+                          <span class="chip-dot-available"></span>
+                        } @else if (slot.status === 'Held') {
+                          <span class="chip-dot-held"></span>
+                        } @else if (slot.status === 'Occupied') {
+                          <span class="chip-dot-occupied"></span>
+                        }
+                      </span>
+
+                      <span class="chip-code">{{ slot.slotCode }}</span>
+                      <span class="chip-status-text">({{ slot.status }})</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  }
+</div>
