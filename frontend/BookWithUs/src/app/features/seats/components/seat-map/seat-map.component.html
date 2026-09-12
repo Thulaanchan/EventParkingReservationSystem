@@ -1,0 +1,72 @@
+<div class="seat-map-container" role="region" aria-label="Interactive event seating map">
+  <!-- Optional Legend Bar -->
+  @if (showLegend) {
+    <header class="seat-map-header">
+      <app-seat-legend [categories]="categories"></app-seat-legend>
+    </header>
+  }
+
+  <!-- Viewport Area -->
+  <div class="seat-map-viewport" tabindex="0" aria-label="Seating area viewport">
+    @if (seats.length === 0) {
+      <!-- Empty State -->
+      <div class="seat-map-empty">
+        <p class="empty-text">No seating data available for this event layout.</p>
+      </div>
+    } @else if (hasCoordinates) {
+      <!-- Coordinate Canvas Mode (Arena Layout matching screen-09.png) -->
+      <div
+        class="arena-canvas"
+        [style.width.px]="canvasWidth"
+        [style.height.px]="canvasHeight"
+      >
+        <!-- Central Non-Interactive Stage -->
+        <div
+          class="stage-indicator"
+          [style.left.px]="stagePosition.x"
+          [style.top.px]="stagePosition.y"
+          aria-hidden="true"
+        >
+          <span class="stage-text">{{ stageLabel }}</span>
+        </div>
+
+        <!-- Positioned Seats -->
+        @for (seat of seats; track seat.id) {
+          <div
+            class="seat-positioned-wrapper"
+            [style.left.px]="seat.positionX"
+            [style.top.px]="seat.positionY"
+          >
+            <app-seat-item
+              [seat]="seat"
+              [selected]="isSeatSelected(seat.id)"
+              [selectedIndex]="getSelectedIndex(seat.id)"
+              (seatSelect)="onSeatSelect($event)"
+            ></app-seat-item>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Fallback Section Grid Mode -->
+      <div class="fallback-container">
+        @for (group of groupedSeats; track group.sectionCode) {
+          <section class="fallback-section" [attr.aria-label]="group.sectionName">
+            <h4 class="fallback-section-title">{{ group.sectionName }} ({{ group.sectionCode }})</h4>
+            <div class="fallback-seat-grid" role="list">
+              @for (seat of group.seats; track seat.id) {
+                <div role="listitem">
+                  <app-seat-item
+                    [seat]="seat"
+                    [selected]="isSeatSelected(seat.id)"
+                    [selectedIndex]="getSelectedIndex(seat.id)"
+                    (seatSelect)="onSeatSelect($event)"
+                  ></app-seat-item>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </div>
+</div>

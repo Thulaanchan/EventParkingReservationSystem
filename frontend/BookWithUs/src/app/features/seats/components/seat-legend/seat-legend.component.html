@@ -1,0 +1,52 @@
+<aside class="seat-legend" aria-label="Seat Legend and Information">
+  <!-- 1. SEAT STATUS LEGEND -->
+  <section class="legend-status-section">
+    <div class="legend-status-list" role="list">
+      @for (item of statusItems; track item.id) {
+        <div class="legend-status-item" role="listitem" [title]="item.description">
+          <span
+            class="legend-swatch"
+            [ngClass]="item.cssClass"
+            aria-hidden="true"
+          >
+            @if (item.symbol) {
+              <span class="legend-swatch-symbol">{{ item.symbol }}</span>
+            }
+          </span>
+          <span class="legend-status-label">{{ item.label }}</span>
+          <span class="sr-only">: {{ item.description }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- 2. OPTIONAL CATEGORY / SECTION PRICING LEGEND -->
+  @if (categories.length > 0) {
+    <section class="legend-category-section" aria-label="Seat Categories and Pricing">
+      <h4 class="legend-section-title">Categories</h4>
+      <div class="legend-category-list" role="list">
+        @for (category of categories; track category.id) {
+          <div class="legend-category-item" role="listitem">
+            <span
+              class="legend-category-dot"
+              [ngClass]="getCategoryDotClass(category)"
+              aria-hidden="true"
+            >
+              @if (!category.isPubliclyBookable) {
+                <span class="category-star">&#9733;</span>
+              }
+            </span>
+            <div class="legend-category-info">
+              <span class="legend-category-name">{{ category.name }}</span>
+              @if (category.isPubliclyBookable) {
+                <span class="legend-category-price">LKR {{ category.adultPrice | number:'1.0-0' }}</span>
+              } @else {
+                <span class="legend-category-tag">VIP Pre-Reserved</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</aside>
