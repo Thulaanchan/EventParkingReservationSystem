@@ -1,0 +1,365 @@
+<div class="review-page-container">
+  <!-- Stepper / Progress Bar (screen-11) -->
+  <nav class="checkout-stepper" aria-label="Checkout Steps">
+    <div class="stepper-step completed">
+      <div class="step-circle">
+        <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <span class="step-label">Event</span>
+      <span class="step-status">Completed</span>
+    </div>
+    <div class="stepper-line completed"></div>
+
+    <div class="stepper-step completed">
+      <div class="step-circle">
+        <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <span class="step-label">Seats</span>
+      <span class="step-status">Completed</span>
+    </div>
+    <div class="stepper-line completed"></div>
+
+    <div class="stepper-step completed">
+      <div class="step-circle">
+        <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <span class="step-label">Parking</span>
+      <span class="step-status">Completed</span>
+    </div>
+    <div class="stepper-line in-progress"></div>
+
+    <div class="stepper-step active">
+      <div class="step-circle">4</div>
+      <span class="step-label">Review</span>
+      <span class="step-status in-progress">In Progress</span>
+    </div>
+    <div class="stepper-line"></div>
+
+    <div class="stepper-step upcoming">
+      <div class="step-circle">5</div>
+      <span class="step-label">Payment</span>
+      <span class="step-status">Upcoming</span>
+    </div>
+    <div class="stepper-line"></div>
+
+    <div class="stepper-step upcoming">
+      <div class="step-circle">6</div>
+      <span class="step-label">Confirmation</span>
+      <span class="step-status">Upcoming</span>
+    </div>
+  </nav>
+
+  <!-- Page Header Section -->
+  <header class="review-header">
+    <div class="header-titles">
+      <h2 class="title">Review Your Booking</h2>
+      <p class="subtitle">Review your booking details before continuing to payment.</p>
+    </div>
+    <div class="status-badge-container">
+      <span class="status-badge status-review">
+        <span class="badge-dot"></span>
+        Review In Progress
+      </span>
+      <span *ngIf="holdState().isHoldActive" class="status-badge status-hold">
+        <svg class="timer-icon" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+        </svg>
+        Seats Held: ~{{ holdState().holdDurationMinutes }}m
+      </span>
+    </div>
+  </header>
+
+  <!-- Validation / Feedback Notices -->
+  <div *ngIf="continueNotice() as notice" class="alert alert-success">
+    <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+    </svg>
+    <span>{{ notice }}</span>
+  </div>
+
+  <!-- Empty State 1: No Event Selected -->
+  <section *ngIf="!hasEvent()" class="empty-state-card">
+    <div class="empty-icon-wrap">
+      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </div>
+    <h3 class="empty-title">Please select an event before checkout.</h3>
+    <p class="empty-description">You haven't selected an event yet. Browse our upcoming events to choose your experience.</p>
+    <a routerLink="/events" class="btn btn-primary">Browse Events</a>
+  </section>
+
+  <!-- Empty State 2: Event Selected but No Seats -->
+  <section *ngIf="hasEvent() && !hasSeats()" class="empty-state-card">
+    <div class="empty-icon-wrap">
+      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 18v3h16v-3M7 14l5-5 5 5M12 9v9"></path>
+      </svg>
+    </div>
+    <h3 class="empty-title">Please select your seats before checkout.</h3>
+    <p class="empty-description">You have selected an event, but haven't selected seats yet.</p>
+    <button type="button" (click)="onBackToSelection()" class="btn btn-primary">Select Seats</button>
+  </section>
+
+  <!-- Validation Error Alert: Invalid Attendee Information -->
+  <div *ngIf="hasEvent() && hasSeats() && hasErrors()" class="alert alert-warning">
+    <div class="alert-content">
+      <svg class="alert-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <div>
+        <h4 class="alert-title">Incomplete Booking Details</h4>
+        <ul class="error-list">
+          <li *ngFor="let error of checkoutValidationErrors()">{{ error }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div *ngIf="hasEvent() && hasSeats()" class="review-grid">
+    <!-- Left Column: Details Cards -->
+    <div class="details-column">
+      <!-- 1. Event Review Card -->
+      <section *ngIf="selectedEvent() as event" class="review-card">
+        <div class="card-header">
+          <h3 class="card-title">Event Details</h3>
+        </div>
+        <div class="event-details-body">
+          <div class="event-poster-wrap">
+            <img
+              [src]="event.posterUrl || 'https://placehold.co/600x400/4f46e5/ffffff?text=Event+Poster'"
+              [alt]="event.eventName"
+              class="event-poster"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <div class="event-info">
+            <h4 class="event-name">{{ event.eventName }}</h4>
+            <div class="event-meta-list">
+              <div class="meta-item">
+                <svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ event.venueName || 'Venue TBD' }}</span>
+              </div>
+              <div *ngIf="event.eventDate" class="meta-item">
+                <svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ event.eventDate }}</span>
+              </div>
+              <div *ngIf="event.startTime" class="meta-item">
+                <svg class="meta-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ event.startTime }}<span *ngIf="event.endTime"> - {{ event.endTime }}</span></span>
+              </div>
+            </div>
+            <div *ngIf="event.categoryName" class="category-badge">
+              {{ event.categoryName }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Selected Seats Card -->
+      <section class="review-card">
+        <div class="card-header">
+          <div class="header-with-count">
+            <h3 class="card-title">Selected Seats</h3>
+            <span class="count-badge">{{ seatCount() }} Seats</span>
+          </div>
+        </div>
+        <div class="seats-table-container">
+          <table class="seats-table">
+            <thead>
+              <tr>
+                <th>Seat</th>
+                <th>Row / Number</th>
+                <th>Section</th>
+                <th>Attendee</th>
+                <th>Type</th>
+                <th class="text-right">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let seat of selectedSeats()">
+                <td class="font-bold seat-code-cell">
+                  <span class="seat-dot"></span>
+                  {{ seat.seatCode }}
+                </td>
+                <td class="text-muted">
+                  Row {{ seat.rowLabel || '-' }}, Seat #{{ seat.seatNumber || '-' }}
+                </td>
+                <td>
+                  <span class="section-tag">{{ seat.sectionName || 'General' }}</span>
+                </td>
+                <td class="attendee-name-cell">
+                  <span *ngIf="seat.attendeeName" class="attendee-name">{{ seat.attendeeName }}</span>
+                  <span *ngIf="!seat.attendeeName" class="missing-attendee">Name required</span>
+                </td>
+                <td>
+                  <span class="attendee-type-badge" [class.child]="seat.attendeeType === 2">
+                    {{ getAttendeeTypeLabel(seat.attendeeType) }}
+                  </span>
+                </td>
+                <td class="text-right font-semibold">
+                  {{ formatCurrency(seat.price) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Parking Card (Displayed only when parking exists) -->
+      <section *ngIf="hasParking() && selectedParking() as parking" class="review-card">
+        <div class="card-header">
+          <div class="header-with-count">
+            <h3 class="card-title">Parking Reservation</h3>
+            <span class="optional-badge">Optional</span>
+          </div>
+        </div>
+        <div class="parking-details-grid">
+          <div class="parking-metric">
+            <div class="metric-icon-wrap">
+              <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="8" rx="2"></rect>
+                <path d="M5 11l2-5h10l2 5M7 19v2M17 19v2M7 15h.01M17 15h.01"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <span class="metric-label">Status</span>
+              <span class="metric-value status-reserved">Reserved</span>
+            </div>
+          </div>
+
+          <div class="parking-metric">
+            <span class="metric-label">Parking Zone</span>
+            <span class="metric-value">{{ parking.zoneName || 'Standard Zone' }}</span>
+          </div>
+
+          <div class="parking-metric">
+            <span class="metric-label">Slot Code</span>
+            <span class="metric-value highlight">{{ parking.slotCode }}</span>
+          </div>
+
+          <div class="parking-metric">
+            <span class="metric-label">Vehicle Info</span>
+            <span class="metric-value">{{ parking.vehicleType || 'Standard' }}</span>
+          </div>
+
+          <div class="parking-metric">
+            <span class="metric-label">Parking Fee</span>
+            <span class="metric-value font-semibold">{{ formatCurrency(parking.fee) }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Contact Information Card -->
+      <section class="review-card contact-card">
+        <div class="contact-header">
+          <div class="contact-icon-wrap">
+            <svg class="contact-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <h4 class="contact-title">Contact Information</h4>
+            <p class="contact-subtitle">Reservation confirmation and tickets will be associated with this account.</p>
+          </div>
+        </div>
+        <div class="contact-details">
+          <span class="contact-email">{{ currentUser()?.email || 'Authenticated Customer' }}</span>
+          <span *ngIf="currentUser()?.displayName" class="contact-name">({{ currentUser()?.displayName }})</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Sticky Order Summary Card -->
+    <aside class="summary-column">
+      <div class="summary-card">
+        <div class="summary-header">
+          <h3 class="summary-title">Booking Summary</h3>
+          <span class="summary-seat-count">{{ seatCount() }} Seat(s) Selected</span>
+        </div>
+
+        <!-- Seats mini breakdown -->
+        <div class="summary-items-list">
+          <div *ngFor="let seat of selectedSeats()" class="summary-seat-row">
+            <div class="seat-row-info">
+              <span class="seat-dot"></span>
+              <span class="seat-code">{{ seat.seatCode }}</span>
+              <span class="seat-category">{{ seat.sectionName }}</span>
+            </div>
+            <span class="seat-price">{{ formatCurrency(seat.price) }}</span>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <!-- Price breakdown calculations -->
+        <div class="summary-calc-row">
+          <span class="calc-label">Tickets Subtotal</span>
+          <span class="calc-value">{{ formatCurrency(totalSeatPrice()) }}</span>
+        </div>
+
+        <div class="summary-calc-row">
+          <span class="calc-label">Parking Fee</span>
+          <span class="calc-value">{{ formatCurrency(parkingFee()) }}</span>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <!-- Grand Total -->
+        <div class="summary-total-row">
+          <span class="total-label">Total</span>
+          <span class="total-value">{{ formatCurrency(displayTotal()) }}</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="summary-actions">
+          <button
+            type="button"
+            class="btn btn-primary btn-block btn-confirm"
+            [disabled]="!isCheckoutReady()"
+            (click)="onContinueBooking()"
+          >
+            <svg class="lock-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+            </svg>
+            Continue Booking
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-outline btn-block"
+            (click)="onBackToSelection()"
+          >
+            <svg class="back-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Back to Selection
+          </button>
+        </div>
+
+        <div class="summary-footer-notice">
+          <svg class="info-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <span>After booking is confirmed, you'll continue to the simulated payment step.</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
