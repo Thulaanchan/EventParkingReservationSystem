@@ -1,0 +1,98 @@
+<div class="stage-layout-section" [class.is-disabled]="disabled">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="section-icon-badge" aria-hidden="true">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+        <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+      </svg>
+    </div>
+    <div class="section-title-wrap">
+      <h3 class="section-title">Stage &amp; Seating Configuration</h3>
+      <p class="section-subtitle">
+        Choose the stage arrangement that will guide the event seat-map layout.
+      </p>
+    </div>
+  </div>
+
+  <!-- Content Grid: Selector + Preview Area -->
+  <div class="selector-preview-grid">
+    <!-- Form Control Field -->
+    <div class="field-container">
+      <label for="stageLayoutSelect" class="field-label">
+        <span>Stage Layout</span>
+        @if (required) {
+          <span class="required-indicator" aria-hidden="true">*</span>
+        }
+      </label>
+
+      <div class="select-wrapper">
+        <select
+          id="stageLayoutSelect"
+          class="native-select"
+          [disabled]="disabled"
+          [required]="required"
+          [value]="value ?? ''"
+          (change)="onSelectChange($event)"
+          aria-describedby="stageLayoutHelperText"
+        >
+          <option value="">Select stage layout</option>
+
+          @if (isCustomValue && value) {
+            <option [value]="value" selected>{{ value }} (Current)</option>
+          }
+
+          @for (option of options; track option.value) {
+            <option [value]="option.value" [selected]="option.value === value">
+              {{ option.label }}
+            </option>
+          }
+        </select>
+
+        <div class="select-chevron-box" aria-hidden="true">
+          <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <span id="stageLayoutHelperText" class="field-hint">
+        Guides arrangement in the Seat Map Builder.
+      </span>
+    </div>
+
+    <!-- Selected Layout Visual Preview Card -->
+    @if (selectedOption) {
+      <div class="layout-preview-card" role="region" aria-label="Stage layout preview">
+        <!-- Generic Conceptual Stage / Seating Diagram -->
+        <div class="diagram-container" aria-hidden="true">
+          <svg class="stage-diagram-svg" viewBox="0 0 80 80" fill="none">
+            <!-- Surrounding audience seating arc / blocks -->
+            <rect x="34" y="6" width="12" height="6" rx="2" fill="#c4b5fd" />
+            <rect x="18" y="12" width="10" height="6" rx="2" fill="#c4b5fd" transform="rotate(-30 23 15)" />
+            <rect x="52" y="12" width="10" height="6" rx="2" fill="#c4b5fd" transform="rotate(30 57 15)" />
+
+            <rect x="8" y="26" width="6" height="12" rx="2" fill="#c4b5fd" />
+            <rect x="66" y="26" width="6" height="12" rx="2" fill="#c4b5fd" />
+
+            <rect x="8" y="44" width="6" height="12" rx="2" fill="#c4b5fd" />
+            <rect x="66" y="44" width="6" height="12" rx="2" fill="#c4b5fd" />
+
+            <rect x="18" y="62" width="10" height="6" rx="2" fill="#c4b5fd" transform="rotate(30 23 65)" />
+            <rect x="52" y="62" width="10" height="6" rx="2" fill="#c4b5fd" transform="rotate(-30 57 65)" />
+            <rect x="34" y="68" width="12" height="6" rx="2" fill="#c4b5fd" />
+
+            <!-- Central Stage Area -->
+            <circle cx="40" cy="40" r="15" fill="#ede9fe" stroke="#7c3aed" stroke-width="2" />
+            <circle cx="40" cy="40" r="6" fill="#7c3aed" />
+          </svg>
+        </div>
+
+        <div class="preview-text-group">
+          <strong class="preview-heading">{{ previewLabel }}</strong>
+          <p class="preview-description">{{ previewDescription }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
