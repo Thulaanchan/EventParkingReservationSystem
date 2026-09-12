@@ -1,0 +1,168 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card Container */
+.section-summary-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Header Columns */
+.summary-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Sections List */
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.section-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.section-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Category Color Palette (UI-Only Deterministic) */
+.category-color-0 {
+  background-color: #1e1b4b; /* Deep Navy */
+}
+
+.category-color-1 {
+  background-color: #7c3aed; /* Purple */
+}
+
+.category-color-2 {
+  background-color: #f59e0b; /* Amber */
+}
+
+.category-color-3 {
+  background-color: #64748b; /* Slate */
+}
+
+.category-color-4 {
+  background-color: #0284c7; /* Sky */
+}
+
+.category-color-5 {
+  background-color: #0d9488; /* Teal */
+}
+
+.section-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.section-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-meta {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-count {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.count-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Total Row */
+.summary-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4px;
+}
+
+.total-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.total-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 12px 0;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}

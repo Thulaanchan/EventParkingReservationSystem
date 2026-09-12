@@ -1,0 +1,43 @@
+<section class="section-summary-card" aria-labelledby="sectionSummaryTitle">
+  <h3 id="sectionSummaryTitle" class="card-title">Section Summary</h3>
+
+  @if (sections.length === 0) {
+    <div class="empty-state" role="status">
+      <p class="empty-text">No seat sections configured.</p>
+    </div>
+  } @else {
+    <!-- Table Header -->
+    <div class="summary-table-header" aria-hidden="true">
+      <span class="col-section-header">SECTION</span>
+      <span class="col-seats-header">TOTAL SEATS</span>
+    </div>
+
+    <!-- Sections List -->
+    <div class="sections-list" role="list">
+      @for (section of sections; track section.id; let idx = $index) {
+        <div class="section-row" role="listitem">
+          <div class="section-identity">
+            <span
+              class="section-marker"
+              [ngClass]="getCategoryColorClass(idx)"
+              aria-hidden="true">
+            </span>
+            <div class="section-names">
+              <span class="section-name">{{ section.name }}</span>
+              <span class="section-meta">{{ section.categoryName }} ({{ section.code }})</span>
+            </div>
+          </div>
+          <div class="section-count">
+            <span class="count-value">{{ getSafeSeatCount(section.seatCount) | number }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Total Footer Row -->
+    <div class="summary-total-row">
+      <span class="total-label">Total</span>
+      <span class="total-value">{{ totalSeats | number }}</span>
+    </div>
+  }
+</section>
