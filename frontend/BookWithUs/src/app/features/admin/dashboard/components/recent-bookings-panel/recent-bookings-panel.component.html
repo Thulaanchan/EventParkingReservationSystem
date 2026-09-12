@@ -1,0 +1,90 @@
+<section class="recent-bookings-card" aria-labelledby="recentBookingsTitle">
+  <!-- Card Header -->
+  <div class="card-header">
+    <h2 id="recentBookingsTitle" class="card-title">Recent Bookings</h2>
+    <button
+      type="button"
+      class="btn-view-all"
+      (click)="onViewAll()"
+      aria-label="View all bookings">
+      <span>View All</span>
+      <svg class="arrow-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Content States -->
+  @if (loading) {
+    <!-- Loading Skeleton State -->
+    <div class="bookings-list" aria-busy="true" aria-label="Loading recent bookings">
+      @for (row of skeletonRows; track row) {
+        <div class="booking-item skeleton-item">
+          <div class="skeleton-cell skeleton-icon"></div>
+          <div class="skeleton-main">
+            <div class="skeleton-cell skeleton-num"></div>
+            <div class="skeleton-cell skeleton-cust"></div>
+            <div class="skeleton-cell skeleton-event"></div>
+          </div>
+          <div class="skeleton-right">
+            <div class="skeleton-cell skeleton-amount"></div>
+            <div class="skeleton-cell skeleton-badge"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (bookings.length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state" role="status">
+      <div class="empty-icon-box" aria-hidden="true">
+        <svg class="empty-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+          <line x1="9" y1="12" x2="15" y2="12"></line>
+        </svg>
+      </div>
+      <p class="empty-message">No recent bookings found.</p>
+    </div>
+  } @else {
+    <!-- Data Feed State -->
+    <div class="bookings-list" role="list">
+      @for (booking of bookings; track booking.bookingId) {
+        <div class="booking-item" role="listitem">
+          <!-- Ticket Icon Box -->
+          <div class="booking-icon-box" aria-hidden="true">
+            <svg class="ticket-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+              <line x1="9" y1="12" x2="15" y2="12"></line>
+            </svg>
+          </div>
+
+          <!-- Main Booking Details -->
+          <div class="booking-main-content">
+            <div class="booking-top-line">
+              <span class="booking-number">{{ booking.bookingNumber.startsWith('#') ? booking.bookingNumber : ('#' + booking.bookingNumber) }}</span>
+              <span class="booking-date">{{ booking.createdAt | date:'MMM d, y • h:mm a' }}</span>
+            </div>
+            <span class="customer-name">{{ booking.customerName }}</span>
+            <span class="event-name">{{ booking.eventName }}</span>
+          </div>
+
+          <!-- Right Meta: Amount, Status, and Action -->
+          <div class="booking-meta-right">
+            <div class="amount-status-group">
+              <span class="booking-amount">LKR {{ booking.amount | number:'1.2-2' }}</span>
+              <span class="status-badge" [ngClass]="getStatusClass(booking.status)">
+                {{ booking.status }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn-view-booking"
+              (click)="onViewBooking(booking)"
+              [attr.aria-label]="'View details for booking ' + booking.bookingNumber">
+              View
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
