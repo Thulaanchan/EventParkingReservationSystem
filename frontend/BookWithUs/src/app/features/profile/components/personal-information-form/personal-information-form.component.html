@@ -1,0 +1,181 @@
+<div class="card personal-info-card">
+  <div class="card-header">
+    <span class="card-eyebrow">PERSONAL INFORMATION</span>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error" role="alert" aria-live="polite">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div class="alert-content">
+        <span class="alert-title">Update Failed</span>
+        <span class="alert-message">{{ errorMessage }}</span>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="info-form" novalidate>
+    <!-- First Name Field -->
+    <div class="form-group">
+      <label for="firstName" class="form-label">First Name</label>
+      <div class="input-wrapper" [class.input-error]="isFieldInvalid('firstName')">
+        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <input
+          type="text"
+          id="firstName"
+          formControlName="firstName"
+          placeholder="e.g. Leo"
+          autocomplete="given-name"
+          class="form-input"
+          [attr.aria-invalid]="isFieldInvalid('firstName')"
+          aria-describedby="firstName-error"
+        />
+      </div>
+      @if (isFieldInvalid('firstName')) {
+        <p id="firstName-error" class="field-error" role="alert">
+          @if (firstNameControl?.errors?.['required']) {
+            <span>First name is required.</span>
+          } @else if (firstNameControl?.errors?.['maxlength']) {
+            <span>First name cannot exceed 50 characters.</span>
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Last Name Field -->
+    <div class="form-group">
+      <label for="lastName" class="form-label">Last Name</label>
+      <div class="input-wrapper" [class.input-error]="isFieldInvalid('lastName')">
+        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <input
+          type="text"
+          id="lastName"
+          formControlName="lastName"
+          placeholder="e.g. Thas"
+          autocomplete="family-name"
+          class="form-input"
+          [attr.aria-invalid]="isFieldInvalid('lastName')"
+          aria-describedby="lastName-error"
+        />
+      </div>
+      @if (isFieldInvalid('lastName')) {
+        <p id="lastName-error" class="field-error" role="alert">
+          @if (lastNameControl?.errors?.['required']) {
+            <span>Last name is required.</span>
+          } @else if (lastNameControl?.errors?.['maxlength']) {
+            <span>Last name cannot exceed 50 characters.</span>
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Email Address Field -->
+    <div class="form-group">
+      <label for="email" class="form-label">Email Address</label>
+      <div class="input-wrapper" [class.input-error]="isFieldInvalid('email')">
+        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="name@example.com"
+          autocomplete="email"
+          class="form-input"
+          [attr.aria-invalid]="isFieldInvalid('email')"
+          aria-describedby="email-error"
+        />
+        <!-- Verified status badge inside input (screen-17) -->
+        @if (customer?.isEmailVerified && emailControl?.value === customer?.email) {
+          <span class="inline-verified-tag" title="Email is verified">
+            <svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Verified</span>
+          </span>
+        }
+      </div>
+      @if (isFieldInvalid('email')) {
+        <p id="email-error" class="field-error" role="alert">
+          @if (emailControl?.errors?.['required']) {
+            <span>Email address is required.</span>
+          } @else if (emailControl?.errors?.['email']) {
+            <span>Please enter a valid email address.</span>
+          } @else if (emailControl?.errors?.['maxlength']) {
+            <span>Email cannot exceed 150 characters.</span>
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Phone Number Field -->
+    <div class="form-group">
+      <label for="phone" class="form-label">
+        Phone Number
+        <span class="optional-label">(optional)</span>
+      </label>
+      <div class="input-wrapper" [class.input-error]="isFieldInvalid('phone')">
+        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          placeholder="+94 77 123 4567"
+          autocomplete="tel"
+          class="form-input"
+          [attr.aria-invalid]="isFieldInvalid('phone')"
+          aria-describedby="phone-error"
+        />
+      </div>
+      @if (isFieldInvalid('phone')) {
+        <p id="phone-error" class="field-error" role="alert">
+          <span>Phone number cannot exceed 25 characters.</span>
+        </p>
+      }
+    </div>
+
+    <!-- Actions Row (screen-17) -->
+    <div class="form-actions">
+      @if (profileForm.dirty && !isSaving) {
+        <button
+          type="button"
+          class="discard-btn"
+          (click)="discardChanges()"
+        >
+          Discard
+        </button>
+      }
+
+      <button
+        type="submit"
+        class="save-btn"
+        [disabled]="profileForm.invalid || isSaving || profileForm.pristine"
+      >
+        @if (isSaving) {
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Saving Changes...</span>
+        } @else {
+          <svg class="save-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span>Save Changes</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

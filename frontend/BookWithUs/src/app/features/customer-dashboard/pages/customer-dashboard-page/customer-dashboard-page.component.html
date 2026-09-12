@@ -1,0 +1,97 @@
+<div class="dashboard-page-container">
+  <!-- Mutually Exclusive State: Loading -->
+  @if (viewState() === 'loading') {
+    <div class="dashboard-loading-state" aria-busy="true" aria-label="Loading dashboard">
+      <div class="spinner"></div>
+      <p class="loading-message">Preparing your dashboard...</p>
+    </div>
+  }
+
+  <!-- Mutually Exclusive State: Error -->
+  @else if (viewState() === 'error') {
+    <div class="dashboard-error-state" role="alert" aria-live="polite">
+      <div class="error-card">
+        <div class="error-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h2 class="error-title">Unable to Load Dashboard</h2>
+        <p class="error-description">{{ errorMessage() }}</p>
+        <button type="button" class="retry-btn" (click)="retry()">
+          Try Again
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Mutually Exclusive State: Empty -->
+  @else if (viewState() === 'empty') {
+    <div class="dashboard-empty-state">
+      <app-welcome-banner [displayName]="displayName()"></app-welcome-banner>
+
+      <div class="empty-dashboard-card">
+        <div class="empty-icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <h2 class="empty-title">Your EventFlow Journey Starts Here</h2>
+        <p class="empty-subtitle">
+          You don't have any bookings or parking reservations yet. Explore the latest events, book tickets, and manage all your reservations in one place.
+        </p>
+        <a routerLink="/events" class="explore-btn">
+          Explore Events
+        </a>
+      </div>
+
+      <app-quick-actions></app-quick-actions>
+    </div>
+  }
+
+  <!-- Mutually Exclusive State: Data (screen-07) -->
+  @else if (viewState() === 'data') {
+    <div class="dashboard-content">
+      <!-- 1. Welcome Banner -->
+      <app-welcome-banner [displayName]="displayName()"></app-welcome-banner>
+
+      <!-- 2. Four Feature & Summary Cards (screen-07) -->
+      <div class="cards-grid">
+        <app-upcoming-booking-card
+          [count]="summary()?.upcomingBookingsCount ?? 0"
+          [booking]="upcomingBooking()"
+        ></app-upcoming-booking-card>
+
+        <app-parking-summary-card
+          [count]="summary()?.reservedParkingCount ?? 0"
+          [parking]="parkingSummary()"
+        ></app-parking-summary-card>
+
+        <app-recent-payment-card
+          [count]="summary()?.recentPaymentsCount ?? 0"
+          [payment]="recentPayment()"
+        ></app-recent-payment-card>
+
+        <app-unread-notification-card
+          [count]="summary()?.unreadNotificationsCount ?? 0"
+          [notifications]="notifications()"
+        ></app-unread-notification-card>
+      </div>
+
+      <!-- 3. Recommended for You Section (screen-07) -->
+      @if (recommendedEvents().length > 0) {
+        <app-recommended-events
+          [events]="recommendedEvents()"
+        ></app-recommended-events>
+      }
+
+      <!-- 4. Quick Actions (screen-07) -->
+      <app-quick-actions></app-quick-actions>
+    </div>
+  }
+</div>

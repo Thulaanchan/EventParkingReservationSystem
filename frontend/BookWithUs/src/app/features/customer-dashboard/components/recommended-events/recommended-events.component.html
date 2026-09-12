@@ -1,0 +1,99 @@
+<div class="recommended-section">
+  <!-- Section Header -->
+  <div class="section-header">
+    <h2 class="section-title">Recommended for You</h2>
+    <a routerLink="/events" class="view-all-link">
+      <span>View All Events</span>
+      <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Events Grid -->
+  <div class="events-grid">
+    @for (event of events; track event.id) {
+      <div class="event-card">
+        <!-- Event Poster -->
+        <div class="poster-container">
+          @if (event.posterUrl) {
+            <img [src]="event.posterUrl" [alt]="event.name" class="poster-image" />
+          } @else {
+            <div class="poster-fallback-banner">
+              <svg class="fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 2 12 7 7 2"></polyline>
+              </svg>
+            </div>
+          }
+          <button type="button" class="favorite-btn" aria-label="Add to favorites">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Event Body -->
+        <div class="event-card-body">
+          <span class="event-category">{{ event.category }}</span>
+          <h3 class="event-title">{{ event.name }}</h3>
+
+          <div class="meta-row">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>{{ event.venueName }}</span>
+          </div>
+
+          <div class="meta-row">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>
+              {{ event.eventDate }}
+              @if (event.startTime) {
+                &bull; {{ event.startTime }}
+              }
+            </span>
+          </div>
+
+          <!-- Price & Action -->
+          <div class="price-action-row">
+            <div class="price-box">
+              <span class="price-prefix">From</span>
+              <span class="price-val">{{ event.priceFrom | currency:'LKR ':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <a [routerLink]="['/events', event.id]" class="details-btn">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Discover More Card (screen-07) -->
+    <div class="discover-more-card">
+      <div class="plus-icon-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+
+      <h3 class="discover-card-title">Discover More Events</h3>
+      <p class="discover-card-sub">
+        Explore more amazing events tailored just for you.
+      </p>
+
+      <a routerLink="/events" class="browse-events-btn">
+        Browse Events
+      </a>
+    </div>
+  </div>
+</div>

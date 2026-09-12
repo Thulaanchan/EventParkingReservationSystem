@@ -1,0 +1,139 @@
+/* Card Base */
+.security-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Eyebrow Header */
+.card-header {
+  margin-bottom: 1.25rem;
+}
+
+.card-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #4f46e5;
+  text-transform: uppercase;
+}
+
+.security-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Password Display Row */
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.375rem;
+}
+
+.password-display-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  padding: 0 1rem;
+  height: 2.875rem;
+  box-sizing: border-box;
+}
+
+.password-dots {
+  font-size: 1.25rem;
+  letter-spacing: 0.2em;
+  color: #64748b;
+  user-select: none;
+}
+
+.eye-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.eye-toggle-btn:hover {
+  color: #475569;
+}
+
+.eye-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.security-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+.lock-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #6366f1;
+  flex-shrink: 0;
+}
+
+/* Reset Password Action */
+.reset-action-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.25rem;
+}
+
+.reset-pwd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: 1.5px solid #6366f1;
+  border-radius: 0.625rem;
+  background-color: #ffffff;
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.reset-pwd-btn:hover {
+  background-color: #f5f3ff;
+  border-color: #4f46e5;
+}
+
+.btn-lock-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.reset-caption {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0.5rem 0 0;
+  line-height: 1.4;
+}
