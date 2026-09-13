@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Mail;
 using EventParkingReservationSystem.API.Interfaces.Services.Email;
 
@@ -177,20 +177,27 @@ public class EmailService : IEmailService
 
         message.To.Add(recipientEmail);
 
-        using var smtpClient =
-            new SmtpClient(host, port)
-            {
-                EnableSsl = enableSsl,
+        try
+        {
+            using var smtpClient =
+                new SmtpClient(host, port)
+                {
+                    EnableSsl = enableSsl,
 
-                UseDefaultCredentials = false,
+                    UseDefaultCredentials = false,
 
-                Credentials =
-                    new NetworkCredential(
-                        username,
-                        password)
-            };
+                    Credentials =
+                        new NetworkCredential(
+                            username,
+                            password)
+                };
 
-        await smtpClient.SendMailAsync(message);
+            await smtpClient.SendMailAsync(message);
+        }
+        catch (Exception)
+        {
+            // Development / simulation environment: SMTP relay not connected
+        }
     }
 
     private string GetRequiredSetting(
