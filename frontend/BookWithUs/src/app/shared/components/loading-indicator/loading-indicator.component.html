@@ -1,0 +1,18 @@
+@if (loadingService.isLoading()) {
+  <div
+    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading content">
+    <div class="bg-white/95 px-8 py-6 rounded-2xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs mx-4 text-center">
+      <!-- Purple Spinner -->
+      <div class="relative w-12 h-12">
+        <div class="w-12 h-12 rounded-full border-4 border-purple-200"></div>
+        <div class="w-12 h-12 rounded-full border-4 border-purple-600 border-t-transparent animate-spin absolute inset-0"></div>
+      </div>
+
+      <!-- Text -->
+      <p class="text-sm font-semibold text-slate-800 tracking-wide">Loading...</p>
+    </div>
+  </div>
+}
