@@ -1,15 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ApiError } from '../../models/errors/api-error.model';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorHandlerService {
+  private readonly toastService = inject(ToastService);
+
   handleError(error: HttpErrorResponse): ApiError {
     const status = error.status;
     const message = this.getUserFriendlyMessage(error);
+
+    this.toastService.showError(message);
 
     return {
       status,
