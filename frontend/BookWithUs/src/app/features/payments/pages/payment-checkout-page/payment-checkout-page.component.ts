@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { PaymentService } from '../../../../core/services/payments/payment.service';
 import { PaymentDue } from '../../../../core/models/payments/payment-due.model';
@@ -32,15 +32,19 @@ import { PaymentMethodSelectorComponent } from '../../components/payment-method-
 export class PaymentCheckoutPageComponent implements OnInit {
   private readonly paymentService = inject(PaymentService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   bookingId!: number;
   paymentDue: PaymentDue | null = null;
   isLoading = false;
   errorMessage = '';
+
+  // Submission state
   paymentResult: Payment | null = null;
+  paymentError = '';
+  isSubmitting = false;
 
   selectedPaymentMethod: PaymentMethod | null = PaymentMethod.Card;
-  isSubmitting = false;
   showCardFields = true;
 
   paymentForm: FormGroup = new FormGroup({
@@ -134,9 +138,13 @@ export class PaymentCheckoutPageComponent implements OnInit {
   }
 
   submitPayment(): void {
-    if (this.paymentForm.invalid || this.isSubmitting || this.isLoading) {
+    if (this.paymentForm.invalid || this.isSubmitting) {
       return;
     }
+
+    this.isSubmitting = true;
+    this.paymentError = '';
+    this.errorMessage = '';
 
     const formValues = this.paymentForm.value;
     const request: ProcessPaymentRequest = {
@@ -147,24 +155,34 @@ export class PaymentCheckoutPageComponent implements OnInit {
       testCvv: formValues.testCvv || null
     };
 
-    this.isSubmitting = true;
-    this.isLoading = true;
-    this.errorMessage = '';
-
     this.paymentService.processPayment(this.bookingId, request).subscribe({
       next: (payment: Payment) => {
-        this.isSubmitting = false;
-        this.isLoading = false;
         this.paymentResult = payment;
+        this.isSubmitting = false;
+        this.router.navigate(['/bookings/confirmation', this.bookingId]);
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.isLoading = false;
-        this.errorMessage =
+        this.paymentError =
           err?.error?.message ??
           err?.message ??
           'Payment processing failed.';
       }
     });
+  }
+
+  getPaymentMethodName(method: PaymentMethod): string {
+    switch (method) {
+      case PaymentMethod.Card:
+        return 'Credit / Debit Card';
+      case PaymentMethod.MobileWallet:
+        return 'Mobile Wallet';
+      case PaymentMethod.NetBanking:
+        return 'Net Banking';
+      case PaymentMethod.LankaQr:
+        return 'LankaQR';
+      default:
+        return String(method);
+    }
   }
 }
