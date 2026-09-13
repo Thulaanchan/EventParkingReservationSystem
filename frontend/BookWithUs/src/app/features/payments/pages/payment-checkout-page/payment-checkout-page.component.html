@@ -1,0 +1,143 @@
+<div class="checkout-container">
+  <header class="checkout-header">
+    <h1>Payment Checkout</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-message" role="status">
+      <p>Loading payment details, please wait...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="error-message" role="alert">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (paymentResult) {
+    <div class="payment-success-message" role="status">
+      <p>{{ paymentResult.message }}</p>
+    </div>
+  }
+
+  @if (paymentDue) {
+    <section class="booking-summary-section">
+      <h2>Booking Summary</h2>
+      <div class="summary-details">
+        <p><strong>Booking Number:</strong> {{ paymentDue.bookingNumber }}</p>
+        <p><strong>Booking ID:</strong> {{ paymentDue.bookingId }}</p>
+      </div>
+    </section>
+
+    <section class="amount-due-section">
+      <h2>Amount Due</h2>
+      <div class="amount-display">
+        <span class="amount-currency">{{ paymentDue.currency }}</span>
+        <span class="amount-value">{{ paymentDue.amountDue | number:'1.2-2' }}</span>
+      </div>
+    </section>
+
+    <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="payment-form">
+      <section class="payment-method-section">
+        <h3>Select Payment Method</h3>
+        <div class="payment-methods-grid">
+          @for (method of paymentMethodOptions; track method.value) {
+            <label class="payment-method-option">
+              <input
+                type="radio"
+                formControlName="paymentMethod"
+                [value]="method.value"
+              />
+              <span>{{ method.label }}</span>
+            </label>
+          }
+        </div>
+      </section>
+
+      <section class="card-details-section">
+        <h3>Card Details</h3>
+
+        <div class="form-group">
+          <label for="cardholderName">Cardholder Name</label>
+          <input
+            id="cardholderName"
+            type="text"
+            formControlName="cardholderName"
+            placeholder="Name on card"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="testCardNumber">Card Number</label>
+          <input
+            id="testCardNumber"
+            type="text"
+            formControlName="testCardNumber"
+            placeholder="16-digit card number"
+          />
+          @if (paymentForm.get('testCardNumber')?.touched && paymentForm.get('testCardNumber')?.invalid) {
+            <div class="field-error">
+              @if (paymentForm.get('testCardNumber')?.hasError('required')) {
+                <span>Card number is required.</span>
+              }
+              @if (paymentForm.get('testCardNumber')?.hasError('invalidCardChecksum')) {
+                <span>Invalid card number checksum.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expiry">Expiry Date (MM/YY)</label>
+            <input
+              id="expiry"
+              type="text"
+              formControlName="expiry"
+              placeholder="MM/YY"
+            />
+            @if (paymentForm.get('expiry')?.touched && paymentForm.get('expiry')?.invalid) {
+              <div class="field-error">
+                @if (paymentForm.get('expiry')?.hasError('required')) {
+                  <span>Expiry date is required.</span>
+                }
+                @if (paymentForm.get('expiry')?.hasError('invalidExpiryFormat')) {
+                  <span>Expiry must use MM/YY format.</span>
+                }
+                @if (paymentForm.get('expiry')?.hasError('expiryInPast')) {
+                  <span>Card expiry date cannot be in the past.</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="testCvv">CVV</label>
+            <input
+              id="testCvv"
+              type="password"
+              formControlName="testCvv"
+              placeholder="3 digits"
+              maxlength="4"
+            />
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="pay-button"
+          [disabled]="paymentForm.invalid || isLoading"
+        >
+          @if (isLoading) {
+            <span>Processing...</span>
+          } @else {
+            <span>Pay Now</span>
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>
