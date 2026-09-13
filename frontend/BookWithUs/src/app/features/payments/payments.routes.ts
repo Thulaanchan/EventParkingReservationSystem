@@ -19,5 +19,12 @@ export const paymentRoutes: Routes = [
       import(
         './pages/payment-receipt-page/payment-receipt-page.component'
       ).then((m) => m.PaymentReceiptPageComponent)
+  },
+  {
+    path: 'history',
+    loadComponent: () =>
+      import(
+        './pages/payment-history-page/payment-history-page.component'
+      ).then((m) => m.PaymentHistoryPageComponent)
   }
 ];
