@@ -1,0 +1,102 @@
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.875rem;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .payment-methods-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.payment-method-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0.5rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+  width: 100%;
+  outline: none;
+}
+
+.payment-method-card:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.payment-method-card.selected {
+  border-color: #4f46e5;
+  background-color: #f5f3ff;
+  box-shadow: 0 0 0 1px #4f46e5;
+}
+
+.selected-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #4f46e5;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.badge-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.method-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: 0.625rem;
+  color: #334155;
+  border-radius: 0.5rem;
+}
+
+.payment-method-card.selected .method-icon-wrapper {
+  color: #4f46e5;
+}
+
+.method-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.method-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.method-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.payment-method-card.selected .method-name {
+  color: #4338ca;
+}
+
+.method-desc {
+  font-size: 0.725rem;
+  color: #64748b;
+  line-height: 1.2;
+}

@@ -16,11 +16,16 @@ import { Payment } from '../../../../core/models/payments/payment.model';
 import { cardChecksumValidator } from '../../../../shared/validators/card-checksum.validator';
 import { expiryFormatValidator } from '../../../../shared/validators/expiry-format.validator';
 import { expiryInFutureValidator } from '../../../../shared/validators/expiry-in-future.validator';
+import { PaymentMethodSelectorComponent } from '../../components/payment-method-selector/payment-method-selector.component';
 
 @Component({
   selector: 'app-payment-checkout-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PaymentMethodSelectorComponent
+  ],
   templateUrl: './payment-checkout-page.component.html',
   styleUrl: './payment-checkout-page.component.css'
 })
@@ -34,8 +39,12 @@ export class PaymentCheckoutPageComponent implements OnInit {
   errorMessage = '';
   paymentResult: Payment | null = null;
 
+  selectedPaymentMethod: PaymentMethod | null = PaymentMethod.Card;
+  isSubmitting = false;
+  showCardFields = true;
+
   paymentForm: FormGroup = new FormGroup({
-    paymentMethod: new FormControl<PaymentMethod | null>(null, [
+    paymentMethod: new FormControl<PaymentMethod | null>(PaymentMethod.Card, [
       Validators.required
     ]),
     cardholderName: new FormControl<string>(''),
@@ -52,13 +61,6 @@ export class PaymentCheckoutPageComponent implements OnInit {
   });
 
   readonly PaymentMethod = PaymentMethod;
-
-  readonly paymentMethodOptions = [
-    { value: PaymentMethod.Card, label: 'Credit / Debit Card' },
-    { value: PaymentMethod.MobileWallet, label: 'Mobile Wallet' },
-    { value: PaymentMethod.NetBanking, label: 'Net Banking' },
-    { value: PaymentMethod.LankaQr, label: 'LankaQR' }
-  ];
 
   ngOnInit(): void {
     const snapshotParam =
@@ -108,29 +110,55 @@ export class PaymentCheckoutPageComponent implements OnInit {
     });
   }
 
+  onPaymentMethodSelected(method: PaymentMethod): void {
+    this.selectedPaymentMethod = method;
+    this.showCardFields = method === PaymentMethod.Card;
+    this.paymentForm.patchValue({ paymentMethod: method });
+
+    if (this.showCardFields) {
+      this.paymentForm.get('testCardNumber')?.setValidators([
+        Validators.required,
+        cardChecksumValidator
+      ]);
+      this.paymentForm.get('expiry')?.setValidators([
+        Validators.required,
+        expiryFormatValidator,
+        expiryInFutureValidator
+      ]);
+    } else {
+      this.paymentForm.get('testCardNumber')?.clearValidators();
+      this.paymentForm.get('expiry')?.clearValidators();
+    }
+    this.paymentForm.get('testCardNumber')?.updateValueAndValidity();
+    this.paymentForm.get('expiry')?.updateValueAndValidity();
+  }
+
   submitPayment(): void {
-    if (this.paymentForm.invalid || this.isLoading) {
+    if (this.paymentForm.invalid || this.isSubmitting || this.isLoading) {
       return;
     }
 
     const formValues = this.paymentForm.value;
     const request: ProcessPaymentRequest = {
-      paymentMethod: formValues.paymentMethod,
+      paymentMethod: this.selectedPaymentMethod ?? formValues.paymentMethod,
       cardholderName: formValues.cardholderName || null,
       testCardNumber: formValues.testCardNumber || null,
       expiry: formValues.expiry || null,
       testCvv: formValues.testCvv || null
     };
 
+    this.isSubmitting = true;
     this.isLoading = true;
     this.errorMessage = '';
 
     this.paymentService.processPayment(this.bookingId, request).subscribe({
       next: (payment: Payment) => {
+        this.isSubmitting = false;
         this.isLoading = false;
         this.paymentResult = payment;
       },
       error: (err) => {
+        this.isSubmitting = false;
         this.isLoading = false;
         this.errorMessage =
           err?.error?.message ??

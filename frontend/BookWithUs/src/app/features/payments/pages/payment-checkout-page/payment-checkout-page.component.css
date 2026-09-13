@@ -1,181 +1,20 @@
-.checkout-container {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 1.5rem;
+.spinner-icon {
+  animation: spin 1s linear infinite;
 }
 
-.checkout-header {
-  margin-bottom: 1.5rem;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.checkout-header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
+.text-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
-.loading-message {
-  padding: 1rem;
-  background-color: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 6px;
-  margin-bottom: 1.25rem;
-  color: #0369a1;
+.checkout-submit-btn {
+  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);
 }
 
-.error-message {
-  padding: 1rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  margin-bottom: 1.25rem;
-  color: #b91c1c;
-}
-
-.payment-success-message {
-  padding: 1rem;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 6px;
-  margin-bottom: 1.25rem;
-  color: #15803d;
-}
-
-.booking-summary-section,
-.amount-due-section,
-.payment-method-section,
-.card-details-section {
-  margin-bottom: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background-color: #ffffff;
-}
-
-.booking-summary-section h2,
-.amount-due-section h2,
-.payment-method-section h3,
-.card-details-section h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.summary-details p {
-  margin: 0.5rem 0;
-  color: #374151;
-}
-
-.amount-display {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
-
-.amount-currency {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #4b5563;
-}
-
-.amount-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.payment-methods-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.payment-method-option {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.payment-method-option:hover {
-  background-color: #f9fafb;
-}
-
-.payment-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  margin-bottom: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.form-group input {
-  padding: 0.625rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 1rem;
-  outline: none;
-}
-
-.form-group input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.form-row {
-  display: flex;
-  gap: 1rem;
-}
-
-.form-row .form-group {
-  flex: 1;
-}
-
-.field-error {
-  margin-top: 0.375rem;
-  color: #dc2626;
-  font-size: 0.8125rem;
-}
-
-.form-actions {
-  margin-top: 0.5rem;
-}
-
-.pay-button {
-  width: 100%;
-  padding: 0.875rem 1.5rem;
-  background-color: #2563eb;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.pay-button:hover:not(:disabled) {
-  background-color: #1d4ed8;
-}
-
-.pay-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
+.checkout-submit-btn:disabled {
+  box-shadow: none;
 }
