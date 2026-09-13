@@ -1,0 +1,334 @@
+<div class="max-w-6xl mx-auto px-4 py-6">
+  <!-- Loading state -->
+  @if (isLoading) {
+    <div class="status-banner loading-banner" role="status">
+      <div class="flex items-center gap-3">
+        <svg class="spinner-icon w-5 h-5 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12" />
+        </svg>
+        <span class="text-sm font-medium">Loading payment details, please wait...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Error state: Loading error -->
+  @if (errorMessage) {
+    <div class="status-banner error-banner" role="alert">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-rose-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span class="text-sm font-medium">{{ errorMessage }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Error state: Payment submission error -->
+  @if (paymentError) {
+    <div class="status-banner error-banner" role="alert">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-rose-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span class="text-sm font-medium">{{ paymentError }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Success state: Payment submission success -->
+  @if (paymentResult) {
+    <div class="status-banner success-banner" role="status">
+      <div class="flex items-start gap-3">
+        <svg class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        <div>
+          <p class="text-sm font-semibold text-emerald-900 m-0">Payment Successful</p>
+          <p class="text-xs text-emerald-700 m-0 mt-0.5">{{ paymentResult.message }}</p>
+          <div class="mt-2 text-xs text-emerald-800 space-y-1">
+            <p class="m-0">Booking Number: <strong>{{ paymentResult.bookingNumber }}</strong></p>
+            <p class="m-0">Amount Paid: <strong>{{ paymentResult.currency }} {{ paymentResult.amountPaid | number:'1.2-2' }}</strong></p>
+            <p class="m-0">Payment Status: <strong>{{ paymentResult.paymentStatus }}</strong></p>
+            <p class="m-0">Payment Method: <strong>{{ getPaymentMethodName(paymentResult.paymentMethod) }}</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Hold Timer Banner -->
+  @if (paymentDue?.holdExpiresAtUtc) {
+    <div class="flex items-center justify-between p-3.5 px-5 bg-rose-50/90 border border-rose-200 rounded-2xl text-rose-700 mb-6">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-5 h-5 text-rose-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span class="text-sm">
+          Hold expires at: <strong>{{ paymentDue?.holdExpiresAtUtc | date:'medium' }}</strong>
+        </span>
+      </div>
+      <span class="text-xs font-semibold text-rose-700 hidden sm:inline">Hold ends soon</span>
+    </div>
+  }
+
+  <!-- Two-Column Checkout Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- LEFT SIDE: Payment Section -->
+    <section class="lg:col-span-7">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm">
+        <header class="mb-6">
+          <h1 class="text-2xl font-bold text-slate-900 m-0">Complete Your Payment</h1>
+        </header>
+
+        <!-- Payment Method Selection -->
+        <div class="mb-8">
+          <h2 class="text-base font-semibold text-slate-800 mb-3.5">Select Payment Method</h2>
+          <app-payment-method-selector
+            [selectedMethod]="selectedPaymentMethod"
+            (methodSelected)="onPaymentMethodSelected($event)"
+          />
+        </div>
+
+        <!-- Card Details (when Card selected) -->
+        @if (showCardFields) {
+          <div class="pt-6 border-t border-slate-100">
+            <h2 class="text-base font-semibold text-slate-800 mb-3.5">Payment Details</h2>
+
+            <!-- Simulation Banner -->
+            <div class="flex items-start gap-3 p-3.5 bg-blue-50/90 border border-blue-200/80 rounded-xl mb-5 text-blue-900">
+              <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+              <div>
+                <p class="text-sm font-semibold text-blue-900 m-0">Payment Simulation &ndash; No Real Transaction will occur.</p>
+                <p class="text-xs text-blue-600 m-0 mt-0.5">This is a student project demonstration.</p>
+              </div>
+            </div>
+
+            <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="flex flex-col gap-4">
+              <!-- Cardholder Name -->
+              <div class="flex flex-col gap-1.5">
+                <label for="cardholderName" class="text-sm font-medium text-slate-700">Cardholder Name</label>
+                <input
+                  id="cardholderName"
+                  type="text"
+                  formControlName="cardholderName"
+                  placeholder="Guest User"
+                  class="text-input w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 outline-none transition duration-150"
+                />
+              </div>
+
+              <!-- Test Card Number -->
+              <div class="flex flex-col gap-1.5">
+                <label for="testCardNumber" class="text-sm font-medium text-slate-700">Card Number</label>
+                <div class="relative flex items-center">
+                  <svg class="absolute left-3.5 w-5 h-5 text-slate-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                  </svg>
+                  <input
+                    id="testCardNumber"
+                    type="text"
+                    formControlName="testCardNumber"
+                    placeholder="4111 1111 1111 1111"
+                    class="text-input w-full pl-11 pr-16 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 outline-none transition duration-150"
+                  />
+                  <span class="absolute right-3.5 text-xs font-extrabold tracking-wider text-blue-900 bg-blue-100 px-1.5 py-0.5 rounded">VISA</span>
+                </div>
+                @if (paymentForm.get('testCardNumber')?.touched && paymentForm.get('testCardNumber')?.invalid) {
+                  <div class="text-xs text-rose-600 mt-1">
+                    @if (paymentForm.get('testCardNumber')?.hasError('required')) {
+                      <span>Card number is required.</span>
+                    }
+                    @if (paymentForm.get('testCardNumber')?.hasError('invalidCardChecksum')) {
+                      <span>Invalid card number checksum.</span>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Expiry & CVV -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label for="expiry" class="text-sm font-medium text-slate-700">Expiry Date (MM/YY)</label>
+                  <div class="relative flex items-center">
+                    <input
+                      id="expiry"
+                      type="text"
+                      formControlName="expiry"
+                      placeholder="12 / 25"
+                      class="text-input w-full px-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 outline-none transition duration-150"
+                    />
+                    <svg class="absolute right-3 w-5 h-5 text-slate-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  @if (paymentForm.get('expiry')?.touched && paymentForm.get('expiry')?.invalid) {
+                    <div class="text-xs text-rose-600 mt-1">
+                      @if (paymentForm.get('expiry')?.hasError('required')) {
+                        <span>Expiry date is required.</span>
+                      }
+                      @if (paymentForm.get('expiry')?.hasError('invalidExpiryFormat')) {
+                        <span>Expiry must use MM/YY format.</span>
+                      }
+                      @if (paymentForm.get('expiry')?.hasError('expiryInPast')) {
+                        <span>Card expiry date cannot be in the past.</span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                  <label for="testCvv" class="text-sm font-medium text-slate-700">CVV</label>
+                  <div class="relative flex items-center">
+                    <input
+                      id="testCvv"
+                      type="password"
+                      formControlName="testCvv"
+                      placeholder="&bull;&bull;&bull;"
+                      maxlength="4"
+                      class="text-input w-full px-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 outline-none transition duration-150"
+                    />
+                    <svg class="absolute right-3 w-5 h-5 text-slate-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pay Now Button -->
+              <div class="mt-2">
+                <button
+                  type="submit"
+                  class="checkout-submit-btn w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-indigo-700 hover:bg-indigo-800 disabled:bg-slate-400 text-white rounded-xl text-base font-semibold transition duration-150 cursor-pointer disabled:cursor-not-allowed"
+                  [disabled]="paymentForm.invalid || isSubmitting"
+                >
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>{{ isSubmitting ? 'Processing Payment...' : 'Pay Now' }}</span>
+                </button>
+              </div>
+
+              <div class="flex items-center justify-center gap-1.5 text-xs text-slate-500 mt-1">
+                <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+                <span>Your payment information is secure and encrypted.</span>
+              </div>
+            </form>
+          </div>
+        } @else {
+          <!-- Alternative payment method confirmation -->
+          <div class="pt-6 border-t border-slate-100">
+            <p class="text-sm text-slate-600 mb-5">
+              Proceed with your selected payment method.
+            </p>
+            <button
+              type="button"
+              class="checkout-submit-btn w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-indigo-700 hover:bg-indigo-800 disabled:bg-slate-400 text-white rounded-xl text-base font-semibold transition duration-150 cursor-pointer disabled:cursor-not-allowed"
+              [disabled]="isSubmitting"
+              (click)="submitPayment()"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span>{{ isSubmitting ? 'Processing Payment...' : 'Pay Now' }}</span>
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE: Booking Summary & Security Notice -->
+    <aside class="lg:col-span-5">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-900 mb-5">Booking Summary</h2>
+
+        @if (paymentDue) {
+          <div class="flex flex-col gap-3">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500">Booking Number</span>
+              <span class="font-mono font-semibold text-slate-800">{{ paymentDue.bookingNumber }}</span>
+            </div>
+
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500">Payment Status</span>
+              <span class="text-xs font-semibold px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full">{{ paymentDue.paymentStatus }}</span>
+            </div>
+
+            <div class="h-px bg-slate-100 my-1"></div>
+
+            <div class="flex justify-between items-baseline py-2">
+              <div>
+                <span class="text-sm font-semibold text-slate-900">Amount Due</span>
+                <p class="text-xs text-slate-500 mt-0.5 m-0">Currency: {{ paymentDue.currency }}</p>
+              </div>
+              <div class="flex items-baseline gap-1 text-indigo-700 font-extrabold">
+                <span class="text-base">{{ paymentDue.currency }}</span>
+                <span class="text-2xl">{{ paymentDue.amountDue | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Hold Expiry Info Box -->
+            @if (paymentDue.holdExpiresAtUtc) {
+              <div class="flex gap-3 p-3.5 bg-indigo-50/80 border border-indigo-100 rounded-xl mt-2 text-indigo-950">
+                <svg class="w-6 h-6 text-indigo-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-indigo-950 m-0">Hold expiry time</p>
+                  <p class="text-xs font-semibold text-indigo-800 my-0.5">{{ paymentDue.holdExpiresAtUtc | date:'medium' }}</p>
+                  <p class="text-xs text-indigo-600 m-0">Complete the payment before the hold expires.</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Security Notice Section -->
+        <div class="mt-6 pt-5 border-t border-slate-100">
+          <h3 class="text-sm font-semibold text-slate-700 mb-3">Secure Payment</h3>
+          <ul class="space-y-2.5 p-0 m-0 list-none">
+            <li class="flex items-center gap-2 text-xs text-slate-600">
+              <svg class="w-4 h-4 text-indigo-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span>Simulated payment environment</span>
+            </li>
+            <li class="flex items-center gap-2 text-xs text-slate-600">
+              <svg class="w-4 h-4 text-indigo-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>No real card charges</span>
+            </li>
+            <li class="flex items-center gap-2 text-xs text-slate-600">
+              <svg class="w-4 h-4 text-indigo-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>Test card validation</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

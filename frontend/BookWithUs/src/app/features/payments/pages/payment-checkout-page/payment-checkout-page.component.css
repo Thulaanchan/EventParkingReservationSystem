@@ -1,0 +1,20 @@
+.spinner-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.text-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.checkout-submit-btn {
+  box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);
+}
+
+.checkout-submit-btn:disabled {
+  box-shadow: none;
+}
