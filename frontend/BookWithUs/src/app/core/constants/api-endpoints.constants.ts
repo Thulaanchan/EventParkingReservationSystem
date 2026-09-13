@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
     receipt: (paymentId: number): string => `/payments/${paymentId}/receipt`
   },
   notifications: {
+    customerNotifications: (customerId: number): string => `/notifications/customer/${customerId}`,
     forCustomer: (customerId: number): string => `/notifications/customer/${customerId}`,
     unreadCount: (customerId: number): string => `/notifications/customer/${customerId}/unread-count`,
     markRead: (notificationId: number): string => `/notifications/${notificationId}/read`
