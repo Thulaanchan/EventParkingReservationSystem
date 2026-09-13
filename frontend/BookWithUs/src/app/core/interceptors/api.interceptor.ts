@@ -5,10 +5,11 @@ import {
   HttpHandlerFn,
   HttpErrorResponse
 } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { catchError, finalize, throwError } from 'rxjs';
 
 import { AuthSessionService } from '../services/auth/auth-session.service';
 import { ErrorHandlerService } from '../services/errors/error-handler.service';
+import { LoadingService } from '../services/loading/loading.service';
 
 export const apiInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -16,6 +17,7 @@ export const apiInterceptor: HttpInterceptorFn = (
 ) => {
   const authSessionService = inject(AuthSessionService);
   const errorHandler = inject(ErrorHandlerService);
+  const loadingService = inject(LoadingService);
 
   const token = authSessionService.getToken();
 
@@ -28,6 +30,8 @@ export const apiInterceptor: HttpInterceptorFn = (
     });
   }
 
+  loadingService.show();
+
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       // 401 Unauthorized: clear invalid session if supported
@@ -37,6 +41,9 @@ export const apiInterceptor: HttpInterceptorFn = (
 
       const handledError = errorHandler.handleError(error);
       return throwError(() => handledError);
+    }),
+    finalize(() => {
+      loadingService.hide();
     })
   );
 };
