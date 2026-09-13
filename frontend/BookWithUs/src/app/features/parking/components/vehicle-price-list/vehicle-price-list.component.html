@@ -1,0 +1,39 @@
+<aside class="vehicle-price-list-card" aria-label="Vehicle Parking Rates">
+  <header class="price-list-header">
+    <h3 class="price-list-title">Parking Rates</h3>
+    <span class="rates-badge">Per Vehicle</span>
+  </header>
+
+  @if (orderedZones.length > 0) {
+    <ul class="rates-list" role="list">
+      @for (zone of orderedZones; track zone.id) {
+        <li
+          class="rate-item"
+          role="listitem"
+          [class.rate-offline]="!zone.isOnlineBookable"
+        >
+          <div class="rate-vehicle-info">
+            <span class="vehicle-icon" aria-hidden="true">{{ getVehicleIcon(zone.vehicleType) }}</span>
+            <div class="vehicle-details">
+              <span class="vehicle-name">{{ zone.name || getVehicleLabel(zone.vehicleType) }}</span>
+              <span class="vehicle-type-tag">{{ getVehicleLabel(zone.vehicleType) }}</span>
+            </div>
+          </div>
+
+          <div class="rate-price-info">
+            <span class="rate-fee">{{ formatFee(zone.fee) }}</span>
+            @if (!zone.isOnlineBookable) {
+              <span class="offline-tag" aria-label="Offline: allocated on-site only">On-site only</span>
+            } @else {
+              <span class="online-tag">Online Bookable</span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="empty-rates">
+      <p class="empty-text">No parking rates available for this event.</p>
+    </div>
+  }
+</aside>

@@ -1,0 +1,375 @@
+:host {
+  display: block;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.parking-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Booking Stepper (screen-10.png reference)
+   ========================================================================== */
+
+.booking-stepper {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.stepper-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.step-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.step-completed {
+  color: #059669;
+}
+
+.step-completed .step-badge {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.step-active {
+  color: #3730a3;
+  font-weight: 700;
+}
+
+.step-active .step-badge {
+  background-color: #3730a3;
+  color: #ffffff;
+}
+
+.step-divider {
+  width: 32px;
+  height: 2px;
+  background-color: #e2e8f0;
+}
+
+/* ==========================================================================
+   Page Alerts
+   ========================================================================== */
+
+.page-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.alert-info {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.alert-warning {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.alert-text {
+  margin: 0;
+  flex: 1;
+}
+
+.alert-retry-btn {
+  background-color: #ffffff;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Main Grid Layout
+   ========================================================================== */
+
+.parking-page-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.parking-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.page-header {
+  margin-bottom: 0.25rem;
+}
+
+.page-title {
+  margin: 0 0 0.375rem 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.map-toolbar-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   State Cards (Loading / Error / Empty)
+   ========================================================================== */
+
+.parking-state-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.state-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.state-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.state-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  max-width: 420px;
+}
+
+.state-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ==========================================================================
+   Sidebar Column & Action Card
+   ========================================================================== */
+
+.parking-sidebar-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sidebar-actions-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-outline {
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+}
+
+.btn-outline:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.btn-cta {
+  width: 100%;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem;
+  text-align: center;
+  transition: color 0.15s ease;
+}
+
+.btn-link:hover {
+  color: #3730a3;
+  text-decoration: underline;
+}
+
+.btn-link:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .parking-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parking-sidebar-col {
+    order: 2;
+  }
+
+  .parking-main-col {
+    order: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .parking-page-container {
+    padding: 1rem;
+  }
+
+  .stepper-divider {
+    display: none;
+  }
+
+  .stepper-list {
+    gap: 0.75rem;
+  }
+}

@@ -1,0 +1,160 @@
+<div class="parking-page-container">
+  <!-- Booking Flow Stepper (matching screen-10.png) -->
+  <nav class="booking-stepper" aria-label="Booking steps">
+    <ol class="stepper-list">
+      <li class="step-item step-completed">
+        <span class="step-badge" aria-hidden="true">&#x2713;</span>
+        <span class="step-label">Seats</span>
+      </li>
+      <li class="step-divider" aria-hidden="true"></li>
+
+      <li class="step-item step-active" aria-current="step">
+        <span class="step-badge">2</span>
+        <span class="step-label">Parking</span>
+      </li>
+      <li class="step-divider" aria-hidden="true"></li>
+
+      <li class="step-item step-upcoming">
+        <span class="step-badge">3</span>
+        <span class="step-label">Review</span>
+      </li>
+      <li class="step-divider" aria-hidden="true"></li>
+
+      <li class="step-item step-upcoming">
+        <span class="step-badge">4</span>
+        <span class="step-label">Payment</span>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Notification Banners -->
+  @if (notificationMessage) {
+    <div class="page-alert alert-info" role="status">
+      <span class="alert-icon" aria-hidden="true">&#x2139;&#xFE0F;</span>
+      <p class="alert-text">{{ notificationMessage }}</p>
+    </div>
+  }
+
+  @if (conflictMessage) {
+    <div class="page-alert alert-warning" role="alert">
+      <span class="alert-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
+      <p class="alert-text">{{ conflictMessage }}</p>
+    </div>
+  }
+
+  @if (errorMessage && hasParkingConfigured) {
+    <div class="page-alert alert-error" role="alert">
+      <span class="alert-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
+      <p class="alert-text">{{ errorMessage }}</p>
+      <button type="button" class="alert-retry-btn" (click)="reloadParking()">Retry</button>
+    </div>
+  }
+
+  <!-- Main Grid Layout -->
+  <div class="parking-page-grid">
+    <!-- Left Column: Map Area -->
+    <main class="parking-main-col">
+      <header class="page-header">
+        <h1 class="page-title">Select Parking</h1>
+        <p class="page-subtitle">
+          Choose an optional parking space for your vehicle, or skip to continue to review.
+        </p>
+      </header>
+
+      @if (isLoading) {
+        <div class="parking-state-card state-loading" role="status" aria-live="polite">
+          <div class="loading-spinner" aria-hidden="true"></div>
+          <p class="loading-label">Loading parking availability...</p>
+        </div>
+      } @else if (errorMessage && !hasParkingConfigured) {
+        <div class="parking-state-card state-error" role="alert">
+          <span class="state-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
+          <h2 class="state-title">Unable to Load Parking</h2>
+          <p class="state-desc">{{ errorMessage }}</p>
+          <div class="state-actions">
+            <button type="button" class="btn btn-primary" (click)="reloadParking()">
+              Retry
+            </button>
+            <button type="button" class="btn btn-outline" (click)="onSkipParking()">
+              Skip Parking
+            </button>
+          </div>
+        </div>
+      } @else if (!hasParkingConfigured) {
+        <div class="parking-state-card state-empty">
+          <span class="state-icon" aria-hidden="true">&#x1F17F;&#xFE0F;</span>
+          <h2 class="state-title">No Parking Available</h2>
+          <p class="state-desc">
+            No online parking spaces are configured for this event. You can continue to review.
+          </p>
+          <div class="state-actions">
+            <button type="button" class="btn btn-primary" (click)="onSkipParking()">
+              Continue Without Parking
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Interactive Map Toolbar -->
+        <div class="map-toolbar-row">
+          <app-parking-map-toolbar
+            (resetMap)="onResetMap()"
+            (zoomIn)="onZoomIn()"
+            (zoomOut)="onZoomOut()"
+            (fitMap)="onFitMap()"
+          />
+        </div>
+
+        <!-- Visual Parking Map -->
+        <app-parking-map
+          [slots]="slots"
+          [zones]="zones"
+          [selectedParkingSlotId]="selectedParkingSlotId"
+          (slotSelect)="onSlotSelect($event)"
+        />
+      }
+    </main>
+
+    <!-- Right Column: Sidebar -->
+    <aside class="parking-sidebar-col" aria-label="Booking & Parking Details">
+      <!-- Event Metadata Summary -->
+      <app-parking-event-summary [event]="eventInfo" />
+
+      <!-- Vehicle Rates Reference -->
+      <app-vehicle-price-list [zones]="zones" />
+
+      <!-- Customer Selected Parking Summary -->
+      <app-selected-parking-summary
+        [selectedParking]="selectedParking"
+        (removeParking)="onRemoveParking()"
+      />
+
+      <!-- Action Card -->
+      <div class="sidebar-actions-card">
+        <button
+          type="button"
+          class="btn btn-primary btn-cta"
+          [disabled]="!selectedParking"
+          (click)="onContinueToReview()"
+        >
+          Continue to Review &rarr;
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline btn-cta"
+          (click)="onSkipParking()"
+        >
+          Skip Parking
+        </button>
+
+        <button
+          type="button"
+          class="btn-link btn-back"
+          (click)="onBackToSeats()"
+        >
+          &larr; Back to Seats
+        </button>
+      </div>
+    </aside>
+  </div>
+</div>
