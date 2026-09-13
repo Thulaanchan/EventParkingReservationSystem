@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { PaymentCheckoutPageComponent } from './pages/payment-checkout-page/payment-checkout-page.component';
+import { authGuard } from '../../core/guards/auth.guard';
 
 export const paymentRoutes: Routes = [
   {
@@ -22,6 +23,7 @@ export const paymentRoutes: Routes = [
   },
   {
     path: 'history',
+    canActivate: [authGuard],
     loadComponent: () =>
       import(
         './pages/payment-history-page/payment-history-page.component'

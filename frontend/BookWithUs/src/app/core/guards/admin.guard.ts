@@ -1,23 +1,19 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 
+import { AuthSessionService } from '../services/auth/auth-session.service';
+import { AuthRole } from '../models/auth/auth-role.model';
+
 export const adminGuard: CanActivateFn = (route, state): boolean | UrlTree => {
+  const authSessionService = inject(AuthSessionService);
   const router = inject(Router);
 
-  const role =
-    typeof localStorage !== 'undefined'
-      ? localStorage.getItem('role') || localStorage.getItem('userRole')
-      : null;
-
-  // Reject explicit customer or non-administrator roles
-  if (role === 'Customer') {
-    return router.createUrlTree(['/']);
+  if (
+    authSessionService.isAuthenticated() &&
+    authSessionService.getRole() === AuthRole.Administrator
+  ) {
+    return true;
   }
 
-  if (role !== null && role !== 'Administrator') {
-    return router.createUrlTree(['/']);
-  }
-
-  // Allow Administrator or dev/test execution
-  return true;
+  return router.createUrlTree(['/unauthorized']);
 };
