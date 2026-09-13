@@ -7,6 +7,7 @@ import {
   DestroyRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
@@ -17,7 +18,7 @@ import { Notification } from '../../../core/models/notifications/notification.mo
 @Component({
   selector: 'app-notification-bell',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './notification-bell.component.html',
   styleUrl: './notification-bell.component.css'
 })

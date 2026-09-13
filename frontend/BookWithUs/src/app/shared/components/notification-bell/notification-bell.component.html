@@ -149,8 +149,14 @@
 
       <!-- Panel Footer -->
       @if (!loading && !errorMessage && notifications.length > 0) {
-        <div class="px-4 py-2 border-t border-slate-100 bg-slate-50/50 text-center">
-          <span class="text-[11px] text-slate-400">Click any unread notification to mark as read</span>
+        <div class="px-4 py-2 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-center">
+          <span class="text-[11px] text-slate-400">Click unread to mark as read</span>
+          <a
+            routerLink="/notifications"
+            (click)="closePanel()"
+            class="text-[11px] font-semibold text-purple-600 hover:text-purple-700">
+            View All
+          </a>
         </div>
       }
     </div>

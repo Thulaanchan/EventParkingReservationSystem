@@ -1,0 +1,190 @@
+<div class="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight">Notifications</h1>
+          @if (unreadCount > 0) {
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+              {{ unreadCount }} new
+            </span>
+          }
+        </div>
+        <p class="text-sm text-slate-500 mt-1">Stay updated with your bookings, payments, and event reminders.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="loadNotifications()"
+          [disabled]="loading"
+          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50">
+          <svg class="w-4 h-4" [class.animate-spin]="loading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
+
+        @if (unreadCount > 0) {
+          <button
+            type="button"
+            (click)="markAllAsRead()"
+            class="inline-flex items-center px-3 py-2 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">
+            Mark all read
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex border-b border-slate-200 gap-4">
+      <button
+        type="button"
+        (click)="setFilter('all')"
+        class="pb-3 text-sm font-semibold transition-colors relative"
+        [class.text-purple-600]="filter === 'all'"
+        [class.text-slate-500]="filter !== 'all'">
+        All ({{ notifications.length }})
+        @if (filter === 'all') {
+          <span class="absolute bottom-0 inset-x-0 h-0.5 bg-purple-600 rounded-full"></span>
+        }
+      </button>
+      <button
+        type="button"
+        (click)="setFilter('unread')"
+        class="pb-3 text-sm font-semibold transition-colors relative"
+        [class.text-purple-600]="filter === 'unread'"
+        [class.text-slate-500]="filter !== 'unread'">
+        Unread ({{ unreadCount }})
+        @if (filter === 'unread') {
+          <span class="absolute bottom-0 inset-x-0 h-0.5 bg-purple-600 rounded-full"></span>
+        }
+      </button>
+      <button
+        type="button"
+        (click)="setFilter('read')"
+        class="pb-3 text-sm font-semibold transition-colors relative"
+        [class.text-purple-600]="filter === 'read'"
+        [class.text-slate-500]="filter !== 'read'">
+        Read ({{ notifications.length - unreadCount }})
+        @if (filter === 'read') {
+          <span class="absolute bottom-0 inset-x-0 h-0.5 bg-purple-600 rounded-full"></span>
+        }
+      </button>
+    </div>
+
+    <!-- Error State -->
+    @if (errorMessage) {
+      <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMessage }}</span>
+        </div>
+        <button
+          type="button"
+          (click)="loadNotifications()"
+          class="text-xs font-bold text-rose-700 underline hover:no-underline">
+          Retry
+        </button>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (loading) {
+      <div class="space-y-3">
+        @for (item of [1, 2, 3]; track item) {
+          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm animate-pulse flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div class="h-3 bg-slate-100 rounded w-3/4"></div>
+              <div class="h-3 bg-slate-100 rounded w-1/6"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Notifications List -->
+    @if (!loading && filteredNotifications.length > 0) {
+      <div class="space-y-3">
+        @for (notification of filteredNotifications; track notification.notificationId) {
+          <div
+            (click)="markAsRead(notification)"
+            class="bg-white rounded-xl p-5 border transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer flex items-start gap-4"
+            [class.border-purple-200]="!notification.isRead"
+            [class.bg-purple-50\/20]="!notification.isRead"
+            [class.border-slate-200]="notification.isRead">
+            <!-- Indicator Icon -->
+            <div class="flex-shrink-0 mt-0.5">
+              <span
+                class="w-9 h-9 rounded-full flex items-center justify-center"
+                [class.bg-purple-100]="!notification.isRead"
+                [class.text-purple-600]="!notification.isRead"
+                [class.bg-slate-100]="notification.isRead"
+                [class.text-slate-400]="notification.isRead">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              </span>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  @if (!notification.isRead) {
+                    <span class="w-2 h-2 rounded-full bg-purple-600" title="Unread"></span>
+                  }
+                  <h3
+                    class="text-sm font-bold truncate"
+                    [class.text-slate-900]="!notification.isRead"
+                    [class.text-slate-700]="notification.isRead">
+                    {{ notification.title }}
+                  </h3>
+                </div>
+                <span class="text-xs text-slate-400 flex-shrink-0">
+                  {{ getRelativeTime(notification.createdAtUtc) }}
+                </span>
+              </div>
+
+              <p
+                class="text-sm mt-1 leading-relaxed"
+                [class.text-slate-700]="!notification.isRead"
+                [class.text-slate-500]="notification.isRead">
+                {{ notification.message }}
+              </p>
+
+              <div class="mt-2 flex items-center justify-between">
+                <span
+                  class="text-[11px] font-semibold"
+                  [class.text-purple-600]="!notification.isRead"
+                  [class.text-slate-400]="notification.isRead">
+                  {{ notification.isRead ? 'Read' : 'Unread • Click to mark as read' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading && filteredNotifications.length === 0 && !errorMessage) {
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+        <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">No notifications found</h3>
+        <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+          {{ filter === 'unread' ? 'You have caught up with all notifications.' : 'When you receive booking updates or payment receipts, they will appear here.' }}
+        </p>
+      </div>
+    }
+  </div>
+</div>
