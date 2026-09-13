@@ -1,0 +1,152 @@
+<aside class="category-detail-panel" aria-labelledby="detailPanelTitle">
+  <!-- Panel Header -->
+  <div class="panel-header">
+    <h2 id="detailPanelTitle" class="panel-title">Category Details</h2>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="onClose()"
+      aria-label="Close category details panel"
+    >
+      <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  @if (category) {
+    <div class="panel-body">
+      <!-- Server Error Banner -->
+      @if (serverError) {
+        <div class="error-banner" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ serverError }}</span>
+        </div>
+      }
+
+      <!-- Category Identity Card -->
+      <div class="category-identity">
+        <div class="identity-icon-box">
+          <svg class="identity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+        </div>
+        <div class="identity-text">
+          <h3 class="category-title">{{ category.name }}</h3>
+          <span class="category-badge">Event Category</span>
+        </div>
+      </div>
+
+      <!-- Attributes List -->
+      <div class="attributes-list">
+        <div class="attribute-row">
+          <span class="attribute-label">Category Name</span>
+          <span class="attribute-value">{{ category.name }}</span>
+        </div>
+        <div class="attribute-row">
+          <span class="attribute-label">Events Assigned</span>
+          <span class="attribute-value">
+            {{ category.eventCount }} {{ category.eventCount === 1 ? 'event' : 'events' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Events Usage Overview -->
+      <div class="usage-section">
+        <h4 class="section-title">Events Using This Category</h4>
+        <div class="usage-box">
+          <div class="usage-indicator">
+            <svg class="usage-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <div class="usage-text">
+              <span class="usage-headline">
+                {{ category.eventCount }} {{ category.eventCount === 1 ? 'event' : 'events' }} currently assigned
+              </span>
+              <span class="usage-subtext">
+                Events using this category appear across BookWithUs listings.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deletion Safeguard Alert -->
+      @if (category.eventCount > 0) {
+        <div class="safeguard-banner" role="note">
+          <svg class="safeguard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <p class="safeguard-text">
+            This category is currently assigned to existing events and cannot be deleted.
+          </p>
+        </div>
+      }
+
+      <!-- Actions Section -->
+      <div class="actions-section">
+        <h4 class="section-title">Category Actions</h4>
+
+        <button
+          type="button"
+          class="btn btn-edit"
+          (click)="onEdit()"
+          aria-label="Edit category"
+        >
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Edit Category</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-delete"
+          (click)="onDelete()"
+          [disabled]="category.eventCount > 0 || deleting"
+          [attr.aria-label]="category.eventCount > 0 ? 'Cannot delete category assigned to events' : 'Delete category'"
+        >
+          @if (deleting) {
+            <span class="spinner"></span>
+            <span>Deleting...</span>
+          } @else {
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Delete Category</span>
+          }
+        </button>
+
+        @if (category.eventCount > 0) {
+          <p class="delete-help-text">
+            Remove this category from all existing events before deleting it.
+          </p>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Empty / No Selection State -->
+    <div class="empty-panel-state">
+      <div class="empty-icon-box">
+        <svg class="empty-panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+      </div>
+      <p class="empty-panel-text">Select a category to view its details.</p>
+    </div>
+  }
+</aside>

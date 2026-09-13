@@ -1,0 +1,90 @@
+<div class="venue-management-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">Venue Management</h1>
+      <p class="page-subtitle">Manage event venues, capacities and availability.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-add-venue"
+      (click)="onAddVenue()"
+      aria-label="Add new venue"
+    >
+      <span class="btn-icon">+</span>
+      <span>Add Venue</span>
+    </button>
+  </div>
+
+  <!-- Loading State (Initial) -->
+  @if (loading && venues.length === 0) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span>Loading venues...</span>
+    </div>
+  } @else if (errorMessage && venues.length === 0) {
+    <!-- Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h3 class="error-title">Failed to load venues</h3>
+        <p class="error-message">{{ errorMessage }}</p>
+        <button type="button" class="btn btn-retry" (click)="loadVenues()">
+          Try Again
+        </button>
+      </div>
+    </div>
+  } @else {
+    <!-- Main Content & Detail Panel Layout -->
+    <div class="venue-management-layout" [class.has-detail-panel]="!!selectedVenue">
+      <div class="main-content-column">
+        <!-- Stats Component -->
+        <app-venue-stats
+          [totalVenues]="totalVenues"
+          [upcomingEvents]="upcomingEvents"
+          [totalCapacity]="totalCapacity"
+        ></app-venue-stats>
+
+        <!-- Filter Component -->
+        <app-venue-filter
+          [searchTerm]="searchTerm"
+          [capacityFilter]="capacityFilter"
+          [capacityOptions]="capacityOptions"
+          (searchTermChange)="onSearchChange($event)"
+          (capacityFilterChange)="onCapacityChange($event)"
+          (clearFilters)="onClearFilters()"
+        ></app-venue-filter>
+
+        <!-- Table Component -->
+        <app-venue-table
+          [venues]="filteredVenues"
+          [loading]="loading"
+          (viewVenue)="onViewVenue($event)"
+          (editVenue)="onEditVenue($event)"
+          (deleteVenue)="onDeleteVenue($event)"
+        ></app-venue-table>
+      </div>
+
+      <!-- Detail Panel Column -->
+      @if (selectedVenue) {
+        <div class="detail-panel-column">
+          <app-venue-detail-panel
+            [venue]="selectedVenue"
+            [deleting]="deleting"
+            [serverError]="deleteError"
+            (close)="onCloseDetail()"
+            (edit)="onEditVenue($event)"
+            (delete)="onDeleteVenue($event)"
+          ></app-venue-detail-panel>
+        </div>
+      }
+    </div>
+  }
+</div>

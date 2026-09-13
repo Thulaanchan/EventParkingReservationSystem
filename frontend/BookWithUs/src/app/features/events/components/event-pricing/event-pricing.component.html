@@ -1,0 +1,47 @@
+<section class="pricing-card" aria-labelledby="pricingHeading">
+  <div class="pricing-header">
+    <div class="pricing-icon-box">
+      <svg class="pricing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+      </svg>
+    </div>
+    <div>
+      <h2 id="pricingHeading" class="pricing-title">Pricing & Discounts</h2>
+      <p class="pricing-subtitle">Standard admission rate for BookWithUs events</p>
+    </div>
+  </div>
+
+  <div class="pricing-content">
+    <!-- Standard Ticket Price -->
+    <div class="price-tier-card">
+      <div class="tier-info">
+        <span class="tier-name">Standard Admission</span>
+        <span class="tier-description">General admission entry ticket</span>
+      </div>
+      <div class="tier-price">
+        @if (event.ticketPrice === 0) {
+          <span class="price-free">Free</span>
+        } @else {
+          <span class="price-currency">LKR</span>
+          <span class="price-number">{{ event.ticketPrice | number:'1.2-2' }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Child Discount Section (Only when > 0) -->
+    @if (event.childDiscountPercent > 0) {
+      <div class="discount-banner">
+        <div class="discount-badge-box">
+          <span class="discount-badge">{{ event.childDiscountPercent }}% OFF</span>
+        </div>
+        <div class="discount-details">
+          <strong class="discount-title">Child Discount Available</strong>
+          <span class="discount-subtext">
+            Eligible children receive a {{ event.childDiscountPercent }}% concession on standard tickets.
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+</section>

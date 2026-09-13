@@ -1,0 +1,147 @@
+<div class="category-table-card">
+  <!-- Table Header Bar -->
+  <div class="table-header-bar">
+    <div class="table-title-group">
+      <h2 class="table-title">Event Categories</h2>
+      <span class="category-count-badge">
+        {{ categories.length }} {{ categories.length === 1 ? 'category' : 'categories' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading categories...</span>
+    </div>
+  } @else if (categories.length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-icon-circle">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+      </div>
+      <h3 class="empty-title">No categories found</h3>
+      <p class="empty-subtitle">
+        No event categories match your criteria or none have been added yet.
+      </p>
+    </div>
+  } @else {
+    <!-- Table Content -->
+    <div class="table-responsive">
+      <table class="category-table" aria-label="Event Categories List">
+        <thead>
+          <tr>
+            <th scope="col" class="th-category">CATEGORY</th>
+            <th scope="col" class="th-assigned">EVENTS ASSIGNED</th>
+            <th scope="col" class="th-action">ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categories; track category.id) {
+            <tr class="category-row">
+              <!-- Category Name & Icon -->
+              <td class="td-category">
+                <div class="category-cell">
+                  <div class="category-icon-box">
+                    <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                  </div>
+                  <span class="category-name">{{ category.name }}</span>
+                </div>
+              </td>
+
+              <!-- Events Assigned Count -->
+              <td class="td-assigned">
+                <div class="assigned-cell">
+                  <span class="event-count-text">
+                    {{ category.eventCount }} {{ category.eventCount === 1 ? 'event' : 'events' }}
+                  </span>
+                  @if (category.eventCount > 0) {
+                    <span class="protection-tag" title="Deletion is protected because events are assigned to this category">
+                      <svg class="protection-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                      In Use
+                    </span>
+                  }
+                </div>
+              </td>
+
+              <!-- Action (View + Kebab Menu) -->
+              <td class="td-action">
+                <div class="action-cell">
+                  <button
+                    type="button"
+                    class="btn-view"
+                    (click)="onView(category)"
+                    [attr.aria-label]="'View details for ' + category.name"
+                  >
+                    View
+                  </button>
+
+                  <div class="action-menu-wrapper">
+                    <button
+                      type="button"
+                      class="btn-kebab"
+                      (click)="toggleMenu(category.id, $event)"
+                      [attr.aria-label]="'Open actions menu for ' + category.name"
+                      [attr.aria-expanded]="activeMenuCategoryId === category.id"
+                    >
+                      <svg class="kebab-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <circle cx="12" cy="5" r="2"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <circle cx="12" cy="19" r="2"></circle>
+                      </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    @if (activeMenuCategoryId === category.id) {
+                      <div class="dropdown-menu" role="menu">
+                        <button
+                          type="button"
+                          class="dropdown-item"
+                          (click)="onEdit(category)"
+                          role="menuitem"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                          <span>Edit Category</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="dropdown-item delete-item"
+                          (click)="onDelete(category)"
+                          role="menuitem"
+                          [title]="category.eventCount > 0 ? 'Assigned to existing events (protected)' : 'Delete category'"
+                        >
+                          <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                          <span>Delete Category</span>
+                          @if (category.eventCount > 0) {
+                            <span class="item-badge">Protected</span>
+                          }
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

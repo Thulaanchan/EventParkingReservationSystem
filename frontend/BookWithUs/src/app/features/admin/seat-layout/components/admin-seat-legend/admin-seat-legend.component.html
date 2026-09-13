@@ -1,0 +1,47 @@
+<div class="seat-legend-card" role="region" aria-label="Seat map categories and status legend">
+  <!-- Categories Legend Group -->
+  <div class="legend-group">
+    <span class="legend-group-title">Seat Sections (Categories)</span>
+    <div class="legend-items-list" role="list">
+      @if (categories.length === 0) {
+        <span class="legend-empty-text">No seat categories configured.</span>
+      } @else {
+        @for (category of categories; track category.id; let idx = $index) {
+          <div class="legend-item" role="listitem">
+            <span
+              class="legend-color-marker"
+              [ngClass]="getCategoryColorClass(idx)"
+              aria-hidden="true">
+            </span>
+            <span class="legend-item-label">{{ category.name }}</span>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="legend-divider" aria-hidden="true"></div>
+
+  <!-- Status Legend Group -->
+  <div class="legend-group">
+    <span class="legend-group-title">Seat Status (Legends)</span>
+    <div class="legend-items-list" role="list">
+      @for (status of statusItems; track status.id) {
+        <div class="legend-item" role="listitem">
+          <span
+            class="legend-status-marker"
+            [ngClass]="status.visualClass"
+            aria-hidden="true">
+          </span>
+          <span class="legend-item-label">
+            {{ status.label }}
+            @if (status.description) {
+              <span class="legend-item-desc">{{ status.description }}</span>
+            }
+          </span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

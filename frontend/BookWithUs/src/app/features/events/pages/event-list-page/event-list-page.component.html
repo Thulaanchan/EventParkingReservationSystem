@@ -1,0 +1,109 @@
+<div class="event-list-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Explore Events</h1>
+    <p class="page-subtitle">
+      Discover and book parking & tickets for upcoming concerts, sports, conferences, and shows across BookWithUs venues.
+    </p>
+  </header>
+
+  <!-- Optional Filter Options Loading Notice -->
+  @if (optionsError) {
+    <div class="options-warning-banner" role="alert">
+      <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <div class="warning-content">
+        <span>{{ optionsError }}</span>
+        <button type="button" class="btn-retry-options" (click)="loadFilterOptions()">
+          Retry Loading Filters
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Event Filters -->
+  <section class="filters-section" aria-label="Event filtering">
+    <app-event-filter
+      [filter]="currentFilter"
+      [venues]="venues"
+      [categories]="categories"
+      [loadingOptions]="loadingOptions"
+      (filterChange)="onFilterChange($event)"
+      (clearFilters)="onClearFilters()"
+    ></app-event-filter>
+  </section>
+
+  <!-- Results Summary Counter -->
+  @if (!loading && !errorMessage) {
+    <div class="results-header" aria-live="polite">
+      <span class="results-count">
+        Showing <strong>{{ totalCount }}</strong> {{ totalCount === 1 ? 'event' : 'events' }}
+      </span>
+    </div>
+  }
+
+  <!-- Mutually Exclusive Error State -->
+  @if (errorMessage) {
+    <section class="error-container" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="error-title">Unable to Load Events</h2>
+      <p class="error-message">{{ errorMessage }}</p>
+      <button type="button" class="btn-retry-events" (click)="reloadEvents()">
+        Try Again
+      </button>
+    </section>
+  } @else {
+    <!-- Events Card List (Handles loading, empty, and data states internally) -->
+    <section class="cards-section" aria-label="Events catalog">
+      <app-event-card-list
+        [events]="events"
+        [loading]="loading"
+        (viewEvent)="onViewEvent($event)"
+      ></app-event-card-list>
+    </section>
+
+    <!-- Pagination Controls -->
+    @if (!loading && totalPages > 1) {
+      <nav class="pagination-nav" aria-label="Events pagination">
+        <button
+          type="button"
+          class="btn-pagination"
+          [disabled]="page <= 1"
+          (click)="goToPage(page - 1)"
+          aria-label="Previous page"
+        >
+          <svg class="pagination-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Previous</span>
+        </button>
+
+        <span class="pagination-info">
+          Page <strong class="page-current">{{ page }}</strong> of <strong>{{ totalPages }}</strong>
+        </span>
+
+        <button
+          type="button"
+          class="btn-pagination"
+          [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)"
+          aria-label="Next page"
+        >
+          <span>Next</span>
+          <svg class="pagination-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </nav>
+    }
+  }
+</div>

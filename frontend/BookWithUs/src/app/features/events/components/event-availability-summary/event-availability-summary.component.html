@@ -1,0 +1,84 @@
+<section class="availability-card" aria-labelledby="availabilityHeading">
+  <div class="card-header">
+    <div class="header-icon-box">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </div>
+    <div>
+      <h2 id="availabilityHeading" class="card-title">Seat Availability</h2>
+      <p class="card-subtitle">Real-time venue seating capacity and occupancy</p>
+    </div>
+  </div>
+
+  @if (!hasConfiguredSeats) {
+    <!-- Zero / Unconfigured Seats Neutral State -->
+    <div class="unconfigured-state" role="status">
+      <svg class="unconfigured-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div class="unconfigured-text">
+        <strong class="unconfigured-title">Seat availability has not been configured yet.</strong>
+        <span class="unconfigured-desc">Seating layout and capacity details for this event will be available soon.</span>
+      </div>
+    </div>
+  } @else {
+    <!-- Occupancy Progress Indicator -->
+    <div class="occupancy-section">
+      <div class="occupancy-labels">
+        <span class="occupancy-title">Capacity Booked</span>
+        <span class="occupancy-percentage" aria-live="polite">
+          {{ clampedPercentage }}% Booked ({{ event.bookedSeats }} of {{ event.totalSeats }} seats)
+        </span>
+      </div>
+
+      <div
+        class="progress-bar-track"
+        role="progressbar"
+        [attr.aria-valuenow]="clampedPercentage"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="clampedPercentage + '% of seats booked'"
+      >
+        <div
+          class="progress-bar-fill"
+          [style.width.%]="clampedPercentage"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Summary Metrics Grid -->
+    <div class="metrics-grid">
+      <!-- Available Seats -->
+      <div class="metric-card available-card">
+        <span class="metric-label">Available Seats</span>
+        <strong class="metric-value">{{ event.availableSeats }}</strong>
+        <span class="metric-subtext">Ready for booking</span>
+      </div>
+
+      <!-- Booked Seats -->
+      <div class="metric-card booked-card">
+        <span class="metric-label">Booked Seats</span>
+        <strong class="metric-value">{{ event.bookedSeats }}</strong>
+        <span class="metric-subtext">Confirmed reservations</span>
+      </div>
+
+      <!-- Total Seats -->
+      <div class="metric-card total-card">
+        <span class="metric-label">Total Seats</span>
+        <strong class="metric-value">{{ event.totalSeats }}</strong>
+        <span class="metric-subtext">Configured capacity</span>
+      </div>
+
+      <!-- Booking Count -->
+      <div class="metric-card count-card">
+        <span class="metric-label">Booking Count</span>
+        <strong class="metric-value">{{ event.bookingCount }}</strong>
+        <span class="metric-subtext">Total orders placed</span>
+      </div>
+    </div>
+  }
+</section>

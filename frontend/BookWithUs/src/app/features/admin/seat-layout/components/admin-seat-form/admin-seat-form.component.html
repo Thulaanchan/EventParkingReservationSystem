@@ -1,0 +1,166 @@
+<div class="seat-form-card">
+  <div class="form-header">
+    <div class="header-icon-wrapper">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+    </div>
+    <div class="header-text">
+      <h3 class="form-title">{{ mode === 'create' ? 'Add New Seat' : 'Edit Seat' }}</h3>
+      <p class="form-subtitle">Configure seat section, row, number, and map coordinates.</p>
+    </div>
+  </div>
+
+  @if (locked) {
+    <div class="alert-banner alert-warning" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <div class="alert-content">
+        <span class="alert-title">Seat Locked</span>
+        <span class="alert-message">This seat cannot be edited while it is held or booked.</span>
+      </div>
+    </div>
+  }
+
+  @if (serverError) {
+    <div class="alert-banner alert-danger" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <div class="alert-content">
+        <span class="alert-title">Submission Error</span>
+        <span class="alert-message">{{ serverError }}</span>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="seat-form" novalidate>
+    <!-- Section Dropdown -->
+    <div class="form-group">
+      <label for="seatSectionId" class="form-label">
+        Seat Section <span class="required-star">*</span>
+      </label>
+      <select
+        id="seatSectionId"
+        formControlName="seatSectionId"
+        class="form-select"
+        [class.input-error]="form.controls.seatSectionId.touched && form.controls.seatSectionId.invalid">
+        <option [ngValue]="null">Select a section...</option>
+        @for (sec of sections; track sec.id) {
+          <option [ngValue]="sec.id">{{ sec.name }} ({{ sec.categoryName }})</option>
+        }
+      </select>
+      @if (form.controls.seatSectionId.touched && form.controls.seatSectionId.invalid) {
+        <span class="error-text">Please select a valid seat section.</span>
+      }
+    </div>
+
+    <!-- Row Label & Seat Number -->
+    <div class="form-row two-cols">
+      <div class="form-group">
+        <label for="rowLabel" class="form-label">
+          Row Label <span class="required-star">*</span>
+        </label>
+        <input
+          id="rowLabel"
+          type="text"
+          formControlName="rowLabel"
+          placeholder="e.g. A, B, VIP-1"
+          maxlength="20"
+          class="form-input"
+          [class.input-error]="form.controls.rowLabel.touched && form.controls.rowLabel.invalid" />
+        @if (form.controls.rowLabel.touched && form.controls.rowLabel.invalid) {
+          <span class="error-text">Row label is required.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="number" class="form-label">
+          Seat Number <span class="required-star">*</span>
+        </label>
+        <input
+          id="number"
+          type="number"
+          formControlName="number"
+          placeholder="e.g. 1, 2, 3"
+          min="1"
+          class="form-input"
+          [class.input-error]="form.controls.number.touched && form.controls.number.invalid" />
+        @if (form.controls.number.touched && form.controls.number.invalid) {
+          <span class="error-text">Valid seat number (1 or greater) is required.</span>
+        }
+      </div>
+    </div>
+
+    <!-- Display Order -->
+    <div class="form-group">
+      <label for="displayOrder" class="form-label">
+        Display Order <span class="required-star">*</span>
+      </label>
+      <input
+        id="displayOrder"
+        type="number"
+        formControlName="displayOrder"
+        placeholder="0"
+        min="0"
+        class="form-input"
+        [class.input-error]="form.controls.displayOrder.touched && form.controls.displayOrder.invalid" />
+      <span class="helper-text">Numeric index used to sequence seats within this row or section.</span>
+      @if (form.controls.displayOrder.touched && form.controls.displayOrder.invalid) {
+        <span class="error-text">Display order must be an integer 0 or greater.</span>
+      }
+    </div>
+
+    <!-- Coordinate Fields (Position X and Position Y) -->
+    <div class="form-row two-cols">
+      <div class="form-group">
+        <label for="positionX" class="form-label">Position X (Optional)</label>
+        <input
+          id="positionX"
+          type="number"
+          step="any"
+          formControlName="positionX"
+          placeholder="e.g. 450"
+          class="form-input" />
+        <span class="helper-text">X coordinate on canvas</span>
+      </div>
+
+      <div class="form-group">
+        <label for="positionY" class="form-label">Position Y (Optional)</label>
+        <input
+          id="positionY"
+          type="number"
+          step="any"
+          formControlName="positionY"
+          placeholder="e.g. 280"
+          class="form-input" />
+        <span class="helper-text">Y coordinate on canvas</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        [disabled]="submitting">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="locked || submitting || form.invalid">
+        @if (submitting) {
+          <span class="spinner-sm" aria-hidden="true"></span>
+          <span>Saving...</span>
+        } @else {
+          <span>{{ mode === 'create' ? 'Add Seat' : 'Save Changes' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

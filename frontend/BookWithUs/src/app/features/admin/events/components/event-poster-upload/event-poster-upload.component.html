@@ -1,0 +1,156 @@
+<div class="event-poster-section" [class.is-disabled]="disabled">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="section-icon-badge" aria-hidden="true">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </div>
+    <div class="section-title-wrap">
+      <h3 class="section-title">Event Poster</h3>
+      <p class="section-subtitle">
+        Add the promotional image that customers will see when browsing this event.
+      </p>
+    </div>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input
+    #fileInput
+    id="eventPosterFileInput"
+    type="file"
+    class="visually-hidden-input"
+    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+    [disabled]="disabled"
+    (change)="onFileInputChange($event)"
+    aria-label="Upload event poster image"
+  />
+
+  <!-- Upload Area (Drop Zone) -->
+  <div
+    class="upload-dropzone"
+    [class.is-dragover]="isDragging"
+    [class.has-preview]="!!activePreviewUrl"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="openFileDialog()"
+    (keydown.enter)="openFileDialog()"
+    (keydown.space)="openFileDialog()"
+    tabindex="0"
+    role="button"
+    aria-label="Upload event poster: Drag and drop an image here or browse from your device"
+  >
+    <div class="dropzone-icon-box" aria-hidden="true">
+      <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </div>
+
+    <div class="dropzone-text-group">
+      <strong class="dropzone-headline">Upload Event Poster</strong>
+      <span class="dropzone-subtext">Drag and drop an image here, or browse from your device.</span>
+    </div>
+
+    <button
+      type="button"
+      class="btn-choose-image"
+      [disabled]="disabled"
+      (click)="$event.stopPropagation(); openFileDialog()"
+    >
+      Choose Image
+    </button>
+
+    <span class="dropzone-helper-text">
+      JPG, JPEG, PNG or WebP &bull; Maximum 5 MB
+    </span>
+  </div>
+
+  <!-- Validation Error Alert -->
+  @if (errorMessage) {
+    <div class="poster-validation-alert" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  <!-- Active Preview Card (Selected File or Existing Server Poster) -->
+  @if (activePreviewUrl) {
+    <div class="poster-preview-card">
+      <div class="preview-media-container">
+        <img
+          [src]="activePreviewUrl"
+          [alt]="previewFileName + ' preview'"
+          class="preview-image"
+          (error)="onImageError()"
+        />
+      </div>
+
+      <div class="preview-details">
+        <div class="preview-meta-group">
+          <strong class="preview-file-name" [title]="previewFileName">
+            {{ previewFileName }}
+          </strong>
+          <span class="preview-file-meta">{{ previewMeta }}</span>
+        </div>
+
+        <div class="preview-actions">
+          <button
+            type="button"
+            class="btn-preview-action action-replace"
+            (click)="openFileDialog()"
+            [disabled]="disabled"
+          >
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Replace Image</span>
+          </button>
+
+          @if (selectedFile) {
+            <button
+              type="button"
+              class="btn-preview-action action-remove"
+              (click)="clearSelection()"
+              [disabled]="disabled"
+              [attr.aria-label]="currentPosterUrl ? 'Cancel replacement and keep existing poster' : 'Remove selected poster'"
+            >
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>{{ currentPosterUrl ? 'Cancel Replacement' : 'Remove' }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Customer Preview Explanatory Banner -->
+  <div class="customer-preview-banner" role="status">
+    <div class="info-icon-badge" aria-hidden="true">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+    </div>
+    <div class="banner-text-group">
+      <strong class="banner-title">Customer Preview</strong>
+      <span class="banner-description">
+        This image will represent your event across customer-facing event cards and event detail views.
+      </span>
+    </div>
+  </div>
+</div>

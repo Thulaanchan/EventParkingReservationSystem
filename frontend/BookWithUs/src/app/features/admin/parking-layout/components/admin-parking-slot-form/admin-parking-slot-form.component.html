@@ -1,0 +1,150 @@
+<div class="slot-form-card">
+  <div class="form-header">
+    <div class="header-icon-box" aria-hidden="true">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M9 9h6M9 13h4" />
+      </svg>
+    </div>
+    <div class="header-text">
+      <h3 class="form-title">{{ mode === 'create' ? 'Add Parking Slot' : 'Edit Parking Slot' }}</h3>
+      <p class="form-subtitle">Configure slot zone, code identifier, display order, and map coordinates.</p>
+    </div>
+  </div>
+
+  @if (locked) {
+    <div class="alert-banner alert-warning" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="3" y="11" width="18" height="11" rx="2" />
+        <path d="M7 11V7a5 5 0 0110 0v4" />
+      </svg>
+      <div class="alert-content">
+        <span class="alert-title">Editing Restricted</span>
+        <span class="alert-message">This parking slot cannot be edited while it is held or occupied.</span>
+      </div>
+    </div>
+  }
+
+  @if (serverError) {
+    <div class="alert-banner alert-danger" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <div class="alert-content">
+        <span class="alert-title">Submission Error</span>
+        <span class="alert-message">{{ serverError }}</span>
+      </div>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="slot-form" novalidate>
+    <!-- Parking Zone -->
+    <div class="form-group">
+      <label for="parkingZoneId" class="form-label">
+        Parking Zone <span class="required-star">*</span>
+      </label>
+      <select
+        id="parkingZoneId"
+        formControlName="parkingZoneId"
+        class="form-select"
+        [class.input-error]="form.controls.parkingZoneId.touched && form.controls.parkingZoneId.invalid">
+        <option [ngValue]="null">Select a parking zone...</option>
+        @for (z of zones; track z.id) {
+          <option [ngValue]="z.id">{{ z.name }} ({{ z.vehicleType }})</option>
+        }
+      </select>
+      @if (form.controls.parkingZoneId.touched && form.controls.parkingZoneId.invalid) {
+        <span class="error-text">Please select a parking zone.</span>
+      }
+    </div>
+
+    <!-- Slot Code -->
+    <div class="form-group">
+      <label for="slotCode" class="form-label">
+        Slot Code <span class="required-star">*</span>
+      </label>
+      <input
+        id="slotCode"
+        type="text"
+        formControlName="slotCode"
+        placeholder="e.g. C1, TW5, V2"
+        maxlength="30"
+        class="form-input"
+        [class.input-error]="form.controls.slotCode.touched && form.controls.slotCode.invalid" />
+      <span class="helper-text">Unique alphanumeric identifier for this parking slot (up to 30 chars).</span>
+      @if (form.controls.slotCode.touched && form.controls.slotCode.invalid) {
+        <span class="error-text">Slot code is required.</span>
+      }
+    </div>
+
+    <!-- Display Order -->
+    <div class="form-group">
+      <label for="displayOrder" class="form-label">
+        Display Order <span class="required-star">*</span>
+      </label>
+      <input
+        id="displayOrder"
+        type="number"
+        formControlName="displayOrder"
+        placeholder="0"
+        min="0"
+        class="form-input"
+        [class.input-error]="form.controls.displayOrder.touched && form.controls.displayOrder.invalid" />
+      <span class="helper-text">Sequence number for ordering slots within the zone.</span>
+      @if (form.controls.displayOrder.touched && form.controls.displayOrder.invalid) {
+        <span class="error-text">Display order must be an integer 0 or greater.</span>
+      }
+    </div>
+
+    <!-- Coordinates (Position X, Position Y) -->
+    <div class="form-row two-cols">
+      <div class="form-group">
+        <label for="positionX" class="form-label">Position X (Optional)</label>
+        <input
+          id="positionX"
+          type="number"
+          step="any"
+          formControlName="positionX"
+          placeholder="e.g. 350"
+          class="form-input" />
+        <span class="helper-text">X coordinate on layout canvas</span>
+      </div>
+
+      <div class="form-group">
+        <label for="positionY" class="form-label">Position Y (Optional)</label>
+        <input
+          id="positionY"
+          type="number"
+          step="any"
+          formControlName="positionY"
+          placeholder="e.g. 420"
+          class="form-input" />
+        <span class="helper-text">Y coordinate on layout canvas</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        [disabled]="submitting">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="locked || submitting || form.invalid">
+        @if (submitting) {
+          <span class="spinner-sm" aria-hidden="true"></span>
+          <span>Saving...</span>
+        } @else {
+          <span>{{ mode === 'create' ? 'Add Parking Slot' : 'Save Changes' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

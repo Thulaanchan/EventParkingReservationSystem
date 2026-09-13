@@ -1,0 +1,86 @@
+<div class="category-management-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">Category Management</h1>
+      <p class="page-subtitle">Manage event categories used across BookWithUs.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-add-category"
+      (click)="onAddCategory()"
+      aria-label="Add new event category"
+    >
+      <span class="btn-icon">+</span>
+      <span>Add Category</span>
+    </button>
+  </div>
+
+  <!-- Loading State (Initial) -->
+  @if (loading && categories.length === 0) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span>Loading categories...</span>
+    </div>
+  } @else if (errorMessage && categories.length === 0) {
+    <!-- Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h3 class="error-title">Failed to load categories</h3>
+        <p class="error-message">{{ errorMessage }}</p>
+        <button type="button" class="btn btn-retry" (click)="loadCategories()">
+          Try Again
+        </button>
+      </div>
+    </div>
+  } @else {
+    <!-- Main Content & Detail Panel Layout -->
+    <div class="category-management-layout" [class.has-detail-panel]="!!selectedCategory">
+      <div class="main-content-column">
+        <!-- Stats Component -->
+        <app-category-stats
+          [totalCategories]="totalCategories"
+          [categoriesInUse]="categoriesInUse"
+        ></app-category-stats>
+
+        <!-- Search Component -->
+        <app-category-search
+          [searchTerm]="searchTerm"
+          (searchTermChange)="onSearchChange($event)"
+          (clearSearch)="onClearSearch()"
+        ></app-category-search>
+
+        <!-- Table Component -->
+        <app-category-table
+          [categories]="filteredCategories"
+          [loading]="loading"
+          (viewCategory)="onViewCategory($event)"
+          (editCategory)="onEditCategory($event)"
+          (deleteCategory)="onDeleteCategory($event)"
+        ></app-category-table>
+      </div>
+
+      <!-- Detail Panel Column -->
+      @if (selectedCategory) {
+        <div class="detail-panel-column">
+          <app-category-detail-panel
+            [category]="selectedCategory"
+            [deleting]="deleting"
+            [serverError]="deleteError"
+            (close)="onCloseDetail()"
+            (edit)="onEditCategory($event)"
+            (delete)="onDeleteCategory($event)"
+          ></app-category-detail-panel>
+        </div>
+      }
+    </div>
+  }
+</div>

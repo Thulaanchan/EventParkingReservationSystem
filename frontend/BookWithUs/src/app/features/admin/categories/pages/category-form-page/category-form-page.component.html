@@ -1,0 +1,68 @@
+<div class="category-form-page">
+  <!-- Back Link & Page Title Area -->
+  <div class="page-top-nav">
+    <a routerLink="/admin/categories" class="back-link">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Category Management</span>
+    </a>
+  </div>
+
+  <div class="page-header">
+    <h1 class="page-title">
+      {{ isEditMode ? 'Edit Event Category' : 'Add Event Category' }}
+    </h1>
+    <p class="page-subtitle">
+      {{ isEditMode
+          ? 'Update category name for organizing BookWithUs events.'
+          : 'Create a new category for organizing BookWithUs events.'
+      }}
+    </p>
+  </div>
+
+  <!-- Loading Existing Category in Edit Mode -->
+  @if (loading) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span>Loading category details...</span>
+    </div>
+  } @else if (loadError) {
+    <!-- Load Error -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h3 class="error-title">Category Error</h3>
+        <p class="error-message">{{ loadError }}</p>
+        <div class="error-actions">
+          @if (categoryId) {
+            <button type="button" class="btn btn-retry" (click)="loadCategory(categoryId)">
+              Try Again
+            </button>
+          }
+          <a routerLink="/admin/categories" class="btn btn-back">
+            Return to Category Management
+          </a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Form Component Container -->
+    <div class="form-container">
+      <app-category-form
+        [category]="category"
+        [submitting]="submitting"
+        [serverError]="submitError"
+        (save)="onSave($event)"
+        (cancel)="onCancel()"
+      ></app-category-form>
+    </div>
+  }
+</div>

@@ -1,0 +1,347 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.parking-detail-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+/* Empty State */
+.empty-state-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  text-align: center;
+  gap: 10px;
+}
+
+.empty-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.empty-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0;
+}
+
+.empty-message {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.slot-code-badge {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #6d28d9;
+  background-color: #ede9fe;
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: -0.01em;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.zone-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.close-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Lock Banner */
+.lock-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  margin-bottom: 16px;
+}
+
+.lock-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.lock-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lock-heading {
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.lock-detail {
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+/* Detail Rows */
+.details-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f9fafb;
+  font-size: 0.8125rem;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.detail-value-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-subtext {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+
+.font-mono {
+  font-family: monospace;
+}
+
+.font-semibold {
+  font-weight: 700;
+}
+
+.text-sm {
+  font-size: 0.75rem;
+}
+
+/* Status Pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-available {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.status-available .status-dot {
+  background-color: #10b981;
+}
+
+.status-held {
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.status-held .status-dot {
+  background-color: #f59e0b;
+}
+
+.status-occupied {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.status-occupied .status-dot {
+  background-color: #ef4444;
+}
+
+.status-neutral {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Online Pill */
+.online-pill {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.online-yes {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.online-no {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Action Buttons */
+.panel-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.btn-outline {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover:not(:disabled) {
+  border-color: #7c3aed;
+  color: #7c3aed;
+  background-color: #fbf9ff;
+}
+
+.btn-danger-outline {
+  background-color: #ffffff;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.btn-danger-outline:hover:not(:disabled) {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.safeguard-note {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin: 8px 0 0 0;
+  text-align: center;
+}

@@ -1,0 +1,83 @@
+<div class="event-info-container">
+  <!-- Description Section (Only when present) -->
+  @if (event.description && event.description.trim()) {
+    <section class="info-card description-card" aria-labelledby="descHeading">
+      <h2 id="descHeading" class="section-title">About This Event</h2>
+      <p class="description-text">{{ event.description }}</p>
+    </section>
+  }
+
+  <!-- Event Key Details Grid -->
+  <section class="info-card details-card" aria-labelledby="detailsHeading">
+    <h2 id="detailsHeading" class="section-title">Event & Venue Information</h2>
+
+    <div class="details-grid">
+      <!-- Venue & Location -->
+      <div class="detail-block">
+        <div class="detail-icon-box">
+          <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <span class="detail-label">Venue</span>
+          <strong class="detail-value">{{ event.venueName }}</strong>
+          @if (event.venueAddress && event.venueAddress.trim()) {
+            <span class="detail-subtext">{{ event.venueAddress }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="detail-block">
+        <div class="detail-icon-box">
+          <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <span class="detail-label">Schedule</span>
+          <time [attr.datetime]="event.eventDate" class="detail-value">
+            {{ event.eventDate | date:'fullDate' }}
+          </time>
+          <span class="detail-subtext">{{ event.startTime }} – {{ event.endTime }}</span>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="detail-block">
+        <div class="detail-icon-box">
+          <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+        </div>
+        <div class="detail-content">
+          <span class="detail-label">Category</span>
+          <strong class="detail-value">{{ event.categoryName }}</strong>
+        </div>
+      </div>
+
+      <!-- Stage / Seating Layout (Only when present) -->
+      @if (event.stageLayout && event.stageLayout.trim()) {
+        <div class="detail-block">
+          <div class="detail-icon-box">
+            <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Stage Layout</span>
+            <strong class="detail-value">{{ event.stageLayout }}</strong>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

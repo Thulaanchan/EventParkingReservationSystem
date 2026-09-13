@@ -1,0 +1,85 @@
+<div class="admin-event-filter-container">
+  <!-- Search Input -->
+  <div class="search-input-wrapper">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <label for="adminEventSearchInput" class="visually-hidden">Search events by name</label>
+    <input
+      type="text"
+      id="adminEventSearchInput"
+      class="search-input"
+      placeholder="Search events by name..."
+      [ngModel]="search"
+      (ngModelChange)="onSearchChange($event)"
+      aria-label="Search events by name"
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Venue Select -->
+  <div class="select-wrapper">
+    <label for="adminVenueSelect" class="visually-hidden">Filter by venue</label>
+    <select
+      id="adminVenueSelect"
+      class="filter-select"
+      [ngModel]="venue"
+      (ngModelChange)="onVenueChange($event)"
+      [disabled]="loadingOptions"
+      aria-label="Filter events by venue"
+    >
+      <option [ngValue]="null">All Venues</option>
+      @for (v of venues; track v.id) {
+        <option [ngValue]="v.id">{{ v.name }}</option>
+      }
+    </select>
+    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </div>
+
+  <!-- Category Select -->
+  <div class="select-wrapper">
+    <label for="adminCategorySelect" class="visually-hidden">Filter by category</label>
+    <select
+      id="adminCategorySelect"
+      class="filter-select"
+      [ngModel]="category"
+      (ngModelChange)="onCategoryChange($event)"
+      [disabled]="loadingOptions"
+      aria-label="Filter events by category"
+    >
+      <option [ngValue]="null">All Categories</option>
+      @for (c of categories; track c.id) {
+        <option [ngValue]="c.id">{{ c.name }}</option>
+      }
+    </select>
+    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </div>
+
+  <!-- Date Input -->
+  <div class="date-input-wrapper">
+    <label for="adminEventDateInput" class="visually-hidden">Filter by date</label>
+    <input
+      type="date"
+      id="adminEventDateInput"
+      class="filter-date-input"
+      [ngModel]="date"
+      (ngModelChange)="onDateChange($event)"
+      aria-label="Filter events by date"
+    />
+  </div>
+
+  <!-- Clear Filters Button -->
+  <button
+    type="button"
+    class="btn-clear-filters"
+    (click)="onClear()"
+    aria-label="Clear all applied filters"
+  >
+    Clear Filters
+  </button>
+</div>

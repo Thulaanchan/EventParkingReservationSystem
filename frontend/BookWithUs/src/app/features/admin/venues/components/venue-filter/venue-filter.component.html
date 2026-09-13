@@ -1,0 +1,50 @@
+<div class="venue-filter-container">
+  <!-- Search Input -->
+  <div class="search-input-wrapper">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <label for="venueSearchInput" class="visually-hidden">Search venues by name or address</label>
+    <input
+      type="text"
+      id="venueSearchInput"
+      class="search-input"
+      placeholder="Search venues by name or address..."
+      [ngModel]="searchTerm"
+      (ngModelChange)="onSearchChange($event)"
+      aria-label="Search venues by name or address"
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Capacity Select Dropdown -->
+  <div class="select-wrapper">
+    <label for="capacitySelect" class="visually-hidden">Filter by capacity</label>
+    <select
+      id="capacitySelect"
+      class="filter-select"
+      [ngModel]="capacityFilter"
+      (ngModelChange)="onCapacityChange($event)"
+      aria-label="Filter venues by capacity"
+    >
+      <option value="">All Capacities</option>
+      @for (option of capacityOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </div>
+
+  <!-- Clear Filters Button -->
+  <button
+    type="button"
+    class="btn-clear-filters"
+    (click)="onClear()"
+    aria-label="Clear all venue filters"
+  >
+    Clear Filters
+  </button>
+</div>

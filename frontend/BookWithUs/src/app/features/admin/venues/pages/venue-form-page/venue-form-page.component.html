@@ -1,0 +1,68 @@
+<div class="venue-form-page">
+  <!-- Back Link & Page Title Area -->
+  <div class="page-top-nav">
+    <a routerLink="/admin/venues" class="back-link">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Venue Management</span>
+    </a>
+  </div>
+
+  <div class="page-header">
+    <h1 class="page-title">
+      {{ isEditMode ? 'Edit Venue' : 'Add Venue' }}
+    </h1>
+    <p class="page-subtitle">
+      {{ isEditMode
+          ? 'Update the details for this BookWithUs venue.'
+          : 'Register a new venue for BookWithUs events.'
+      }}
+    </p>
+  </div>
+
+  <!-- Loading Existing Venue in Edit Mode -->
+  @if (loading) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span>Loading venue details...</span>
+    </div>
+  } @else if (loadError) {
+    <!-- Load Error -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h3 class="error-title">Venue Error</h3>
+        <p class="error-message">{{ loadError }}</p>
+        <div class="error-actions">
+          @if (venueId) {
+            <button type="button" class="btn-retry" (click)="loadVenue(venueId)">
+              Try Again
+            </button>
+          }
+          <a routerLink="/admin/venues" class="btn-back">
+            Return to Venue Management
+          </a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Form Component Container -->
+    <div class="form-container">
+      <app-venue-form
+        [venue]="venue"
+        [submitting]="submitting"
+        [serverError]="submitError"
+        (save)="onSave($event)"
+        (cancel)="onCancel()"
+      ></app-venue-form>
+    </div>
+  }
+</div>

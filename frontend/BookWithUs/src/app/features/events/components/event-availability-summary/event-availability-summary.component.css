@@ -1,0 +1,203 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.availability-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.header-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: #f3e8ff;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+/* Unconfigured State */
+.unconfigured-state {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+}
+
+.unconfigured-icon {
+  width: 32px;
+  height: 32px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.unconfigured-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.unconfigured-title {
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.unconfigured-desc {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+/* Occupancy Progress */
+.occupancy-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background-color: #faf5ff;
+  border: 1px solid #ede9fe;
+  border-radius: 12px;
+}
+
+.occupancy-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.occupancy-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.occupancy-percentage {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 10px;
+  background-color: #e9d5ff;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: border-color 0.15s ease;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.metric-subtext {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.available-card {
+  border-left: 4px solid #059669;
+}
+
+.booked-card {
+  border-left: 4px solid #7c3aed;
+}
+
+.total-card {
+  border-left: 4px solid #3b82f6;
+}
+
+.count-card {
+  border-left: 4px solid #f59e0b;
+}
+
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .availability-card {
+    padding: 20px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,71 @@
+<div class="stat-grid" role="region" aria-label="Admin Dashboard Statistics Overview">
+  @for (card of statCards; track card.id) {
+    <div class="stat-card" [class.is-loading]="summary === null">
+      <div class="stat-icon-wrapper" aria-hidden="true">
+        @switch (card.icon) {
+          @case ('events') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          }
+          @case ('bookings') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+              <line x1="9" y1="12" x2="15" y2="12"></line>
+            </svg>
+          }
+          @case ('seats') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+              <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"></path>
+              <path d="M5 18v2"></path>
+              <path d="M19 18v2"></path>
+            </svg>
+          }
+          @case ('parking') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"></path>
+              <path d="M3 11h18v5a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-5z"></path>
+              <circle cx="7" cy="14" r="1.5"></circle>
+              <circle cx="17" cy="14" r="1.5"></circle>
+            </svg>
+          }
+          @case ('revenue') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+              <path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path>
+            </svg>
+          }
+          @case ('customers') {
+            <svg class="stat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          }
+        }
+      </div>
+
+      <div class="stat-content">
+        <span class="stat-label">{{ card.label }}</span>
+        @if (summary !== null) {
+          <div class="stat-value-row">
+            @if (card.isCurrency) {
+              <span class="stat-currency">LKR</span>
+              <span class="stat-value">{{ card.value | number:'1.0-2' }}</span>
+            } @else {
+              <span class="stat-value">{{ card.value | number }}</span>
+            }
+          </div>
+        } @else {
+          <div class="stat-skeleton" aria-label="Loading metric value"></div>
+        }
+      </div>
+    </div>
+  }
+</div>

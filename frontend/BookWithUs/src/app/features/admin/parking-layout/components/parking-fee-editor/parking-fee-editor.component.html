@@ -1,0 +1,123 @@
+<div class="fee-editor-card" role="region" aria-label="Parking Zone Fee Editor">
+  <div class="card-header">
+    <div class="header-icon-box" aria-hidden="true">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M6 12h.01M18 12h.01" />
+      </svg>
+    </div>
+    <div class="header-titles">
+      <h3 class="card-title">Zone Parking Fee</h3>
+      <span class="card-subtitle">Manage reservation fees applied per parking zone</span>
+    </div>
+  </div>
+
+  @if (zones.length === 0) {
+    <div class="empty-state-fee" role="status">
+      <p class="empty-text">No parking zones available to edit fee.</p>
+    </div>
+  } @else {
+    <!-- Zone Selection Dropdown -->
+    <div class="form-group">
+      <label for="feeZoneSelect" class="form-label">Select Parking Zone</label>
+      <select
+        id="feeZoneSelect"
+        class="form-select"
+        [value]="activeZone?.id"
+        (change)="onZoneSelectChange($event)"
+        [disabled]="disabled || submitting">
+        @for (z of zones; track z.id) {
+          <option [value]="z.id">{{ z.name }}</option>
+        }
+      </select>
+    </div>
+
+    @if (activeZone) {
+      <!-- Active Zone Summary Meta -->
+      <div class="zone-meta-box">
+        <div class="meta-row">
+          <span class="meta-label">Selected Zone:</span>
+          <span class="meta-value">{{ activeZone.name }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Current Rate:</span>
+          <span class="meta-value font-mono">LKR {{ activeZone.fee | number:'1.2-2' }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Online Status:</span>
+          <span
+            class="online-status-pill"
+            [class.pill-online]="activeZone.isOnlineBookable"
+            [class.pill-offline]="!activeZone.isOnlineBookable">
+            {{ activeZone.isOnlineBookable ? 'Online Booking Enabled' : 'Online Booking Disabled' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Server Error Alert -->
+      @if (serverError) {
+        <div class="alert-banner alert-danger" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span class="alert-message">{{ serverError }}</span>
+        </div>
+      }
+
+      <!-- Fee Input & Action Form -->
+      <div class="fee-input-group">
+        <label for="zoneFeeInput" class="form-label">
+          New Fee (LKR) <span class="required-star">*</span>
+        </label>
+        <div class="input-with-button">
+          <div class="currency-input-wrapper">
+            <span class="currency-prefix" aria-hidden="true">LKR</span>
+            <input
+              id="zoneFeeInput"
+              type="number"
+              min="0"
+              step="any"
+              [formControl]="feeControl"
+              placeholder="0.00"
+              class="form-input currency-input"
+              [class.input-error]="feeControl.touched && feeControl.invalid" />
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-update"
+            (click)="onSave()"
+            [disabled]="feeControl.invalid || isFeeUnchanged || submitting || disabled">
+            @if (submitting) {
+              <span class="spinner-sm" aria-hidden="true"></span>
+              <span>Updating...</span>
+            } @else {
+              <span>Update Fee</span>
+            }
+          </button>
+        </div>
+
+        @if (feeControl.touched && feeControl.invalid) {
+          <span class="error-text">Fee must be a valid non-negative number.</span>
+        }
+      </div>
+
+      <!-- Informational Safeguard Box -->
+      <div class="info-callout" role="note">
+        <div class="info-icon-box" aria-hidden="true">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+        </div>
+        <p class="info-message">
+          <strong>Existing reservation fees are preserved.</strong> Changing the parking fee applies only according to the booking rules; already reserved fees remain fixed.
+        </p>
+      </div>
+    }
+  }
+</div>

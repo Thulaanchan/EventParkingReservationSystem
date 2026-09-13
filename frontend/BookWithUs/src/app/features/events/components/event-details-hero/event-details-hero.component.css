@@ -1,0 +1,278 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.event-hero-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.hero-layout {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+}
+
+/* Poster Area */
+.hero-poster-wrapper {
+  width: 280px;
+  min-width: 280px;
+  height: 380px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background-color: #f3f4f6;
+  flex-shrink: 0;
+}
+
+.hero-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #ede9fe 0%, #f3e8ff 100%);
+  color: #7c3aed;
+}
+
+.placeholder-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.placeholder-text {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Content Area */
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.hero-category-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #f3e8ff;
+  color: #6d28d9;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.past-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  word-break: break-word;
+}
+
+/* Meta List */
+.hero-meta-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meta-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: #ede9fe;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.meta-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.meta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.meta-val {
+  font-size: 0.9375rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Actions */
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.booking-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-booking {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-primary {
+  background-color: #6d28d9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #5b21b6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+  cursor: not-allowed;
+}
+
+.cta-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.booking-hint {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.past-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.notice-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .hero-poster-wrapper {
+    width: 220px;
+    min-width: 220px;
+    height: 300px;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-hero-card {
+    padding: 20px;
+  }
+
+  .hero-poster-wrapper {
+    width: 100%;
+    min-width: 0;
+    height: 260px;
+  }
+
+  .btn-booking {
+    width: 100%;
+  }
+}

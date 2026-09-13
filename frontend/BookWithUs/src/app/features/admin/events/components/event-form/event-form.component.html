@@ -1,0 +1,559 @@
+<form [formGroup]="form" class="event-form" (ngSubmit)="onSubmit()" novalidate>
+  <!-- Global Server Error Alert -->
+  @if (serverError) {
+    <div class="form-server-error-banner" role="alert">
+      <svg class="error-banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ serverError }}</span>
+    </div>
+  }
+
+  <div class="form-layout-grid">
+    <!-- Main Form Column (Left) -->
+    <div class="main-form-column">
+      <!-- 1. Basic Information Card -->
+      <section class="form-section-card" aria-labelledby="basicInfoTitle">
+        <div class="section-card-header">
+          <div class="section-card-icon-badge" aria-hidden="true">
+            <svg class="section-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="section-card-title-group">
+            <h2 id="basicInfoTitle" class="section-card-title">Basic Information</h2>
+            <p class="section-card-subtitle">
+              Enter the main information customers will use to identify this event.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-fields-stack">
+          <div class="form-row-two-col">
+            <!-- Event Name -->
+            <div class="form-field-group">
+              <label for="eventNameInput" class="field-label">
+                Event Name <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="eventNameInput"
+                type="text"
+                class="form-text-input"
+                formControlName="name"
+                placeholder="e.g. Annual Tech Symposium 2026"
+                maxlength="180"
+                [class.has-error]="form.controls.name.invalid && form.controls.name.touched"
+                aria-describedby="nameErrors"
+              />
+              @if (form.controls.name.invalid && form.controls.name.touched) {
+                <div id="nameErrors" class="field-error-message" role="alert">
+                  @if (form.controls.name.errors?.['required'] || form.controls.name.errors?.['whitespace']) {
+                    <span>Event name is required.</span>
+                  } @else if (form.controls.name.errors?.['maxlength']) {
+                    <span>Event name cannot exceed 180 characters.</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Venue -->
+            <div class="form-field-group">
+              <label for="eventVenueSelect" class="field-label">
+                Venue <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <div class="select-container">
+                <select
+                  id="eventVenueSelect"
+                  class="form-select-input"
+                  formControlName="venueId"
+                  [class.has-error]="form.controls.venueId.invalid && form.controls.venueId.touched"
+                  aria-describedby="venueErrors"
+                >
+                  <option [ngValue]="null">Select a venue</option>
+                  @for (v of venues; track v.id) {
+                    <option [ngValue]="v.id">{{ v.name }}</option>
+                  }
+                </select>
+                <svg class="select-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              @if (form.controls.venueId.invalid && form.controls.venueId.touched) {
+                <div id="venueErrors" class="field-error-message" role="alert">
+                  <span>Please select a venue.</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="form-field-group">
+            <label for="eventCategorySelect" class="field-label">
+              Category <span class="required-star" aria-hidden="true">*</span>
+            </label>
+            <div class="select-container">
+              <select
+                id="eventCategorySelect"
+                class="form-select-input"
+                formControlName="categoryId"
+                [class.has-error]="form.controls.categoryId.invalid && form.controls.categoryId.touched"
+                aria-describedby="categoryErrors"
+              >
+                <option [ngValue]="null">Select a category</option>
+                @for (cat of categories; track cat.id) {
+                  <option [ngValue]="cat.id">{{ cat.name }}</option>
+                }
+              </select>
+              <svg class="select-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+              <div id="categoryErrors" class="field-error-message" role="alert">
+                <span>Please select a category.</span>
+              </div>
+            }
+          </div>
+
+          <!-- Description -->
+          <div class="form-field-group">
+            <label for="eventDescriptionInput" class="field-label">
+              Description <span class="optional-tag">(Optional)</span>
+            </label>
+            <textarea
+              id="eventDescriptionInput"
+              class="form-textarea-input"
+              formControlName="description"
+              rows="4"
+              placeholder="Provide event details, schedule highlights, agenda or special instructions..."
+              maxlength="3000"
+              [class.has-error]="form.controls.description.invalid && form.controls.description.touched"
+              aria-describedby="descErrors"
+            ></textarea>
+            @if (form.controls.description.invalid && form.controls.description.touched) {
+              <div id="descErrors" class="field-error-message" role="alert">
+                <span>Description cannot exceed 3000 characters.</span>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Event Poster Card -->
+      <section class="form-section-card" aria-label="Event Poster">
+        <app-event-poster-upload
+          [currentPosterUrl]="event?.posterUrl ?? null"
+          [disabled]="submitting"
+          (posterChange)="onPosterChange($event)"
+        ></app-event-poster-upload>
+      </section>
+
+      <!-- 3. Stage & Seating Configuration Card -->
+      <section class="form-section-card" aria-label="Stage & Seating Configuration">
+        <app-stage-layout-selector
+          [value]="form.controls.stageLayout.value"
+          [options]="stageLayoutOptions"
+          [disabled]="submitting || (event ? !event.canEditStageLayout : false)"
+          (valueChange)="onStageLayoutChange($event)"
+        ></app-stage-layout-selector>
+
+        @if (event && !event.canEditStageLayout) {
+          <div class="field-lock-notice" role="status">
+            <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Stage layout is locked because this event has existing bookings.</span>
+          </div>
+        }
+      </section>
+
+      <!-- 4. Schedule Card -->
+      <section class="form-section-card" aria-labelledby="scheduleTitle">
+        <div class="section-card-header">
+          <div class="section-card-icon-badge" aria-hidden="true">
+            <svg class="section-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <div class="section-card-title-group">
+            <h2 id="scheduleTitle" class="section-card-title">Schedule</h2>
+            <p class="section-card-subtitle">Set the event date and time.</p>
+          </div>
+        </div>
+
+        <div class="form-fields-stack">
+          <div class="schedule-inputs-grid">
+            <!-- Event Date -->
+            <div class="form-field-group">
+              <label for="eventDateInput" class="field-label">
+                Event Date <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="eventDateInput"
+                type="date"
+                class="form-text-input"
+                formControlName="eventDate"
+                [class.has-error]="form.controls.eventDate.invalid && form.controls.eventDate.touched"
+                aria-describedby="dateErrors"
+              />
+              @if (form.controls.eventDate.invalid && form.controls.eventDate.touched) {
+                <div id="dateErrors" class="field-error-message" role="alert">
+                  @if (form.controls.eventDate.errors?.['required']) {
+                    <span>Event date is required.</span>
+                  } @else if (form.controls.eventDate.errors?.['pastDate']) {
+                    <span>Event date must be in the future.</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Start Time -->
+            <div class="form-field-group">
+              <label for="startTimeInput" class="field-label">
+                Start Time <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="startTimeInput"
+                type="time"
+                class="form-text-input"
+                formControlName="startTime"
+                [class.has-error]="form.controls.startTime.invalid && form.controls.startTime.touched"
+                aria-describedby="startTimeErrors"
+              />
+              @if (form.controls.startTime.invalid && form.controls.startTime.touched) {
+                <div id="startTimeErrors" class="field-error-message" role="alert">
+                  <span>Start time is required.</span>
+                </div>
+              }
+            </div>
+
+            <!-- End Time -->
+            <div class="form-field-group">
+              <label for="endTimeInput" class="field-label">
+                End Time <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="endTimeInput"
+                type="time"
+                class="form-text-input"
+                formControlName="endTime"
+                [class.has-error]="(form.controls.endTime.invalid && form.controls.endTime.touched) || isTimeRangeInvalid"
+                aria-describedby="endTimeErrors"
+              />
+              @if (form.controls.endTime.invalid && form.controls.endTime.touched) {
+                <div id="endTimeErrors" class="field-error-message" role="alert">
+                  <span>End time is required.</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Cross-Field Time Range Error -->
+          @if (isTimeRangeInvalid) {
+            <div class="field-error-message time-range-error" role="alert">
+              <span>End time must be later than start time.</span>
+            </div>
+          }
+
+          <!-- Real Venue Availability Status Component -->
+          <div class="availability-checker-wrapper">
+            <app-venue-availability-status
+              [venueId]="form.controls.venueId.value"
+              [date]="form.controls.eventDate.value"
+              [startTime]="form.controls.startTime.value"
+              [endTime]="form.controls.endTime.value"
+              [excludeEventId]="event?.id ?? null"
+              [disabled]="submitting"
+            ></app-venue-availability-status>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Pricing & Capacity Card -->
+      <section class="form-section-card" aria-labelledby="pricingTitle">
+        <div class="section-card-header">
+          <div class="section-card-icon-badge" aria-hidden="true">
+            <svg class="section-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+          </div>
+          <div class="section-card-title-group">
+            <h2 id="pricingTitle" class="section-card-title">Pricing &amp; Capacity</h2>
+            <p class="section-card-subtitle">
+              Set the event ticket price and total bookable capacity.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-fields-stack">
+          <div class="form-row-two-col">
+            <!-- Ticket Price -->
+            <div class="form-field-group">
+              <label for="ticketPriceInput" class="field-label">
+                Ticket Price <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <div class="currency-input-wrapper">
+                <span class="currency-prefix" aria-hidden="true">LKR</span>
+                <input
+                  id="ticketPriceInput"
+                  type="number"
+                  class="form-text-input currency-input"
+                  formControlName="ticketPrice"
+                  min="0"
+                  max="999999999"
+                  step="0.01"
+                  placeholder="0.00"
+                  [class.has-error]="form.controls.ticketPrice.invalid && form.controls.ticketPrice.touched"
+                  aria-describedby="priceErrors"
+                />
+              </div>
+              <span class="field-subnote">Enter 0 for free events.</span>
+
+              @if (form.controls.ticketPrice.invalid && form.controls.ticketPrice.touched) {
+                <div id="priceErrors" class="field-error-message" role="alert">
+                  @if (form.controls.ticketPrice.errors?.['required']) {
+                    <span>Ticket price is required.</span>
+                  } @else if (form.controls.ticketPrice.errors?.['min']) {
+                    <span>Ticket price cannot be negative.</span>
+                  } @else if (form.controls.ticketPrice.errors?.['max']) {
+                    <span>Ticket price exceeds allowable maximum.</span>
+                  }
+                </div>
+              }
+
+              @if (event && !event.canEditTicketPrice) {
+                <div class="field-lock-notice" role="status">
+                  <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span>Ticket price is locked because this event has existing bookings.</span>
+                </div>
+              }
+            </div>
+
+            <!-- Capacity -->
+            <div class="form-field-group">
+              <label for="capacityInput" class="field-label">
+                Capacity <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="capacityInput"
+                type="number"
+                class="form-text-input"
+                formControlName="capacity"
+                min="1"
+                step="1"
+                placeholder="e.g. 500"
+                [class.has-error]="form.controls.capacity.invalid && form.controls.capacity.touched"
+                aria-describedby="capacityErrors"
+              />
+
+              @if (form.controls.capacity.invalid && form.controls.capacity.touched) {
+                <div id="capacityErrors" class="field-error-message" role="alert">
+                  @if (form.controls.capacity.errors?.['required']) {
+                    <span>Capacity is required.</span>
+                  } @else if (form.controls.capacity.errors?.['min']) {
+                    <span>Capacity must be at least 1.</span>
+                  } @else if (form.controls.capacity.errors?.['exceedsVenueCapacity']) {
+                    <span>
+                      Event capacity cannot exceed the selected venue capacity of
+                      {{ form.controls.capacity.errors?.['exceedsVenueCapacity']?.max }}.
+                    </span>
+                  }
+                </div>
+              }
+
+              @if (event && !event.canEditCapacity) {
+                <div class="field-lock-notice" role="status">
+                  <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span>Capacity is locked because this event has existing bookings.</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Real Venue Capacity Info Component -->
+          <app-venue-capacity-info
+            [venue]="selectedVenue"
+            [eventCapacity]="form.controls.capacity.value"
+            [capacityLocked]="event ? !event.canEditCapacity : false"
+          ></app-venue-capacity-info>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sidebar Column (Right) -->
+    <aside class="sidebar-column">
+      <!-- Event Guide Card -->
+      <div class="guide-card">
+        <h3 class="guide-card-title">
+          <svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>{{ isEditMode ? 'Event Editing Guide' : 'Event Creation Guide' }}</span>
+        </h3>
+
+        <div class="guide-step-item">
+          <div class="step-badge">1</div>
+          <div class="step-text-group">
+            <strong class="step-title">Basic Information</strong>
+            <p class="step-desc">Every event requires a valid venue and category.</p>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="step-badge">2</div>
+          <div class="step-text-group">
+            <strong class="step-title">Venue Availability</strong>
+            <p class="step-desc">The selected venue must be available for the chosen schedule.</p>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="step-badge">3</div>
+          <div class="step-text-group">
+            <strong class="step-title">Capacity Limit</strong>
+            <p class="step-desc">Event capacity cannot exceed the venue's configured total capacity.</p>
+          </div>
+        </div>
+
+        <div class="guide-step-item">
+          <div class="step-badge">4</div>
+          <div class="step-text-group">
+            <strong class="step-title">Seat Configuration</strong>
+            <p class="step-desc">After saving, configure the event seat map to match event capacity.</p>
+          </div>
+        </div>
+
+        <div class="guide-callout-box">
+          <div class="callout-icon-box">i</div>
+          <div class="callout-text">
+            <strong>Stage Layout</strong>
+            <p>The selected layout guides the Seat Map Builder.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Summary Card -->
+      <div class="summary-card">
+        <h3 class="summary-card-title">Event Summary</h3>
+
+        <div class="summary-key-values">
+          <div class="summary-row">
+            <span class="summary-label">Event Name:</span>
+            <span class="summary-value">{{ form.controls.name.value || 'Untitled' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Event Poster:</span>
+            <span class="summary-value">
+              {{ selectedPosterFile ? 'New Selected' : (event?.posterUrl ? 'Existing' : 'None') }}
+            </span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Venue:</span>
+            <span class="summary-value">{{ selectedVenue?.name || 'Not selected' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Category:</span>
+            <span class="summary-value">{{ selectedCategory?.name || 'Not selected' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Stage Layout:</span>
+            <span class="summary-value">{{ form.controls.stageLayout.value || 'Not selected' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Date:</span>
+            <span class="summary-value">{{ form.controls.eventDate.value || 'Not set' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Time:</span>
+            <span class="summary-value">
+              @if (form.controls.startTime.value || form.controls.endTime.value) {
+                {{ form.controls.startTime.value }} – {{ form.controls.endTime.value }}
+              } @else {
+                Not set
+              }
+            </span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Ticket Price:</span>
+            <span class="summary-value">
+              @if (form.controls.ticketPrice.value === 0) {
+                Free
+              } @else if (form.controls.ticketPrice.value !== null && form.controls.ticketPrice.value !== undefined) {
+                LKR {{ form.controls.ticketPrice.value }}
+              } @else {
+                Not set
+              }
+            </span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Capacity:</span>
+            <span class="summary-value">
+              {{ form.controls.capacity.value ? (form.controls.capacity.value + ' seats') : 'Not set' }}
+            </span>
+          </div>
+
+          <div class="summary-row">
+            <span class="summary-label">Venue Capacity:</span>
+            <span class="summary-value">
+              {{ selectedVenue ? (selectedVenue.totalCapacity + ' seats') : '—' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Form Actions Bar -->
+  <footer class="form-actions-footer">
+    <button
+      type="button"
+      class="btn btn-cancel"
+      (click)="onCancel()"
+      [disabled]="submitting"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-submit"
+      [disabled]="form.invalid || submitting"
+    >
+      @if (submitting) {
+        <span class="btn-spinner" aria-hidden="true"></span>
+        <span>{{ isEditMode ? 'Saving Changes...' : 'Creating Event...' }}</span>
+      } @else {
+        <svg class="btn-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        <span>{{ isEditMode ? 'Save Changes' : 'Create Event' }}</span>
+      }
+    </button>
+  </footer>
+</form>
