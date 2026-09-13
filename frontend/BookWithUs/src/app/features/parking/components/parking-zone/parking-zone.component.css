@@ -1,0 +1,194 @@
+:host {
+  display: block;
+}
+
+.parking-zone-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+.parking-zone-card:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+}
+
+.parking-zone-card.zone-offline {
+  background-color: #fafbfc;
+  border-style: dashed;
+  border-color: #cbd5e1;
+}
+
+/* ==========================================================================
+   Zone Header
+   ========================================================================== */
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.zone-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.zone-vehicle-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.zone-title-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.zone-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.zone-vehicle-type {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.zone-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.zone-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.zone-fee-badge {
+  background-color: #eef2ff;
+  color: #4338ca;
+  font-weight: 700;
+  border: 1px solid #e0e7ff;
+}
+
+.zone-count-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 500;
+}
+
+.zone-offline-badge {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+}
+
+/* ==========================================================================
+   Zone Body & Slots Grid
+   ========================================================================== */
+
+.zone-body {
+  width: 100%;
+}
+
+.zone-slots-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.zone-empty-state {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.empty-message {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}
+
+/* ==========================================================================
+   Offline / Reserved Watermark (screen-10.png reference)
+   ========================================================================== */
+
+.zone-offline-watermark {
+  border: 2px dashed #cbd5e1;
+  background: repeating-linear-gradient(
+    45deg,
+    #f8fafc,
+    #f8fafc 10px,
+    #f1f5f9 10px,
+    #f1f5f9 20px
+  );
+  border-radius: 8px;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.offline-watermark-icon {
+  font-size: 1.75rem;
+  color: #94a3b8;
+  line-height: 1;
+}
+
+.offline-watermark-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.offline-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.offline-subtitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.offline-detail {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  font-style: italic;
+}

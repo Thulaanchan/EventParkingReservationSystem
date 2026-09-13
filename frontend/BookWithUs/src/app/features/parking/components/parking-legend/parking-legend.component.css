@@ -1,0 +1,139 @@
+:host {
+  display: block;
+}
+
+.parking-legend-bar {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.legend-status-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.legend-status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.legend-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.swatch-available {
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+}
+
+.swatch-selected {
+  background-color: #3730a3;
+  border: 1.5px solid #312e81;
+}
+
+.swatch-held {
+  background-color: #e0f2fe;
+  border: 1.5px solid #bae6fd;
+  color: #0369a1;
+}
+
+.swatch-occupied {
+  background-color: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  color: #64748b;
+}
+
+.swatch-offline {
+  background-color: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  opacity: 0.7;
+}
+
+.legend-badge {
+  font-size: 0.6875rem;
+  line-height: 1;
+}
+
+.legend-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.legend-desc {
+  font-size: 0.6875rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.legend-divider {
+  width: 1px;
+  height: 28px;
+  background-color: #e2e8f0;
+}
+
+.legend-zone-list {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.legend-zone-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.zone-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4f46e5;
+}
+
+.zone-pill-dot.offline-dot {
+  background-color: #94a3b8;
+}
+
+.zone-offline-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background-color: #fef2f2;
+  color: #dc2626;
+}

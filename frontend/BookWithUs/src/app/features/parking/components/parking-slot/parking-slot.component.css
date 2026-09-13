@@ -1,0 +1,143 @@
+:host {
+  display: inline-block;
+}
+
+.parking-slot {
+  position: relative;
+  width: 58px;
+  height: 40px;
+  padding: 0 4px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-align: center;
+  user-select: none;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+}
+
+.slot-code {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   State Styles
+   ========================================================================== */
+
+/* Available */
+.parking-slot.available {
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.parking-slot.available:hover {
+  border-color: #4f46e5;
+  background-color: #f5f3ff;
+  color: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px -1px rgba(79, 70, 229, 0.18);
+}
+
+.parking-slot.available:active {
+  transform: translateY(0);
+}
+
+/* Selected */
+.parking-slot.selected {
+  background-color: #3730a3;
+  border: 1.5px solid #312e81;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 8px -1px rgba(55, 48, 163, 0.35);
+}
+
+/* Held */
+.parking-slot.held {
+  background-color: #e0f2fe;
+  border: 1.5px solid #bae6fd;
+  color: #0369a1;
+  cursor: not-allowed;
+}
+
+/* Occupied */
+.parking-slot.occupied {
+  background-color: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Offline / Not Online Bookable */
+.parking-slot.offline {
+  background-color: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   Status Indicator Badges (Matching screen-10.png)
+   ========================================================================== */
+
+.status-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.selected-badge {
+  background-color: #ffffff;
+  color: #3730a3;
+  font-weight: 900;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.held-badge {
+  background-color: transparent;
+  color: #0369a1;
+  font-size: 0.6875rem;
+  top: auto;
+  bottom: 2px;
+  right: 2px;
+  width: auto;
+  height: auto;
+}
+
+.occupied-badge {
+  background-color: transparent;
+  color: #64748b;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  top: auto;
+  bottom: 2px;
+  right: 2px;
+  width: auto;
+  height: auto;
+}
+
+/* Accessible focus */
+.parking-slot:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}

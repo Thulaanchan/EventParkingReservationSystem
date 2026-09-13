@@ -1,0 +1,69 @@
+<section
+  class="parking-zone-card"
+  [class.zone-offline]="!isOnlineBookable"
+  [attr.aria-label]="zone.name + ' (' + vehicleLabel + ')'"
+>
+  <!-- Zone Header -->
+  <header class="zone-header">
+    <div class="zone-title-group">
+      <span class="zone-vehicle-icon" aria-hidden="true">{{ vehicleIcon }}</span>
+      <div class="zone-title-meta">
+        <h3 class="zone-name">{{ zone.name }}</h3>
+        <span class="zone-vehicle-type">{{ vehicleLabel }}</span>
+      </div>
+    </div>
+
+    <div class="zone-badges-group">
+      <span class="zone-badge zone-fee-badge" [attr.aria-label]="'Fee: ' + formattedFee">
+        {{ formattedFee }}
+      </span>
+
+      @if (isOnlineBookable) {
+        <span
+          class="zone-badge zone-count-badge"
+          [attr.aria-label]="availableCount + ' of ' + totalCount + ' slots available'"
+        >
+          {{ availableCount }} / {{ totalCount }} Available
+        </span>
+      } @else {
+        <span class="zone-badge zone-offline-badge" aria-label="Not available for online booking">
+          Offline
+        </span>
+      }
+    </div>
+  </header>
+
+  <!-- Zone Body: Slot Grid or Offline Watermark Presentation -->
+  <div class="zone-body">
+    @if (isOnlineBookable) {
+      @if (slots.length > 0) {
+        <div class="zone-slots-grid" role="group" [attr.aria-label]="zone.name + ' slots'">
+          @for (slot of slots; track slot.id) {
+            <app-parking-slot
+              [slot]="slot"
+              [selected]="slot.id === selectedParkingSlotId"
+              (slotSelect)="onSlotSelect($event)"
+            />
+          }
+        </div>
+      } @else {
+        <div class="zone-empty-state">
+          <p class="empty-message">No parking slots configured for this zone.</p>
+        </div>
+      }
+    } @else {
+      <div
+        class="zone-offline-watermark"
+        role="region"
+        aria-label="Reserved Area. Not available for online booking."
+      >
+        <div class="offline-watermark-icon" aria-hidden="true">&#x1F512;</div>
+        <div class="offline-watermark-content">
+          <span class="offline-title">Reserved Area</span>
+          <span class="offline-subtitle">Not Available for Online Booking</span>
+          <span class="offline-detail">Allocated on-site upon arrival</span>
+        </div>
+      </div>
+    }
+  </div>
+</section>
