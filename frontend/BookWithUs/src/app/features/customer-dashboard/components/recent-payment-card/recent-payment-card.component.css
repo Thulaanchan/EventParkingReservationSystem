@@ -1,0 +1,251 @@
+.dash-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.card-icon-box {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.box-purple {
+  background-color: #ede9fe;
+  color: #4f46e5;
+}
+
+.card-icon-box svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+}
+
+.badge-green {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-gray {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.dash-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+  margin-bottom: 0.5rem;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.breakdown-label {
+  color: #64748b;
+}
+
+.breakdown-val {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+  margin-bottom: 0.75rem;
+}
+
+.total-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.total-amount {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+.method-banner {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.method-icon-box {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  background-color: #dcfce7;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.method-icon-box svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.method-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.method-label {
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+.method-val {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.active-count-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 0.75rem;
+  margin: auto 0;
+  gap: 0.5rem;
+}
+
+.preview-text {
+  font-size: 0.8125rem;
+  color: #475569;
+  margin: 0;
+}
+
+.quick-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem 0;
+  margin: auto 0;
+}
+
+.empty-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.empty-text {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 0.25rem;
+}
+
+.empty-sub {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+.dash-card-footer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4f46e5;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.footer-link:hover {
+  color: #4338ca;
+  transform: translateX(2px);
+}
+
+.arrow-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}

@@ -1,0 +1,77 @@
+<div class="pass-card">
+  <!-- Pass Header -->
+  <div class="pass-header">
+    <svg class="pass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+      <path d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01"></path>
+    </svg>
+    <h3 class="pass-title">Your Event Entry Pass</h3>
+  </div>
+
+  <!-- Pass Body -->
+  <div class="pass-body">
+    <!-- Deterministic QR Code Representation derived from authoritative booking number -->
+    <div class="qr-wrapper" [title]="qrPayload()">
+      <svg class="qr-svg" viewBox="0 0 100 100" fill="none" role="img" aria-label="Event entry QR pass">
+        <!-- Outer Corner Anchors -->
+        <rect x="10" y="10" width="24" height="24" rx="2" stroke="#0f172a" stroke-width="4" />
+        <rect x="16" y="16" width="12" height="12" fill="#0f172a" />
+
+        <rect x="66" y="10" width="24" height="24" rx="2" stroke="#0f172a" stroke-width="4" />
+        <rect x="72" y="16" width="12" height="12" fill="#0f172a" />
+
+        <rect x="10" y="66" width="24" height="24" rx="2" stroke="#0f172a" stroke-width="4" />
+        <rect x="16" y="72" width="12" height="12" fill="#0f172a" />
+
+        <!-- Center Brand Emblem -->
+        <rect x="42" y="42" width="16" height="16" rx="3" fill="#4f46e5" />
+        <text x="50" y="54" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">E</text>
+
+        <!-- Dynamic Data Grid Dots -->
+        <rect x="42" y="12" width="6" height="6" fill="#0f172a" />
+        <rect x="52" y="20" width="6" height="6" fill="#0f172a" />
+        <rect x="42" y="28" width="6" height="6" fill="#0f172a" />
+        <rect x="12" y="42" width="6" height="6" fill="#0f172a" />
+        <rect x="22" y="52" width="6" height="6" fill="#0f172a" />
+        <rect x="28" y="42" width="6" height="6" fill="#0f172a" />
+        <rect x="68" y="42" width="6" height="6" fill="#0f172a" />
+        <rect x="76" y="52" width="6" height="6" fill="#0f172a" />
+        <rect x="82" y="42" width="6" height="6" fill="#0f172a" />
+        <rect x="42" y="68" width="6" height="6" fill="#0f172a" />
+        <rect x="52" y="78" width="6" height="6" fill="#0f172a" />
+        <rect x="72" y="72" width="6" height="6" fill="#0f172a" />
+        <rect x="82" y="82" width="6" height="6" fill="#0f172a" />
+      </svg>
+    </div>
+
+    <!-- Booking Identifier & Status -->
+    <div class="pass-meta">
+      <span class="pass-ref">Booking #{{ bookingNumber }}</span>
+      <span class="status-badge" [ngClass]="getStatusBadgeClass()">
+        @if (bookingStatus === 'Confirmed') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Pending') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Cancelled') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Expired') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        }
+        <span>{{ bookingStatus }}</span>
+      </span>
+    </div>
+
+    <!-- Entrance Notice -->
+    <p class="pass-note">
+      Present this QR code at the venue entrance. Event entry QR only &mdash; parking validation is handled separately.
+    </p>
+  </div>
+</div>

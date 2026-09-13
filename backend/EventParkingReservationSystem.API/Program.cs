@@ -146,6 +146,11 @@ builder.Services.AddScoped<
     IAdminDashboardRepository,
     AdminDashboardRepository>();
 
+// Customer Dashboard
+builder.Services.AddScoped<
+    ICustomerDashboardRepository,
+    CustomerDashboardRepository>();
+
 //
 // Customer services
 //
@@ -208,6 +213,12 @@ builder.Services.AddScoped<
     BookingService>();
 
 //
+// Booking expiry background worker
+//
+builder.Services.AddHostedService<
+    BookingExpiryWorker>();
+
+//
 // Payment services
 //
 builder.Services.AddScoped<
@@ -241,6 +252,13 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IAdminDashboardService,
     AdminDashboardService>();
+
+//
+// Customer Dashboard services
+//
+builder.Services.AddScoped<
+    ICustomerDashboardService,
+    CustomerDashboardService>();
 
 //
 // Authentication services

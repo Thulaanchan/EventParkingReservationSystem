@@ -1,0 +1,19 @@
+<nav class="filter-tabs-container" role="tablist" aria-label="Booking Status Filter">
+  @for (tab of tabs; track tab) {
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.active]="activeTab === tab"
+      [attr.aria-selected]="activeTab === tab"
+      (click)="onSelectTab(tab)"
+    >
+      <span class="tab-label">{{ tab }}</span>
+      @if (getTabCount(tab) !== null) {
+        <span class="tab-count" [class.active-count]="activeTab === tab">
+          {{ getTabCount(tab) }}
+        </span>
+      }
+    </button>
+  }
+</nav>

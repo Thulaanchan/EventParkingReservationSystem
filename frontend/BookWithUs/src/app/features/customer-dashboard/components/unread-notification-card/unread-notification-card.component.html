@@ -1,0 +1,81 @@
+<div class="dash-card">
+  <!-- Card Header -->
+  <div class="dash-card-header">
+    <div class="header-left">
+      <div class="card-icon-box box-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+        </svg>
+      </div>
+      <h3 class="card-title">Unread Notifications</h3>
+    </div>
+
+    @if (count > 0) {
+      <span class="badge badge-purple">{{ count }} Unread</span>
+    } @else {
+      <span class="badge badge-gray">0 Unread</span>
+    }
+  </div>
+
+  <!-- Card Body -->
+  <div class="dash-card-body">
+    @if (notifications.length > 0) {
+      <div class="notifications-list">
+        @for (item of notifications; track item.notificationId) {
+          <div class="notification-item">
+            <div class="notif-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+
+            <div class="notif-content">
+              <div class="notif-header">
+                <span class="notif-title">{{ item.title }}</span>
+                <span class="notif-time">{{ item.timestamp }}</span>
+              </div>
+              <p class="notif-message">{{ item.message }}</p>
+            </div>
+
+            <span class="unread-dot" aria-label="Unread"></span>
+          </div>
+        }
+      </div>
+    } @else if (count > 0) {
+      <div class="active-count-preview">
+        <div class="notif-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+        </div>
+        <p class="preview-text">
+          You have <strong>{{ count }}</strong> unread notification{{ count > 1 ? 's' : '' }}.
+        </p>
+        <a routerLink="/notifications" class="quick-link">View in notifications center</a>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+        </svg>
+        <p class="empty-text">You're all caught up!</p>
+        <span class="empty-sub">No unread notifications</span>
+      </div>
+    }
+  </div>
+
+  <!-- Card Footer -->
+  <div class="dash-card-footer">
+    <a routerLink="/notifications" class="footer-link">
+      <span>View Notifications</span>
+      <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+</div>

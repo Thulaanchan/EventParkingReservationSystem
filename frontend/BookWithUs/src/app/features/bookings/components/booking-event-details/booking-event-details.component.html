@@ -1,0 +1,125 @@
+<div class="event-card">
+  <!-- Poster Image -->
+  <div class="poster-wrap">
+    @if (event?.posterUrl) {
+      <img
+        [src]="event?.posterUrl"
+        [alt]="event?.eventName || 'Event Poster'"
+        class="poster-img"
+        loading="lazy"
+      />
+    } @else {
+      <div class="poster-fallback" aria-hidden="true">
+        <svg class="fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+          <polyline points="17 2 12 7 7 2"></polyline>
+        </svg>
+        <span class="fallback-text">Event</span>
+      </div>
+    }
+  </div>
+
+  <!-- Event Information -->
+  <div class="event-info">
+    @if (event?.categoryName) {
+      <span class="category-tag">{{ event?.categoryName }}</span>
+    }
+
+    <h2 class="event-title">{{ event?.eventName || 'Event Details' }}</h2>
+
+    @if (event?.description) {
+      <p class="event-desc">{{ event?.description }}</p>
+    }
+
+    <div class="info-list">
+      <!-- Venue -->
+      @if (event?.venueName) {
+        <div class="info-item">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>{{ event?.venueName }}</span>
+        </div>
+      }
+
+      <!-- Date & Time -->
+      <div class="info-item">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>
+          {{ event?.eventDate | date:'mediumDate' }}
+          @if (event?.startTime) {
+            &bull; {{ event?.startTime }}
+          }
+          @if (event?.endTime) {
+            - {{ event?.endTime }}
+          }
+        </span>
+      </div>
+
+      <!-- Seats & Parking Summary Line -->
+      <div class="info-item highlight-item">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 18v3h16v-3M7 14l5-5 5 5M12 9v9"></path>
+        </svg>
+        <span>
+          {{ seatCount }} {{ seatCount === 1 ? 'Seat' : 'Seats' }}
+          @if (parkingInfo) {
+            &bull; {{ parkingInfo }}
+          }
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Metadata Block (Right side on desktop) -->
+  <div class="meta-block">
+    <div class="meta-row">
+      <span class="meta-label">Booking No.</span>
+      <span class="meta-value font-mono">#{{ bookingNumber }}</span>
+    </div>
+
+    <div class="meta-row">
+      <span class="meta-label">Booking Date</span>
+      <span class="meta-value">{{ createdAt | date:'mediumDate' }} &bull; {{ createdAt | date:'shortTime' }}</span>
+    </div>
+
+    <div class="meta-row">
+      <span class="meta-label">Status</span>
+      <span class="status-badge" [ngClass]="getStatusBadgeClass()">
+        @if (bookingStatus === 'Confirmed') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Pending') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Cancelled') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        } @else if (bookingStatus === 'Expired') {
+          <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        }
+        <span>{{ bookingStatus }}</span>
+      </span>
+    </div>
+
+    @if (holdExpiresAtUtc && bookingStatus === 'Pending') {
+      <div class="meta-row hold-row">
+        <span class="meta-label">Hold Expires</span>
+        <span class="meta-value text-amber">
+          {{ holdExpiresAtUtc | date:'shortTime' }}
+        </span>
+      </div>
+    }
+  </div>
+</div>

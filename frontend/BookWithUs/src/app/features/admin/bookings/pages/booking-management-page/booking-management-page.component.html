@@ -1,0 +1,139 @@
+<div class="admin-bookings-container">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <div class="header-badge-row">
+        <span class="header-badge">Administration</span>
+      </div>
+      <h1 class="page-title">Booking Management</h1>
+      <p class="page-subtitle">
+        Inspect, monitor, and manage event reservations and attendee bookings.
+      </p>
+    </div>
+  </header>
+
+  <!-- Filter & Event Selector Toolbar -->
+  <app-booking-admin-filter
+    [selectedEventId]="selectedEventId()"
+    [activeFilter]="activeStatusFilter()"
+    [initialSearch]="searchQuery()"
+    [isLoading]="isLoading()"
+    (eventIdSelected)="onSelectEvent($event)"
+    (statusFilterSelected)="onStatusFilterSelected($event)"
+    (searchQueryChange)="onSearchQueryChange($event)"
+  />
+
+  <!-- Stats Grid (Rendered once an event is selected) -->
+  @if (selectedEventId()) {
+    <app-booking-admin-stats
+      [totalCount]="totalBookingsCount()"
+      [confirmedCount]="confirmedBookingsCount()"
+      [pendingCount]="pendingBookingsCount()"
+      [cancelledOrExpiredCount]="cancelledOrExpiredCount()"
+      [totalRevenue]="totalRevenue()"
+      [isLoading]="isLoading()"
+    />
+  }
+
+  <!-- 1. NO EVENT SELECTED STATE -->
+  @if (viewState() === 'no-event-selected') {
+    <section class="state-card select-event-card" role="region" aria-label="Event Selection Prompt">
+      <div class="icon-bubble select-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h2 class="state-title">Select an Event to View Bookings</h2>
+      <p class="state-desc">
+        Admin booking management requires an event context. Please enter a valid Event ID in the selector above to inspect real-time reservations.
+      </p>
+    </section>
+  }
+
+  <!-- 2. LOADING STATE -->
+  @else if (viewState() === 'loading') {
+    <div class="skeleton-table-card" role="status" aria-label="Loading event bookings">
+      <div class="sk-header"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-footer"></div>
+    </div>
+  }
+
+  <!-- 3. ERROR STATE -->
+  @else if (viewState() === 'error') {
+    <section class="state-card error-card" role="alert">
+      <div class="icon-bubble error-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+
+      <h2 class="state-title">Unable to Load Bookings</h2>
+      <p class="state-desc">{{ errorMessage() }}</p>
+
+      <div class="state-actions">
+        @if (isSessionExpired()) {
+          <button type="button" class="btn btn-primary" (click)="onGoToLogin()">
+            Sign In Again
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary" (click)="onRetry()">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Retry
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- 4. EMPTY STATE -->
+  @else if (viewState() === 'empty') {
+    <section class="state-card empty-card" role="status">
+      <div class="icon-bubble empty-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      </div>
+
+      <h2 class="state-title">No Bookings Found</h2>
+
+      @if (searchQuery() || activeStatusFilter() !== 'ALL') {
+        <p class="state-desc">
+          No bookings matched your filter criteria for Event #{{ selectedEventId() }}.
+        </p>
+      } @else {
+        <p class="state-desc">
+          There are currently no bookings recorded for Event #{{ selectedEventId() }}.
+        </p>
+      }
+    </section>
+  }
+
+  <!-- 5. DATA STATE -->
+  @else if (viewState() === 'data') {
+    <app-booking-admin-table
+      [bookings]="filteredBookings()"
+      [isLoading]="isLoading()"
+      (bookingSelected)="onBookingSelected($event)"
+    />
+  }
+
+  <!-- Slide-Over Inspection Drawer -->
+  <app-booking-admin-detail-panel
+    [bookingId]="selectedBookingId()"
+    [isOpen]="isDetailPanelOpen()"
+    (closePanel)="onCloseDetailPanel()"
+  />
+</div>

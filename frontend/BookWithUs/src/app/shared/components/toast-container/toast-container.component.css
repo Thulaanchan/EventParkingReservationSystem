@@ -1,0 +1,4 @@
+/* Toast Container Component Styles */
+:host {
+  display: contents;
+}

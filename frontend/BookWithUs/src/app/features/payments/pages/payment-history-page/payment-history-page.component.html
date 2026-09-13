@@ -1,0 +1,90 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <header class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 m-0">Payment History</h1>
+    <p class="text-sm text-slate-500 mt-1 m-0">View all your completed event parking and reservation payments.</p>
+  </header>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="p-4 rounded-xl mb-5 bg-sky-50 border border-sky-200 text-sky-700 flex items-center gap-3" role="status">
+      <svg class="w-5 h-5 text-sky-600 animate-spin flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12" />
+      </svg>
+      <span class="text-sm font-medium">Loading payment history...</span>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (errorMessage) {
+    <div class="p-4 rounded-xl mb-5 bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-3" role="alert">
+      <svg class="w-5 h-5 text-rose-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span class="text-sm font-medium">Unable to load payment history</span>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    @if (payments.length > 0) {
+      <div class="space-y-4">
+        @for (payment of payments; track payment.paymentId) {
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:border-indigo-200 transition duration-150">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <!-- Booking & Event Details -->
+              <div class="space-y-1">
+                <div class="flex items-center gap-3">
+                  <span class="font-mono text-sm font-bold text-slate-900">#{{ payment.bookingNumber }}</span>
+                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    {{ payment.status }}
+                  </span>
+                </div>
+                <h2 class="text-base font-semibold text-slate-800 m-0">{{ payment.eventName }}</h2>
+                <p class="text-xs text-slate-500 m-0">
+                  Paid on {{ payment.paidAtUtc | date:'medium' }} &bull; {{ getPaymentMethodName(payment.paymentMethod) }}
+                </p>
+              </div>
+
+              <!-- Payment Amount & Action -->
+              <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div class="text-right">
+                  <span class="text-lg sm:text-xl font-extrabold text-indigo-700">
+                    {{ payment.currency }} {{ payment.amount | number:'1.2-2' }}
+                  </span>
+                </div>
+
+                @if (payment.receiptAvailable) {
+                  <button
+                    type="button"
+                    (click)="viewReceipt(payment.paymentId)"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold transition duration-150 cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    <span>View Receipt</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center shadow-sm max-w-lg mx-auto">
+        <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-2">No payment history found</h2>
+        <p class="text-sm text-slate-500 m-0">You have not completed any payments yet.</p>
+      </div>
+    }
+  }
+</div>

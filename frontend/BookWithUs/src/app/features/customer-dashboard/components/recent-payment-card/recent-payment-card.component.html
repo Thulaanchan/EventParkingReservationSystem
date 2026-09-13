@@ -1,0 +1,95 @@
+<div class="dash-card">
+  <!-- Card Header -->
+  <div class="dash-card-header">
+    <div class="header-left">
+      <div class="card-icon-box box-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+      </div>
+      <h3 class="card-title">Recent Payments</h3>
+    </div>
+
+    @if (count > 0) {
+      <span class="badge badge-green">Completed</span>
+    } @else {
+      <span class="badge badge-gray">0 Payments</span>
+    }
+  </div>
+
+  <!-- Card Body -->
+  <div class="dash-card-body">
+    @if (payment) {
+      <div class="payment-preview">
+        <!-- Breakdown Rows -->
+        <div class="breakdown-list">
+          <div class="breakdown-row">
+            <span class="breakdown-label">Ticket Total</span>
+            <span class="breakdown-val">{{ payment.ticketTotal | currency:'LKR ':'symbol':'1.0-0' }}</span>
+          </div>
+
+          @if (payment.parkingFee > 0) {
+            <div class="breakdown-row">
+              <span class="breakdown-label">Parking</span>
+              <span class="breakdown-val">{{ payment.parkingFee | currency:'LKR ':'symbol':'1.0-0' }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Total Paid (screen-07) -->
+        <div class="total-row">
+          <span class="total-label">Amount Paid</span>
+          <span class="total-amount">{{ payment.amountPaid | currency:'LKR ':'symbol':'1.0-0' }}</span>
+        </div>
+
+        <!-- Payment Method Pill (screen-07) -->
+        <div class="method-banner">
+          <div class="method-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </div>
+          <div class="method-text">
+            <span class="method-label">Payment Method</span>
+            <span class="method-val">{{ payment.paymentMethod }}</span>
+          </div>
+        </div>
+      </div>
+    } @else if (count > 0) {
+      <div class="active-count-preview">
+        <div class="method-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
+        <p class="preview-text">
+          You have <strong>{{ count }}</strong> completed payment{{ count > 1 ? 's' : '' }} in the last 30 days.
+        </p>
+        <a routerLink="/payments" class="quick-link">View payment history</a>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <p class="empty-text">No recent payments</p>
+        <span class="empty-sub">Transactions from the past 30 days appear here</span>
+      </div>
+    }
+  </div>
+
+  <!-- Card Footer -->
+  <div class="dash-card-footer">
+    <a routerLink="/payments" class="footer-link">
+      <span>View Payment History</span>
+      <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+</div>

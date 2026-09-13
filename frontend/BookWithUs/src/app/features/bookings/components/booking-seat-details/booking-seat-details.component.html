@@ -1,0 +1,47 @@
+<div class="seat-card">
+  <!-- Card Header -->
+  <div class="card-header">
+    <div class="header-left">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 18v3h16v-3M7 14l5-5 5 5M12 9v9"></path>
+      </svg>
+      <h3 class="card-title">Seat Details</h3>
+    </div>
+    <span class="seat-count-badge">{{ seats.length }} {{ seats.length === 1 ? 'Seat' : 'Seats' }}</span>
+  </div>
+
+  <!-- Seats Table / List -->
+  <div class="seat-list">
+    @for (seat of seats; track seat.seatId) {
+      <div class="seat-row">
+        <!-- Seat Badge & Location -->
+        <div class="seat-left">
+          <span class="seat-code-badge">{{ seat.seatCode }}</span>
+          <div class="seat-meta">
+            <span class="section-name">{{ seat.sectionName || 'Standard' }}</span>
+            <span class="row-num">Row {{ seat.rowLabel }}, Seat {{ seat.seatNumber }}</span>
+          </div>
+        </div>
+
+        <!-- Attendee -->
+        <div class="attendee-info">
+          <svg class="attendee-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+          </svg>
+          <span class="attendee-text">{{ getAttendeeLabel(seat) }}</span>
+        </div>
+
+        <!-- Price -->
+        <div class="seat-price">
+          {{ formatCurrency(seat.priceSnapshot) }}
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Ticket Total Footer -->
+  <div class="card-footer">
+    <span class="total-label">Ticket Total</span>
+    <span class="total-value">{{ formatCurrency(getTicketTotal()) }}</span>
+  </div>
+</div>

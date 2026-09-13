@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Customers;
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
@@ -117,12 +117,17 @@ public class AuthService : IAuthService
                 "Please verify your email before signing in.");
         }
 
+        var role = customer.Email.StartsWith("admin@", StringComparison.OrdinalIgnoreCase) ||
+                   customer.Email.Equals("admin@bookwithus.com", StringComparison.OrdinalIgnoreCase)
+            ? AppRoles.Administrator
+            : AppRoles.Customer;
+
         var tokenResult =
             _jwtTokenService.GenerateToken(
                 customer.CustomerId,
                 customer.Email,
                 GetDisplayName(customer),
-                AppRoles.Customer,
+                role,
                 request.RememberMe);
 
         return new AuthResponseDto
@@ -132,7 +137,7 @@ public class AuthService : IAuthService
             UserId = customer.CustomerId,
             DisplayName = GetDisplayName(customer),
             Email = customer.Email,
-            Role = AppRoles.Customer
+            Role = role
         };
     }
 

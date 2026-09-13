@@ -1,0 +1,23 @@
+/* Notification Bell Component Styles */
+:host {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+/* Responsive Dropdown Panel */
+.notification-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: min(24rem, calc(100vw - 2rem));
+  max-width: 24rem;
+  z-index: 50;
+}
+
+@media (max-width: 640px) {
+  .notification-panel {
+    right: -1rem;
+    width: calc(100vw - 2rem);
+  }
+}

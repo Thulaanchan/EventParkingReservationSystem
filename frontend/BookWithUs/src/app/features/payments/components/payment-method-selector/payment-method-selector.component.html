@@ -1,0 +1,31 @@
+<div class="method-selector-container">
+  <label class="selector-title">Select Payment Method</label>
+  <div class="methods-grid">
+    @for (method of methods; track method.id) {
+      <button
+        type="button"
+        class="method-card"
+        [class.selected]="selectedMethod === method.id"
+        (click)="select(method.id)"
+      >
+        <div class="card-radio">
+          <span class="radio-outer">
+            @if (selectedMethod === method.id) {
+              <span class="radio-inner"></span>
+            }
+          </span>
+        </div>
+
+        <div class="card-body">
+          <div class="card-header">
+            <span class="method-title">{{ method.title }}</span>
+            @if (method.badge) {
+              <span class="method-badge">{{ method.badge }}</span>
+            }
+          </div>
+          <span class="method-subtitle">{{ method.subtitle }}</span>
+        </div>
+      </button>
+    }
+  </div>
+</div>

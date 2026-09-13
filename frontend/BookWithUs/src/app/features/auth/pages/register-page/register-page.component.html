@@ -1,0 +1,323 @@
+<div class="register-layout">
+  <div class="register-container">
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="auth-card-header">
+        <div class="auth-icon-badge">
+          <svg class="auth-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h1 class="auth-card-title">Create an Account</h1>
+        <p class="auth-card-subtitle">Join EventFlow to manage your bookings.</p>
+      </div>
+
+      <!-- Error Alert Message -->
+      @if (errorMessage) {
+        <div class="alert alert-error" role="alert" aria-live="polite">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <div class="alert-content">
+            <span class="alert-title">Registration failed</span>
+            <span class="alert-message">{{ errorMessage }}</span>
+          </div>
+        </div>
+      }
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form" novalidate>
+        <!-- Name Fields (First Name & Last Name) -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <div class="input-wrapper" [class.input-error]="isFieldInvalid('firstName')">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                type="text"
+                id="firstName"
+                formControlName="firstName"
+                placeholder="e.g. Leo"
+                autocomplete="given-name"
+                class="form-input"
+                [attr.aria-invalid]="isFieldInvalid('firstName')"
+                aria-describedby="firstName-error"
+              />
+            </div>
+            @if (isFieldInvalid('firstName')) {
+              <p id="firstName-error" class="field-error" role="alert">
+                @if (firstNameControl?.errors?.['required']) {
+                  <span>First name is required.</span>
+                } @else if (firstNameControl?.errors?.['maxlength']) {
+                  <span>First name cannot exceed 50 characters.</span>
+                }
+              </p>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <div class="input-wrapper" [class.input-error]="isFieldInvalid('lastName')">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                type="text"
+                id="lastName"
+                formControlName="lastName"
+                placeholder="e.g. Thas"
+                autocomplete="family-name"
+                class="form-input"
+                [attr.aria-invalid]="isFieldInvalid('lastName')"
+                aria-describedby="lastName-error"
+              />
+            </div>
+            @if (isFieldInvalid('lastName')) {
+              <p id="lastName-error" class="field-error" role="alert">
+                @if (lastNameControl?.errors?.['required']) {
+                  <span>Last name is required.</span>
+                } @else if (lastNameControl?.errors?.['maxlength']) {
+                  <span>Last name cannot exceed 50 characters.</span>
+                }
+              </p>
+            }
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <div class="input-wrapper" [class.input-error]="isFieldInvalid('email')">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="name@example.com"
+              autocomplete="email"
+              class="form-input"
+              [attr.aria-invalid]="isFieldInvalid('email')"
+              aria-describedby="email-error email-note"
+            />
+          </div>
+          @if (isFieldInvalid('email')) {
+            <p id="email-error" class="field-error" role="alert">
+              @if (emailControl?.errors?.['required']) {
+                <span>Email address is required.</span>
+              } @else if (emailControl?.errors?.['email']) {
+                <span>Please enter a valid email address.</span>
+              } @else if (emailControl?.errors?.['maxlength']) {
+                <span>Email cannot exceed 150 characters.</span>
+              }
+            </p>
+          } @else {
+            <p id="email-note" class="field-info">
+              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>A verification link will be sent to your email address.</span>
+            </p>
+          }
+        </div>
+
+        <!-- Phone Number Field (Optional) -->
+        <div class="form-group">
+          <label for="phone" class="form-label">
+            Phone Number <span class="optional-tag">(Optional)</span>
+          </label>
+          <div class="input-wrapper" [class.input-error]="isFieldInvalid('phone')">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              placeholder="e.g. +94 77 123 4567"
+              autocomplete="tel"
+              class="form-input"
+              [attr.aria-invalid]="isFieldInvalid('phone')"
+              aria-describedby="phone-error"
+            />
+          </div>
+          @if (isFieldInvalid('phone')) {
+            <p id="phone-error" class="field-error" role="alert">
+              @if (phoneControl?.errors?.['maxlength']) {
+                <span>Phone number cannot exceed 25 characters.</span>
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-wrapper" [class.input-error]="isFieldInvalid('password')">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Enter at least 8 characters"
+              autocomplete="new-password"
+              class="form-input form-input-password"
+              [attr.aria-invalid]="isFieldInvalid('password')"
+              aria-describedby="password-error password-hint"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              tabindex="0"
+            >
+              @if (showPassword) {
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              } @else {
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (isFieldInvalid('password')) {
+            <p id="password-error" class="field-error" role="alert">
+              @if (passwordControl?.errors?.['required']) {
+                <span>Password is required.</span>
+              } @else if (passwordControl?.errors?.['minlength']) {
+                <span>Password must be at least 8 characters long.</span>
+              } @else if (passwordControl?.errors?.['missingUpperCase']) {
+                <span>Must include at least one uppercase letter.</span>
+              } @else if (passwordControl?.errors?.['missingLowerCase']) {
+                <span>Must include at least one lowercase letter.</span>
+              } @else if (passwordControl?.errors?.['missingNumber']) {
+                <span>Must include at least one number.</span>
+              } @else if (passwordControl?.errors?.['missingSpecialChar']) {
+                <span>Must include at least one special character.</span>
+              }
+            </p>
+          } @else {
+            <p id="password-hint" class="field-hint">Must be at least 8 characters long.</p>
+          }
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <div class="input-wrapper" [class.input-error]="isFieldInvalid('confirmPassword') || hasPasswordMismatch()">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              placeholder="Re-enter your password"
+              autocomplete="new-password"
+              class="form-input form-input-password"
+              [attr.aria-invalid]="isFieldInvalid('confirmPassword') || hasPasswordMismatch()"
+              aria-describedby="confirmPassword-error"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+              tabindex="0"
+            >
+              @if (showConfirmPassword) {
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              } @else {
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (isFieldInvalid('confirmPassword') || hasPasswordMismatch()) {
+            <p id="confirmPassword-error" class="field-error" role="alert">
+              @if (confirmPasswordControl?.errors?.['required']) {
+                <span>Please confirm your password.</span>
+              } @else if (hasPasswordMismatch()) {
+                <span>Passwords do not match.</span>
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Terms Accepted Checkbox -->
+        <div class="form-group terms-group">
+          <label class="checkbox-label" for="termsAccepted">
+            <input
+              type="checkbox"
+              id="termsAccepted"
+              formControlName="termsAccepted"
+              class="checkbox-input"
+              [attr.aria-invalid]="isFieldInvalid('termsAccepted')"
+              aria-describedby="terms-error"
+            />
+            <span class="checkbox-text">
+              By creating an account, you agree to our
+              <span class="terms-link">Terms of Service</span> and
+              <span class="terms-link">Privacy Policy</span>.
+            </span>
+          </label>
+          @if (isFieldInvalid('termsAccepted')) {
+            <p id="terms-error" class="field-error" role="alert">
+              <span>You must accept the terms to create an account.</span>
+            </p>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="registerForm.invalid || isSubmitting"
+        >
+          @if (isSubmitting) {
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Creating account...</span>
+          } @else {
+            <span>Create Account</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          }
+        </button>
+      </form>
+
+      <!-- Footer: Login Link -->
+      <div class="auth-card-footer">
+        <p class="login-prompt">
+          Already have an account?
+          <a routerLink="/auth/login" class="login-link">Log in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
