@@ -1,0 +1,125 @@
+<div class="max-w-3xl mx-auto px-4 py-8">
+  @if (isLoading) {
+    <div class="p-4 rounded-xl mb-5 bg-sky-50 border border-sky-200 text-sky-700 flex items-center gap-3" role="status">
+      <svg class="w-5 h-5 text-sky-600 animate-spin flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12" />
+      </svg>
+      <span class="text-sm font-medium">Loading receipt...</span>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="p-4 rounded-xl mb-5 bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-3" role="alert">
+      <svg class="w-5 h-5 text-rose-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span class="text-sm font-medium">Unable to load receipt</span>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    @if (receipt) {
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <!-- Receipt Header with Success Badge -->
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-100 gap-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 m-0">Payment Receipt</h1>
+            <p class="text-xs text-slate-500 mt-1 m-0">Payment ID: #{{ receipt.paymentId }}</p>
+          </div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-semibold self-start sm:self-auto">
+            <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span>Paid</span>
+          </div>
+        </header>
+
+        <!-- Booking Details Card/Section -->
+        <section class="py-6 border-b border-slate-100">
+          <h2 class="text-base font-semibold text-slate-900 mb-4">Booking Details</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div class="flex flex-col gap-1">
+              <span class="text-slate-500">Booking Number</span>
+              <span class="font-mono font-bold text-slate-800">{{ receipt.bookingNumber }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-slate-500">Customer Name</span>
+              <span class="font-semibold text-slate-800">{{ receipt.customerName }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-slate-500">Event Name</span>
+              <span class="font-semibold text-slate-800">{{ receipt.eventName }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-slate-500">Venue Name</span>
+              <span class="font-semibold text-slate-800">{{ receipt.venueName }}</span>
+            </div>
+            <div class="flex flex-col gap-1 sm:col-span-2">
+              <span class="text-slate-500">Event Date</span>
+              <span class="font-semibold text-slate-800">{{ receipt.eventDateTime | date:'medium' }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payment Breakdown Card/Section -->
+        <section class="py-6">
+          <h2 class="text-base font-semibold text-slate-900 mb-4">Payment Breakdown</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Seat Amount</span>
+              <span class="font-medium text-slate-900">{{ receipt.currency }} {{ receipt.seatAmount | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Parking Amount</span>
+              <span class="font-medium text-slate-900">{{ receipt.currency }} {{ receipt.parkingAmount | number:'1.2-2' }}</span>
+            </div>
+            <div class="h-px bg-slate-100 my-2"></div>
+            <div class="flex justify-between items-baseline pt-1">
+              <span class="text-base font-bold text-slate-900">Total Amount</span>
+              <span class="text-2xl font-extrabold text-indigo-700">
+                {{ receipt.currency }} {{ receipt.totalAmount | number:'1.2-2' }}
+              </span>
+            </div>
+            <div class="h-px bg-slate-100 my-2"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs">
+              <div>
+                <span class="text-slate-500 block">Currency</span>
+                <span class="font-semibold text-slate-800">{{ receipt.currency }}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Payment Method</span>
+                <span class="font-semibold text-slate-800">{{ getPaymentMethodName(receipt.paymentMethod) }}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Payment Status</span>
+                <span class="font-semibold text-emerald-700">{{ receipt.paymentStatus }}</span>
+              </div>
+            </div>
+            @if (receipt.paidAtUtc) {
+              <div class="pt-2 text-xs text-slate-500">
+                Paid Date: <strong class="text-slate-700">{{ receipt.paidAtUtc | date:'medium' }}</strong>
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    } @else {
+      <!-- Receipt is null -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center shadow-sm max-w-lg mx-auto">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-2">Receipt information unavailable</h2>
+        <p class="text-sm text-slate-500">
+          We could not find receipt details for this payment.
+        </p>
+      </div>
+    }
+  }
+</div>

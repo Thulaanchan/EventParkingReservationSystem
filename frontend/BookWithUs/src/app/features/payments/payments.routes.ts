@@ -12,5 +12,12 @@ export const paymentRoutes: Routes = [
       import(
         './pages/payment-confirmation-page/payment-confirmation-page.component'
       ).then((m) => m.PaymentConfirmationPageComponent)
+  },
+  {
+    path: 'receipt/:paymentId',
+    loadComponent: () =>
+      import(
+        './pages/payment-receipt-page/payment-receipt-page.component'
+      ).then((m) => m.PaymentReceiptPageComponent)
   }
 ];

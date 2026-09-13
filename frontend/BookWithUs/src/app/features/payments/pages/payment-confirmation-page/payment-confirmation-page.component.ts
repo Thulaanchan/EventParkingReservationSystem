@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Payment } from '../../../../core/models/payments/payment.model';
 import { PaymentMethod } from '../../../../core/models/payments/payment-method.model';
@@ -14,6 +14,7 @@ import { PaymentMethod } from '../../../../core/models/payments/payment-method.m
 })
 export class PaymentConfirmationPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   bookingId!: number;
   payment: Payment | null = null;
@@ -40,6 +41,12 @@ export class PaymentConfirmationPageComponent implements OnInit {
       if (!this.bookingId && this.payment.bookingId) {
         this.bookingId = this.payment.bookingId;
       }
+    }
+  }
+
+  viewReceipt(): void {
+    if (this.payment?.paymentId) {
+      this.router.navigate(['/payments/receipt', this.payment.paymentId]);
     }
   }
 
