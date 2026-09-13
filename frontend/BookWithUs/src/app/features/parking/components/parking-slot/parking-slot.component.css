@@ -34,14 +34,16 @@
    ========================================================================== */
 
 /* Available */
-.parking-slot.available {
+.parking-slot.available,
+.parking-slot.parking-status-available {
   background-color: #ffffff;
   border: 1.5px solid #cbd5e1;
   color: #1e293b;
   cursor: pointer;
 }
 
-.parking-slot.available:hover {
+.parking-slot.available:hover,
+.parking-slot.parking-status-available:hover {
   border-color: #4f46e5;
   background-color: #f5f3ff;
   color: #4338ca;
@@ -49,7 +51,8 @@
   box-shadow: 0 3px 6px -1px rgba(79, 70, 229, 0.18);
 }
 
-.parking-slot.available:active {
+.parking-slot.available:active,
+.parking-slot.parking-status-available:active {
   transform: translateY(0);
 }
 
@@ -64,7 +67,8 @@
 }
 
 /* Held */
-.parking-slot.held {
+.parking-slot.held,
+.parking-slot.parking-status-held {
   background-color: #e0f2fe;
   border: 1.5px solid #bae6fd;
   color: #0369a1;
@@ -72,7 +76,8 @@
 }
 
 /* Occupied */
-.parking-slot.occupied {
+.parking-slot.occupied,
+.parking-slot.parking-status-occupied {
   background-color: #f1f5f9;
   border: 1.5px solid #e2e8f0;
   color: #94a3b8;

@@ -6,7 +6,7 @@ import { SeatStatus, SeatStatusName } from '../../core/models/seats/seat-status.
   standalone: true
 })
 export class SeatStatusDirective implements OnChanges {
-  @Input('appSeatStatus') status: SeatStatus | SeatStatusName | string | null | undefined;
+  @Input('appSeatStatus') status: SeatStatus | SeatStatusName | null | undefined;
 
   private readonly statusClasses = [
     'seat-status-available',
@@ -38,18 +38,18 @@ export class SeatStatusDirective implements OnChanges {
     this.renderer.setAttribute(this.el.nativeElement, 'data-seat-status', normalized.toLowerCase());
   }
 
-  private normalizeStatus(status: SeatStatus | SeatStatusName | string | null | undefined): SeatStatusName | null {
+  private normalizeStatus(status: SeatStatus | SeatStatusName | null | undefined): SeatStatusName | null {
     if (status == null) {
       return null;
     }
 
-    if (status === SeatStatus.Available || status === 'Available' || status === '1') {
+    if (status === SeatStatus.Available || status === 'Available') {
       return 'Available';
     }
-    if (status === SeatStatus.Held || status === 'Held' || status === '2') {
+    if (status === SeatStatus.Held || status === 'Held') {
       return 'Held';
     }
-    if (status === SeatStatus.Booked || status === 'Booked' || status === '3') {
+    if (status === SeatStatus.Booked || status === 'Booked') {
       return 'Booked';
     }
 

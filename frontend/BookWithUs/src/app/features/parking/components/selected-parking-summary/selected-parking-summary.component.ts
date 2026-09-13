@@ -11,11 +11,12 @@ import {
   VEHICLE_TYPE_LABELS,
   VehicleTypeName
 } from '../../../../core/models/parking/vehicle-type.model';
+import { SlotCodePipe } from '../../../../shared/pipes/slot-code.pipe';
 
 @Component({
   selector: 'app-selected-parking-summary',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SlotCodePipe],
   templateUrl: './selected-parking-summary.component.html',
   styleUrls: ['./selected-parking-summary.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

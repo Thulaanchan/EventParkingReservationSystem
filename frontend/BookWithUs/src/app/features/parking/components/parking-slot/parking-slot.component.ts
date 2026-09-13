@@ -7,11 +7,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ParkingAvailability } from '../../../../core/models/parking/parking-availability.model';
+import { ParkingStatusDirective } from '../../../../shared/directives/parking-status.directive';
+import { SlotCodePipe } from '../../../../shared/pipes/slot-code.pipe';
 
 @Component({
   selector: 'app-parking-slot',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ParkingStatusDirective, SlotCodePipe],
   templateUrl: './parking-slot.component.html',
   styleUrls: ['./parking-slot.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

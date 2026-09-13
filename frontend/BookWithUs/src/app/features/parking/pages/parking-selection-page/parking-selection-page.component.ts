@@ -24,6 +24,10 @@ import { ParkingMapComponent } from '../../components/parking-map/parking-map.co
 import { ParkingLegendComponent } from '../../components/parking-legend/parking-legend.component';
 import { VehiclePriceListComponent } from '../../components/vehicle-price-list/vehicle-price-list.component';
 import { SelectedParkingSummaryComponent } from '../../components/selected-parking-summary/selected-parking-summary.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { AlertBannerComponent } from '../../../../shared/components/alert-banner/alert-banner.component';
 
 @Component({
   selector: 'app-parking-selection-page',
@@ -35,7 +39,11 @@ import { SelectedParkingSummaryComponent } from '../../components/selected-parki
     ParkingMapComponent,
     ParkingLegendComponent,
     VehiclePriceListComponent,
-    SelectedParkingSummaryComponent
+    SelectedParkingSummaryComponent,
+    LoadingSpinnerComponent,
+    ErrorMessageComponent,
+    EmptyStateComponent,
+    AlertBannerComponent
   ],
   templateUrl: './parking-selection-page.component.html',
   styleUrls: ['./parking-selection-page.component.css'],
@@ -78,6 +86,26 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
    * Null if M2 Event models/service remain unintegrated stubs.
    */
   eventInfo: ParkingEventSummaryInfo | null = null;
+
+  /**
+   * Interactive map viewport scale factor.
+   */
+  mapZoom = 1.0;
+  readonly minZoom = 0.7;
+  readonly maxZoom = 1.5;
+  readonly zoomStep = 0.15;
+
+  get canZoomIn(): boolean {
+    return this.mapZoom < this.maxZoom;
+  }
+
+  get canZoomOut(): boolean {
+    return this.mapZoom > this.minZoom;
+  }
+
+  get canResetMap(): boolean {
+    return Math.abs(this.mapZoom - 1.0) > 0.01;
+  }
 
   get selectedParkingSlotId(): number | null {
     return this.selectedParking?.parkingSlotId ?? null;
@@ -270,13 +298,15 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
    * - conflictingResourceIds: number[]
    * - conflictingParkingSlotId: number | null
    */
-  handleParkingConflict(conflictPayload: any): void {
-    const payload: ParkingConflictResponse =
-      conflictPayload?.error || conflictPayload;
+  handleParkingConflict(conflictPayload: unknown): void {
+    const rawPayload = (conflictPayload && typeof conflictPayload === 'object' && 'error' in conflictPayload)
+      ? (conflictPayload as { error: unknown }).error
+      : conflictPayload;
+    const payload = rawPayload && typeof rawPayload === 'object' ? (rawPayload as Partial<ParkingConflictResponse> & Record<string, unknown>) : null;
     const conflictIds: number[] = [];
 
     if (Array.isArray(payload?.conflictingResourceIds)) {
-      conflictIds.push(...payload.conflictingResourceIds);
+      conflictIds.push(...(payload.conflictingResourceIds as number[]));
     }
     if (
       payload?.conflictingParkingSlotId != null &&
@@ -335,8 +365,9 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
   /**
    * Safely maps HTTP errors to customer-friendly messages without exposing raw exceptions.
    */
-  private mapHttpError(err: any): void {
-    const status = err?.status;
+  private mapHttpError(err: unknown): void {
+    const httpErr = err && typeof err === 'object' ? (err as { status?: number }) : null;
+    const status = httpErr?.status;
     if (status === 404) {
       this.errorMessage = 'Parking information is unavailable for this event.';
     } else if (status === 409) {
@@ -349,22 +380,30 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
   }
 
   // =========================================================================
-  // MAP TOOLBAR INTEGRATION HOOKS
+  // MAP TOOLBAR INTEGRATION HOOKS (WORKING TRANSFORM)
   // =========================================================================
 
   onResetMap(): void {
-    // Toolbar hook for future map canvas transformation
+    this.mapZoom = 1.0;
+    this.cdr.markForCheck();
   }
 
   onZoomIn(): void {
-    // Toolbar hook for future map canvas transformation
+    if (this.canZoomIn) {
+      this.mapZoom = Math.min(this.maxZoom, Math.round((this.mapZoom + this.zoomStep) * 100) / 100);
+      this.cdr.markForCheck();
+    }
   }
 
   onZoomOut(): void {
-    // Toolbar hook for future map canvas transformation
+    if (this.canZoomOut) {
+      this.mapZoom = Math.max(this.minZoom, Math.round((this.mapZoom - this.zoomStep) * 100) / 100);
+      this.cdr.markForCheck();
+    }
   }
 
   onFitMap(): void {
-    // Toolbar hook for future map canvas transformation
+    this.mapZoom = 1.0;
+    this.cdr.markForCheck();
   }
 }

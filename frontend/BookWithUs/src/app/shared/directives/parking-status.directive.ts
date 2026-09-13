@@ -6,7 +6,7 @@ import { ParkingStatus, ParkingStatusName } from '../../core/models/parking/park
   standalone: true
 })
 export class ParkingStatusDirective implements OnChanges {
-  @Input('appParkingStatus') status: ParkingStatus | ParkingStatusName | string | null | undefined;
+  @Input('appParkingStatus') status: ParkingStatus | ParkingStatusName | null | undefined;
 
   private readonly statusClasses = [
     'parking-status-available',
@@ -38,18 +38,18 @@ export class ParkingStatusDirective implements OnChanges {
     this.renderer.setAttribute(this.el.nativeElement, 'data-parking-status', normalized.toLowerCase());
   }
 
-  private normalizeStatus(status: ParkingStatus | ParkingStatusName | string | null | undefined): ParkingStatusName | null {
+  private normalizeStatus(status: ParkingStatus | ParkingStatusName | null | undefined): ParkingStatusName | null {
     if (status == null) {
       return null;
     }
 
-    if (status === ParkingStatus.Available || status === 'Available' || status === '1') {
+    if (status === ParkingStatus.Available || status === 'Available') {
       return 'Available';
     }
-    if (status === ParkingStatus.Held || status === 'Held' || status === '2') {
+    if (status === ParkingStatus.Held || status === 'Held') {
       return 'Held';
     }
-    if (status === ParkingStatus.Occupied || status === 'Occupied' || status === '3') {
+    if (status === ParkingStatus.Occupied || status === 'Occupied') {
       return 'Occupied';
     }
 

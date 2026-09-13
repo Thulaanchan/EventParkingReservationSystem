@@ -1,6 +1,7 @@
 <button
   type="button"
   class="parking-slot"
+  [appParkingStatus]="slot.status"
   [class.available]="isSelectable && !selected"
   [class.selected]="selected"
   [class.held]="isHeld"
@@ -12,7 +13,7 @@
   [attr.aria-disabled]="!isSelectable && !selected"
   (click)="onSelect()"
 >
-  <span class="slot-code">{{ slot.slotCode }}</span>
+  <span class="slot-code">{{ slot | slotCode }}</span>
 
   @if (selected) {
     <span class="status-indicator selected-badge" aria-hidden="true">&#x2713;</span>

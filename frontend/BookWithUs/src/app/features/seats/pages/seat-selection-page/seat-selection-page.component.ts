@@ -22,6 +22,10 @@ import { SelectedSeatsSummaryComponent } from '../../components/selected-seats-s
 import { SeatPriceSummaryComponent } from '../../components/seat-price-summary/seat-price-summary.component';
 import { SeatSectionSummaryComponent } from '../../components/seat-section-summary/seat-section-summary.component';
 import { SeatLegendComponent } from '../../components/seat-legend/seat-legend.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
+import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { AlertBannerComponent } from '../../../../shared/components/alert-banner/alert-banner.component';
 
 @Component({
   selector: 'app-seat-selection-page',
@@ -34,7 +38,11 @@ import { SeatLegendComponent } from '../../components/seat-legend/seat-legend.co
     SelectedSeatsSummaryComponent,
     SeatPriceSummaryComponent,
     SeatSectionSummaryComponent,
-    SeatLegendComponent
+    SeatLegendComponent,
+    LoadingSpinnerComponent,
+    ErrorMessageComponent,
+    EmptyStateComponent,
+    AlertBannerComponent
   ],
   templateUrl: './seat-selection-page.component.html',
   styleUrls: ['./seat-selection-page.component.css'],
@@ -455,14 +463,17 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
    * Reusable conflict handling helper supporting both backend 409 shapes
    * (conflictingResourceIds or conflictingSeatIds).
    */
-  handleSeatConflict(conflictPayload: any): void {
-    const payload = conflictPayload?.error || conflictPayload;
+  handleSeatConflict(conflictPayload: unknown): void {
+    const rawPayload = (conflictPayload && typeof conflictPayload === 'object' && 'error' in conflictPayload)
+      ? (conflictPayload as { error: unknown }).error
+      : conflictPayload;
+    const payload = rawPayload && typeof rawPayload === 'object' ? (rawPayload as Record<string, unknown>) : null;
     const conflictIds: number[] = [];
-    if (Array.isArray(payload?.conflictingResourceIds)) {
-      conflictIds.push(...payload.conflictingResourceIds);
+    if (Array.isArray(payload?.['conflictingResourceIds'])) {
+      conflictIds.push(...(payload['conflictingResourceIds'] as number[]));
     }
-    if (Array.isArray(payload?.conflictingSeatIds)) {
-      conflictIds.push(...payload.conflictingSeatIds);
+    if (Array.isArray(payload?.['conflictingSeatIds'])) {
+      conflictIds.push(...(payload['conflictingSeatIds'] as number[]));
     }
 
     if (conflictIds.length > 0) {
@@ -472,7 +483,7 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
       this.conflictMessage =
         'One or more of your chosen seats were held by another user. Valid selections were preserved. The map has been updated.';
     } else {
-      const rawMsg = payload?.message;
+      const rawMsg = payload?.['message'];
       if (typeof rawMsg === 'string' && !rawMsg.includes('Exception') && !rawMsg.includes('Http')) {
         this.conflictMessage = rawMsg;
       } else {
@@ -522,8 +533,9 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
   /**
    * Safely maps HTTP errors to customer-friendly messages without exposing raw exceptions.
    */
-  private mapHttpError(err: any): void {
-    const status = err?.status;
+  private mapHttpError(err: unknown): void {
+    const httpErr = err && typeof err === 'object' ? (err as { status?: number }) : null;
+    const status = httpErr?.status;
     if (status === 404) {
       this.errorMessage = 'The seating layout for this event could not be found.';
     } else if (status === 409) {

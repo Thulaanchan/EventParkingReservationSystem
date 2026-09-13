@@ -29,25 +29,30 @@
 
   <!-- Notification Banners -->
   @if (notificationMessage) {
-    <div class="page-alert alert-info" role="status">
-      <span class="alert-icon" aria-hidden="true">&#x2139;&#xFE0F;</span>
-      <p class="alert-text">{{ notificationMessage }}</p>
-    </div>
+    <app-alert-banner
+      variant="info"
+      [message]="notificationMessage"
+      [dismissible]="true"
+      (dismiss)="notificationMessage = null"
+    />
   }
 
   @if (conflictMessage) {
-    <div class="page-alert alert-warning" role="alert">
-      <span class="alert-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
-      <p class="alert-text">{{ conflictMessage }}</p>
-    </div>
+    <app-alert-banner
+      variant="warning"
+      [message]="conflictMessage"
+      [dismissible]="true"
+      (dismiss)="conflictMessage = null"
+    />
   }
 
   @if (errorMessage && hasParkingConfigured) {
-    <div class="page-alert alert-error" role="alert">
-      <span class="alert-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
-      <p class="alert-text">{{ errorMessage }}</p>
-      <button type="button" class="alert-retry-btn" (click)="reloadParking()">Retry</button>
-    </div>
+    <app-alert-banner
+      variant="error"
+      [message]="errorMessage"
+      [dismissible]="true"
+      (dismiss)="errorMessage = null"
+    />
   }
 
   <!-- Main Grid Layout -->
@@ -62,41 +67,29 @@
       </header>
 
       @if (isLoading) {
-        <div class="parking-state-card state-loading" role="status" aria-live="polite">
-          <div class="loading-spinner" aria-hidden="true"></div>
-          <p class="loading-label">Loading parking availability...</p>
-        </div>
+        <app-loading-spinner message="Loading parking availability..." />
       } @else if (errorMessage && !hasParkingConfigured) {
-        <div class="parking-state-card state-error" role="alert">
-          <span class="state-icon" aria-hidden="true">&#x26A0;&#xFE0F;</span>
-          <h2 class="state-title">Unable to Load Parking</h2>
-          <p class="state-desc">{{ errorMessage }}</p>
-          <div class="state-actions">
-            <button type="button" class="btn btn-primary" (click)="reloadParking()">
-              Retry
-            </button>
-            <button type="button" class="btn btn-outline" (click)="onSkipParking()">
-              Skip Parking
-            </button>
-          </div>
-        </div>
+        <app-error-message
+          [message]="errorMessage"
+          title="Unable to Load Parking"
+          [showRetry]="true"
+          retryLabel="Retry"
+          (retry)="reloadParking()"
+        />
       } @else if (!hasParkingConfigured) {
-        <div class="parking-state-card state-empty">
-          <span class="state-icon" aria-hidden="true">&#x1F17F;&#xFE0F;</span>
-          <h2 class="state-title">No Parking Available</h2>
-          <p class="state-desc">
-            No online parking spaces are configured for this event. You can continue to review.
-          </p>
-          <div class="state-actions">
-            <button type="button" class="btn btn-primary" (click)="onSkipParking()">
-              Continue Without Parking
-            </button>
-          </div>
-        </div>
+        <app-empty-state
+          title="No Parking Available"
+          message="No online parking spaces are configured for this event. You can continue to review."
+          actionLabel="Continue Without Parking"
+          (action)="onSkipParking()"
+        />
       } @else {
         <!-- Interactive Map Toolbar -->
         <div class="map-toolbar-row">
           <app-parking-map-toolbar
+            [canReset]="canResetMap"
+            [canZoomIn]="canZoomIn"
+            [canZoomOut]="canZoomOut"
             (resetMap)="onResetMap()"
             (zoomIn)="onZoomIn()"
             (zoomOut)="onZoomOut()"
@@ -104,13 +97,21 @@
           />
         </div>
 
-        <!-- Visual Parking Map -->
-        <app-parking-map
-          [slots]="slots"
-          [zones]="zones"
-          [selectedParkingSlotId]="selectedParkingSlotId"
-          (slotSelect)="onSlotSelect($event)"
-        />
+        <!-- Visual Parking Map with Transform Stage -->
+        <div class="map-viewport-wrapper">
+          <div
+            class="map-zoom-stage"
+            [style.transform]="'scale(' + mapZoom + ')'"
+            [style.transform-origin]="'top center'"
+          >
+            <app-parking-map
+              [slots]="slots"
+              [zones]="zones"
+              [selectedParkingSlotId]="selectedParkingSlotId"
+              (slotSelect)="onSlotSelect($event)"
+            />
+          </div>
+        </div>
       }
     </main>
 

@@ -42,62 +42,49 @@
     </section>
 
     <!-- State 1: Loading -->
-    <div class="state-card loading-state" *ngIf="isLoading" role="status" aria-live="polite">
-      <div class="loading-spinner" aria-hidden="true"></div>
-      <h2 class="state-title">Loading Seating Layout</h2>
-      <p class="state-desc">Fetching real-time seat availability for this event...</p>
-    </div>
+    <app-loading-spinner
+      *ngIf="isLoading"
+      message="Fetching real-time seat availability for this event..."
+    ></app-loading-spinner>
 
     <!-- State 2: Error with Retry -->
-    <div class="state-card error-state" *ngIf="!isLoading && errorMessage" role="alert">
-      <div class="error-badge-icon" aria-hidden="true">!</div>
-      <h2 class="state-title">Unable to Load Seats</h2>
-      <p class="state-desc">{{ errorMessage }}</p>
-      <div class="state-actions">
-        <button class="btn btn-primary retry-btn" type="button" (click)="reloadSeats()">
-          Try Again
-        </button>
-        <button class="btn btn-secondary back-btn" type="button" (click)="onBack()">
-          Back to Event
-        </button>
-      </div>
-    </div>
+    <app-error-message
+      *ngIf="!isLoading && errorMessage"
+      [message]="errorMessage"
+      title="Unable to Load Seats"
+      [showRetry]="true"
+      retryLabel="Try Again"
+      (retry)="reloadSeats()"
+    ></app-error-message>
 
     <!-- State 3: Empty -->
-    <div class="state-card empty-state" *ngIf="!isLoading && !errorMessage && seats.length === 0" role="status">
-      <div class="empty-badge-icon" aria-hidden="true">&#x1F4BA;</div>
-      <h2 class="state-title">No Seats Available</h2>
-      <p class="state-desc">There are currently no seats configured or available for this event layout.</p>
-      <div class="state-actions">
-        <button class="btn btn-secondary back-btn" type="button" (click)="onBack()">
-          Back to Event Details
-        </button>
-      </div>
-    </div>
+    <app-empty-state
+      *ngIf="!isLoading && !errorMessage && seats.length === 0"
+      title="No Seats Available"
+      message="There are currently no seats configured or available for this event layout."
+      actionLabel="Back to Event Details"
+      (action)="onBack()"
+    ></app-empty-state>
 
     <!-- State 4: Main Seat Selection Workflow -->
     <div class="selection-workflow" *ngIf="!isLoading && !errorMessage && seats.length > 0">
       <!-- In-Page Alert: Concurrency Conflict -->
-      <div class="banner banner-warning" *ngIf="conflictMessage" role="alert">
-        <div class="banner-content">
-          <span class="banner-icon" aria-hidden="true">&#9888;</span>
-          <p class="banner-message">{{ conflictMessage }}</p>
-        </div>
-        <button class="banner-close-btn" type="button" aria-label="Dismiss alert" (click)="conflictMessage = null">
-          &times;
-        </button>
-      </div>
+      <app-alert-banner
+        *ngIf="conflictMessage"
+        variant="warning"
+        [message]="conflictMessage"
+        [dismissible]="true"
+        (dismiss)="conflictMessage = null"
+      ></app-alert-banner>
 
       <!-- In-Page Alert: User Guidance Notification -->
-      <div class="banner banner-info" *ngIf="notificationMessage" role="alert">
-        <div class="banner-content">
-          <span class="banner-icon" aria-hidden="true">&#9432;</span>
-          <p class="banner-message">{{ notificationMessage }}</p>
-        </div>
-        <button class="banner-close-btn" type="button" aria-label="Dismiss alert" (click)="notificationMessage = null">
-          &times;
-        </button>
-      </div>
+      <app-alert-banner
+        *ngIf="notificationMessage"
+        variant="info"
+        [message]="notificationMessage"
+        [dismissible]="true"
+        (dismiss)="notificationMessage = null"
+      ></app-alert-banner>
 
       <!-- Step 1: Ticket Requirements Component -->
       <section class="requirements-section" aria-label="Ticket Requirements">
