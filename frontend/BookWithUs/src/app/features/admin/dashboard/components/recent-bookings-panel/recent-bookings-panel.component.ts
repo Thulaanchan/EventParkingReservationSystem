@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { RecentBooking } from '../../../../../../core/models/dashboards/admin-dashboard.model';
+import { RecentBooking } from '../../../../../core/models/dashboards/admin-dashboard.model';
 
 /**
  * Presentational panel component for the Admin Dashboard Recent Bookings section.

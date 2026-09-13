@@ -11,9 +11,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VenueService } from '../../../../../../core/services/venues/venue.service';
-import { VenueAvailability } from '../../../../../../core/models/venues/venue-availability.model';
-import { VenueAvailabilityQuery } from '../../../../../../core/models/venues/venue-availability-query.model';
+import { VenueService } from '../../../../../core/services/venues/venue.service';
+import { VenueAvailability } from '../../../../../core/models/venues/venue-availability.model';
+import { VenueAvailabilityQuery } from '../../../../../core/models/venues/venue-availability-query.model';
 
 /**
  * Component to check and display real venue schedule availability.

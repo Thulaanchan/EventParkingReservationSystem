@@ -8,13 +8,14 @@ import { EventSeatCategory } from '../../models/seats/event-seat-category.model'
 import { ReserveSeatsRequest } from '../../models/seats/reserve-seats-request.model';
 import { CreateSeatRequest } from '../../models/seats/create-seat-request.model';
 import { UpdateSeatRequest } from '../../models/seats/update-seat-request.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeatService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:7031/api';
+  private readonly baseUrl = environment.apiUrl;
 
   // =========================================================================
   // CUSTOMER ENDPOINTS

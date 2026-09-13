@@ -20,4 +20,6 @@ export const BOOKINGS_ROUTES: Routes = [
   }
 ];
 
+export const bookingRoutes: Routes = BOOKINGS_ROUTES;
+export const bookingsRoutes: Routes = BOOKINGS_ROUTES;
 export default BOOKINGS_ROUTES;

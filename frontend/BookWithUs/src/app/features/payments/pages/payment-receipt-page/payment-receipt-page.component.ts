@@ -46,11 +46,11 @@ export class PaymentReceiptPageComponent implements OnInit {
     this.errorMessage = '';
 
     this.paymentService.getReceipt(paymentId).subscribe({
-      next: (receipt) => {
+      next: (receipt: PaymentReceipt) => {
         this.receipt = receipt;
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.errorMessage =
           err?.error?.message ??

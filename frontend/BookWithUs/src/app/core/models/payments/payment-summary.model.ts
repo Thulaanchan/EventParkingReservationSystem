@@ -18,3 +18,4 @@ export interface PaymentHistoryItem {
 }
 
 export type PaymentHistoryDto = PaymentHistoryItem;
+export type PaymentSummary = PaymentHistoryItem;

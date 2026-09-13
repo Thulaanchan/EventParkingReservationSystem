@@ -29,11 +29,11 @@ import {
 import { VenueCapacityInfoComponent } from '../venue-capacity-info/venue-capacity-info.component';
 import { VenueAvailabilityStatusComponent } from '../venue-availability-status/venue-availability-status.component';
 
-import { EventDetails } from '../../../../../../core/models/events/event-details.model';
-import { Venue } from '../../../../../../core/models/venues/venue.model';
-import { EventCategory } from '../../../../../../core/models/categories/event-category.model';
-import { CreateEventRequest } from '../../../../../../core/models/events/create-event-request.model';
-import { UpdateEventRequest } from '../../../../../../core/models/events/update-event-request.model';
+import { EventDetails } from '../../../../../core/models/events/event-details.model';
+import { Venue } from '../../../../../core/models/venues/venue.model';
+import { EventCategory } from '../../../../../core/models/categories/event-category.model';
+import { CreateEventRequest } from '../../../../../core/models/events/create-event-request.model';
+import { UpdateEventRequest } from '../../../../../core/models/events/update-event-request.model';
 
 interface EventFormControls {
   name: FormControl<string>;

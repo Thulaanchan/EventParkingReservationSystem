@@ -34,11 +34,11 @@ export class AdminPaymentManagementPageComponent implements OnInit {
     this.errorMessage = '';
 
     this.paymentService.getAllPayments().subscribe({
-      next: (response) => {
+      next: (response: PaymentSummary[]) => {
         this.payments = response ?? [];
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.errorMessage = 'Unable to load payments';
         console.error('Failed to load payments:', err);

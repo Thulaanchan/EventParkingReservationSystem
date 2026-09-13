@@ -24,8 +24,8 @@ export class NotificationService {
     );
   }
 
-  markAsRead(notificationId: number): Observable<Notification> {
-    return this.http.put<Notification>(
+  markAsRead(notificationId: number): Observable<void> {
+    return this.http.put<void>(
       buildApiUrl(API_ENDPOINTS.notifications.markRead(notificationId)),
       {}
     );

@@ -9,6 +9,7 @@ export interface BookingSeatDetail {
   rowLabel: string;
   seatNumber: number;
   sectionName: string;
+  categoryName?: string;
   attendeeName: string;
   attendeeType: AttendeeType;
   priceSnapshot: number;

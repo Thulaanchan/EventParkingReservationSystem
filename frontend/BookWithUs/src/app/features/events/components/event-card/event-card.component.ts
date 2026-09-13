@@ -7,7 +7,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { EventSummary } from '../../../../core/models/events/event-summary.model';
 
 @Component({
