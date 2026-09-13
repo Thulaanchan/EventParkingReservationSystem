@@ -3,13 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { PaymentService } from '../../../../core/services/payments/payment.service';
+import { AuthSessionService } from '../../../../core/services/auth/auth-session.service';
 import { PaymentSummary } from '../../../../core/models/payments/payment-summary.model';
 import { PaymentMethod } from '../../../../core/models/payments/payment-method.model';
-
-@Injectable({ providedIn: 'root' })
-export class AuthSessionService {
-  currentCustomerId: number | null = 1;
-}
 
 @Component({
   selector: 'app-payment-history-page',

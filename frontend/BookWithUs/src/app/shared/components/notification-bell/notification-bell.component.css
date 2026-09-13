@@ -1,0 +1,5 @@
+/* Notification Bell Component Styles */
+:host {
+  display: inline-block;
+  vertical-align: middle;
+}
