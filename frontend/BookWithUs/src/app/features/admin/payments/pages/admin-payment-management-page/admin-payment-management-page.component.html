@@ -1,0 +1,274 @@
+<div class="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Payment Management</h1>
+        <p class="text-sm text-slate-500 mt-1">View and monitor customer payment transactions and receipts across all events.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="loadPayments()"
+          class="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 shadow-sm transition-colors"
+          [disabled]="isLoading">
+          <svg class="w-4 h-4 text-slate-500" [class.animate-spin]="isLoading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics Summary Area -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Total Transactions -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Transactions</p>
+          <p class="text-2xl font-bold text-slate-900 mt-1">{{ totalTransactions }}</p>
+          <p class="text-xs text-slate-400 mt-1">Processed payment records</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Revenue</p>
+          <p class="text-2xl font-bold text-purple-700 mt-1">LKR {{ totalRevenue | number:'1.2-2' }}</p>
+          <p class="text-xs text-slate-400 mt-1">Settled completed amount</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Successful Payments -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Successful Payments</p>
+          <p class="text-2xl font-bold text-emerald-600 mt-1">{{ successfulPaymentsCount }}</p>
+          <p class="text-xs text-slate-400 mt-1">Completed transactions</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Pending Payments -->
+      <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Payments</p>
+          <p class="text-2xl font-bold text-amber-600 mt-1">{{ pendingPaymentsCount }}</p>
+          <p class="text-xs text-slate-400 mt-1">Awaiting confirmation</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-50 text-purple-600 mb-4 animate-spin">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
+        <p class="text-base font-medium text-slate-700">Loading payments...</p>
+        <p class="text-xs text-slate-400 mt-1">Retrieving payment records from server</p>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage && !isLoading) {
+      <div class="bg-white rounded-2xl border border-rose-200 p-8 text-center shadow-sm">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-50 text-rose-600 mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 class="text-lg font-semibold text-slate-900">Unable to load payments</h2>
+        <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">There was a problem communicating with the payments service. Please check your network and try again.</p>
+        <div class="mt-4">
+          <button
+            type="button"
+            (click)="loadPayments()"
+            class="inline-flex items-center gap-2 px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            Try Again
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading && !errorMessage && payments.length === 0) {
+      <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-50 text-purple-600 mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <h2 class="text-lg font-semibold text-slate-900">No payments found</h2>
+        <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">No payment records have been processed yet. When customer reservations are paid, they will appear here.</p>
+      </div>
+    }
+
+    <!-- Payments List / Table -->
+    @if (!isLoading && !errorMessage && payments.length > 0) {
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Table Header Banner -->
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-base font-semibold text-slate-800">Transactions ({{ payments.length }})</h2>
+          <span class="text-xs text-slate-500 font-medium">Administrator View</span>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs tracking-wider">
+              <tr>
+                <th scope="col" class="px-6 py-3.5">Payment ID</th>
+                <th scope="col" class="px-6 py-3.5">Booking Number</th>
+                <th scope="col" class="px-6 py-3.5">Event Name</th>
+                <th scope="col" class="px-6 py-3.5">Amount</th>
+                <th scope="col" class="px-6 py-3.5">Currency</th>
+                <th scope="col" class="px-6 py-3.5">Payment Method</th>
+                <th scope="col" class="px-6 py-3.5">Payment Status</th>
+                <th scope="col" class="px-6 py-3.5">Paid Date</th>
+                <th scope="col" class="px-6 py-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              @for (payment of payments; track payment.paymentId) {
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                  <!-- Payment ID -->
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-purple-700">
+                    #{{ payment.paymentId }}
+                  </td>
+
+                  <!-- Booking Number -->
+                  <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-semibold text-slate-900">
+                    {{ payment.bookingNumber }}
+                  </td>
+
+                  <!-- Event Name -->
+                  <td class="px-6 py-4 whitespace-nowrap max-w-xs truncate font-medium text-slate-900" [title]="payment.eventName">
+                    {{ payment.eventName }}
+                  </td>
+
+                  <!-- Amount -->
+                  <td class="px-6 py-4 whitespace-nowrap font-semibold text-slate-900">
+                    {{ payment.amount | number:'1.2-2' }}
+                  </td>
+
+                  <!-- Currency -->
+                  <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-500">
+                    {{ payment.currency }}
+                  </td>
+
+                  <!-- Payment Method -->
+                  <td class="px-6 py-4 whitespace-nowrap text-slate-600">
+                    {{ getPaymentMethodName(payment.paymentMethod) }}
+                  </td>
+
+                  <!-- Payment Status -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border" [ngClass]="getPaymentStatusBadgeClass(payment.status)">
+                      {{ getPaymentStatusName(payment.status) }}
+                    </span>
+                  </td>
+
+                  <!-- Paid Date -->
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
+                    {{ payment.paidAtUtc | date:'medium' }}
+                  </td>
+
+                  <!-- Actions -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                    @if (payment.receiptAvailable) {
+                      <button
+                        type="button"
+                        (click)="viewReceipt(payment.paymentId)"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-purple-500 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        View Receipt
+                      </button>
+                    } @else {
+                      <span class="text-xs text-slate-400">N/A</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card View (for small screens) -->
+        <div class="md:hidden divide-y divide-slate-100">
+          @for (payment of payments; track payment.paymentId) {
+            <div class="p-5 space-y-3">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-purple-700">#{{ payment.paymentId }}</span>
+                    <span class="font-mono text-xs font-semibold text-slate-800">{{ payment.bookingNumber }}</span>
+                  </div>
+                  <h3 class="text-sm font-semibold text-slate-900 mt-1">{{ payment.eventName }}</h3>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border" [ngClass]="getPaymentStatusBadgeClass(payment.status)">
+                  {{ getPaymentStatusName(payment.status) }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <div>
+                  <span class="text-slate-400 block">Amount</span>
+                  <span class="font-semibold text-slate-900">{{ payment.currency }} {{ payment.amount | number:'1.2-2' }}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block">Payment Method</span>
+                  <span class="font-medium text-slate-700">{{ getPaymentMethodName(payment.paymentMethod) }}</span>
+                </div>
+                <div class="col-span-2">
+                  <span class="text-slate-400 block">Paid Date</span>
+                  <span class="text-slate-600">{{ payment.paidAtUtc | date:'medium' }}</span>
+                </div>
+              </div>
+
+              @if (payment.receiptAvailable) {
+                <div class="pt-1">
+                  <button
+                    type="button"
+                    (click)="viewReceipt(payment.paymentId)"
+                    class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-purple-500 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    View Receipt
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>
