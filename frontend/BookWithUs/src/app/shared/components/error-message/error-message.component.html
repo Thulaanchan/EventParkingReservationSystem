@@ -1,0 +1,27 @@
+<div class="error-message-card" role="alert">
+  <div class="error-icon-wrapper" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  </div>
+
+  <div class="error-content">
+    @if (title) {
+      <h3 class="error-title">{{ title }}</h3>
+    }
+    <p class="error-text">{{ message }}</p>
+  </div>
+
+  @if (showRetry) {
+    <button
+      type="button"
+      class="error-retry-btn"
+      [attr.aria-label]="retryLabel"
+      (click)="onRetry()"
+    >
+      {{ retryLabel }}
+    </button>
+  }
+</div>

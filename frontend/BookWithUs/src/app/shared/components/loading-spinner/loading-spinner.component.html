@@ -1,0 +1,14 @@
+<div
+  class="loading-spinner-container"
+  [class.spinner-sm]="size === 'small'"
+  [class.spinner-md]="size === 'medium'"
+  [class.spinner-lg]="size === 'large'"
+  role="status"
+  aria-live="polite"
+>
+  <div class="spinner-circle" aria-hidden="true"></div>
+  @if (message) {
+    <span class="spinner-message">{{ message }}</span>
+  }
+  <span class="sr-only">Loading</span>
+</div>
