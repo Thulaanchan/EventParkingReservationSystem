@@ -1,0 +1,98 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.booking-summary-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 1.25rem;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background-color: #e0e7ff;
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+
+.summary-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.summary-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.summary-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.summary-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.stat-num {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.stat-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.active-pill {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.neutral-pill {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}

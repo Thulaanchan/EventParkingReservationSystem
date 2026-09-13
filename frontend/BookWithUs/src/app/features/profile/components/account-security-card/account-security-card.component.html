@@ -1,0 +1,58 @@
+<div class="card security-card">
+  <div class="card-header">
+    <span class="card-eyebrow">ACCOUNT SECURITY</span>
+  </div>
+
+  <div class="security-card-body">
+    <!-- Password Display Row -->
+    <div class="field-group">
+      <label class="field-label" id="password-label">Password</label>
+      <div class="password-display-wrapper" aria-labelledby="password-label">
+        <span class="password-dots" aria-hidden="true">
+          @if (showMaskedPassword) {
+            ••••••••••••
+          } @else {
+            ••••••••••••
+          }
+        </span>
+        <button
+          type="button"
+          class="eye-toggle-btn"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showMaskedPassword ? 'Show password mask' : 'Hide password mask'"
+        >
+          <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+      <div class="security-hint">
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Your password is securely protected.</span>
+      </div>
+    </div>
+
+    <!-- Reset Password Action (screen-17) -->
+    <div class="reset-action-block">
+      <button
+        type="button"
+        class="reset-pwd-btn"
+        (click)="onResetPassword()"
+      >
+        <svg class="btn-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Reset Password</span>
+      </button>
+
+      <p class="reset-caption">
+        You will be redirected to the secure password reset process.
+      </p>
+    </div>
+  </div>
+</div>

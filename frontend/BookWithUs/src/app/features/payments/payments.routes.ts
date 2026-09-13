@@ -1,32 +1,13 @@
 import { Routes } from '@angular/router';
-import { PaymentCheckoutPageComponent } from './pages/payment-checkout-page/payment-checkout-page.component';
-import { authGuard } from '../../core/guards/auth.guard';
 
-export const paymentRoutes: Routes = [
+export const PAYMENTS_ROUTES: Routes = [
   {
-    path: 'checkout/:bookingId',
-    component: PaymentCheckoutPageComponent
-  },
-  {
-    path: 'confirmation/:bookingId',
+    path: '',
     loadComponent: () =>
-      import(
-        './pages/payment-confirmation-page/payment-confirmation-page.component'
-      ).then((m) => m.PaymentConfirmationPageComponent)
-  },
-  {
-    path: 'receipt/:paymentId',
-    loadComponent: () =>
-      import(
-        './pages/payment-receipt-page/payment-receipt-page.component'
-      ).then((m) => m.PaymentReceiptPageComponent)
-  },
-  {
-    path: 'history',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import(
-        './pages/payment-history-page/payment-history-page.component'
-      ).then((m) => m.PaymentHistoryPageComponent)
+      import('./pages/payment-checkout-page/payment-checkout-page.component').then(
+        (m) => m.PaymentCheckoutPageComponent
+      )
   }
 ];
+
+export default PAYMENTS_ROUTES;

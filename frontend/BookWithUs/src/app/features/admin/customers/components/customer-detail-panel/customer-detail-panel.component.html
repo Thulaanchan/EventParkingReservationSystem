@@ -1,0 +1,145 @@
+@if (isOpen) {
+  <!-- Backdrop -->
+  <div class="panel-backdrop" (click)="onClose()" aria-hidden="true"></div>
+
+  <!-- Drawer Panel -->
+  <aside
+    class="drawer-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="drawer-title"
+  >
+    <!-- Header -->
+    <div class="drawer-header">
+      <div class="header-info">
+        <span class="header-badge">Customer Details</span>
+        <h3 id="drawer-title" class="drawer-title">
+          @if (customer(); as c) {
+            {{ c.firstName }} {{ c.lastName }}
+          } @else {
+            Customer #{{ customerId }}
+          }
+        </h3>
+      </div>
+      <button
+        type="button"
+        class="close-btn"
+        (click)="onClose()"
+        aria-label="Close customer detail panel"
+      >
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="drawer-body">
+      <!-- 1. LOADING STATE -->
+      @if (state() === 'loading') {
+        <div class="drawer-skeleton" role="status" aria-label="Loading customer details">
+          <div class="sk-avatar"></div>
+          <div class="sk-line sk-title"></div>
+          <div class="sk-line sk-subtitle"></div>
+          <div class="sk-card"></div>
+          <div class="sk-card"></div>
+        </div>
+      }
+
+      <!-- 2. ERROR STATE -->
+      @else if (state() === 'error') {
+        <div class="drawer-error" role="alert">
+          <div class="error-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h4 class="error-title">Unable to Load Details</h4>
+          <p class="error-desc">{{ errorMessage() }}</p>
+          <button type="button" class="btn btn-outline" (click)="onRetry()">Try Again</button>
+        </div>
+      }
+
+      <!-- 3. DATA STATE -->
+      @else if (state() === 'data' && customer(); as c) {
+        <!-- Profile Avatar & Status Overview -->
+        <div class="profile-overview">
+          <div class="avatar-circle">
+            {{ c.firstName.charAt(0) }}{{ c.lastName.charAt(0) }}
+          </div>
+          <div class="profile-meta">
+            <span class="customer-id-tag">ID: #{{ c.customerId }}</span>
+            <div class="status-badges">
+              @if (c.isActive) {
+                <span class="badge badge-active">Active</span>
+              } @else {
+                <span class="badge badge-inactive">Inactive</span>
+              }
+
+              @if (c.isEmailVerified) {
+                <span class="badge badge-verified">Email Verified</span>
+              } @else {
+                <span class="badge badge-unverified">Email Unverified</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Information Fields -->
+        <div class="info-section">
+          <h4 class="section-title">Account Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Full Name</span>
+              <span class="info-value">{{ c.firstName }} {{ c.lastName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email Address</span>
+              <span class="info-value">{{ c.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Phone Number</span>
+              <span class="info-value">{{ c.phone || 'Not provided' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Registered On</span>
+              <span class="info-value">{{ c.createdAt | date:'mediumDate' }}</span>
+            </div>
+            @if (c.updatedAt) {
+              <div class="info-item">
+                <span class="info-label">Last Updated</span>
+                <span class="info-value">{{ c.updatedAt | date:'mediumDate' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Booking Summary Card -->
+        <div class="section-wrapper">
+          <app-customer-booking-summary
+            [bookingCount]="c.bookingCount"
+            [isActive]="c.isActive"
+          />
+        </div>
+
+        <!-- Account Management Actions -->
+        <div class="section-wrapper deactivation-card">
+          <h4 class="section-title">Administrative Actions</h4>
+          <p class="admin-action-desc">
+            Deactivating this account will revoke customer login privileges. Reactivation is not supported by the backend.
+          </p>
+          <div class="actions-row">
+            <app-customer-account-actions
+              [customerId]="c.customerId"
+              [customerName]="c.firstName + ' ' + c.lastName"
+              [isActive]="c.isActive"
+              (deactivationCompleted)="onDeactivationCompleted()"
+            />
+          </div>
+        </div>
+      }
+    </div>
+  </aside>
+}

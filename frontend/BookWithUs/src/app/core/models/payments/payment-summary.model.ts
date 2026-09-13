@@ -1,7 +1,10 @@
 import { PaymentMethod } from './payment-method.model';
 import { PaymentStatus } from './payment-status.model';
 
-export interface PaymentSummary {
+/**
+ * Customer payment history entry matching backend PaymentHistoryDto.
+ */
+export interface PaymentHistoryItem {
   paymentId: number;
   bookingId: number;
   bookingNumber: string;
@@ -13,3 +16,5 @@ export interface PaymentSummary {
   paidAtUtc: string;
   receiptAvailable: boolean;
 }
+
+export type PaymentHistoryDto = PaymentHistoryItem;

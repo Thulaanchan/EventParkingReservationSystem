@@ -1,0 +1,39 @@
+<div class="header-container">
+  <!-- Back Link -->
+  <a routerLink="/bookings" class="back-link">
+    <svg class="back-icon" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+    </svg>
+    <span>Back to My Bookings</span>
+  </a>
+
+  <!-- Header Content Row -->
+  <div class="header-main">
+    <div class="title-group">
+      <h1 class="page-title">Booking Details</h1>
+      <div class="meta-row">
+        <span class="booking-number">Booking #{{ bookingNumber }}</span>
+        <span class="status-badge" [ngClass]="getStatusBadgeClass()">
+          @if (bookingStatus === 'Confirmed') {
+            <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          } @else if (bookingStatus === 'Pending') {
+            <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+            </svg>
+          } @else if (bookingStatus === 'Cancelled') {
+            <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          } @else if (bookingStatus === 'Expired') {
+            <svg class="badge-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          }
+          <span>{{ bookingStatus }}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

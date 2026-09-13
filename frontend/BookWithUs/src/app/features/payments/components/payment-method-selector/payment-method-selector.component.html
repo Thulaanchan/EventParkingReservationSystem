@@ -1,53 +1,31 @@
-<div class="payment-methods-grid">
-  @for (method of methods; track method.id) {
-    <button
-      type="button"
-      class="payment-method-card"
-      [class.selected]="selectedMethod === method.id"
-      (click)="select(method.id)"
-      [attr.aria-pressed]="selectedMethod === method.id"
-    >
-      @if (selectedMethod === method.id) {
-        <div class="selected-badge" aria-hidden="true">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="badge-icon">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-          </svg>
+<div class="method-selector-container">
+  <label class="selector-title">Select Payment Method</label>
+  <div class="methods-grid">
+    @for (method of methods; track method.id) {
+      <button
+        type="button"
+        class="method-card"
+        [class.selected]="selectedMethod === method.id"
+        (click)="select(method.id)"
+      >
+        <div class="card-radio">
+          <span class="radio-outer">
+            @if (selectedMethod === method.id) {
+              <span class="radio-inner"></span>
+            }
+          </span>
         </div>
-      }
 
-      <div class="method-icon-wrapper">
-        @if (method.iconType === 'card') {
-          <svg class="method-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="5" width="20" height="14" rx="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
-          </svg>
-        }
-        @if (method.iconType === 'wallet') {
-          <svg class="method-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z" />
-            <path d="M16 12h5v4h-5z" />
-            <circle cx="18.5" cy="14" r="1" fill="currentColor" />
-          </svg>
-        }
-        @if (method.iconType === 'bank') {
-          <svg class="method-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 3l9 7H3l9-7z" />
-          </svg>
-        }
-        @if (method.iconType === 'qr') {
-          <svg class="method-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
-            <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 21h3v-3" />
-          </svg>
-        }
-      </div>
-
-      <div class="method-details">
-        <span class="method-name">{{ method.name }}</span>
-        <span class="method-desc">{{ method.description }}</span>
-      </div>
-    </button>
-  }
+        <div class="card-body">
+          <div class="card-header">
+            <span class="method-title">{{ method.title }}</span>
+            @if (method.badge) {
+              <span class="method-badge">{{ method.badge }}</span>
+            }
+          </div>
+          <span class="method-subtitle">{{ method.subtitle }}</span>
+        </div>
+      </button>
+    }
+  </div>
 </div>

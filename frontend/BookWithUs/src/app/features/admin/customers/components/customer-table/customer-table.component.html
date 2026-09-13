@@ -1,0 +1,148 @@
+<div class="table-container" role="region" aria-label="Customer Directory">
+  <div class="table-scroll-wrap">
+    <table class="customer-table">
+      <thead>
+        <tr>
+          <th scope="col" class="th-customer">Customer</th>
+          <th scope="col" class="th-email">Email & Verification</th>
+          <th scope="col" class="th-status">Account Status</th>
+          <th scope="col" class="th-bookings">Bookings</th>
+          <th scope="col" class="th-actions text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (customer of customers; track customer.customerId) {
+          <tr class="table-row" (click)="onRowClick(customer)">
+            <!-- Customer Name & ID -->
+            <td class="td-customer">
+              <div class="customer-cell">
+                <div class="avatar-sm">
+                  {{ customer.firstName.charAt(0) }}{{ customer.lastName.charAt(0) }}
+                </div>
+                <div class="customer-info">
+                  <span class="customer-name">{{ customer.firstName }} {{ customer.lastName }}</span>
+                  <span class="customer-id">ID: #{{ customer.customerId }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Email & Verified Status -->
+            <td class="td-email">
+              <div class="email-cell">
+                <span class="email-text">{{ customer.email }}</span>
+                @if (customer.isEmailVerified) {
+                  <span class="badge badge-verified">Verified</span>
+                } @else {
+                  <span class="badge badge-unverified">Unverified</span>
+                }
+              </div>
+            </td>
+
+            <!-- Account Status -->
+            <td class="td-status">
+              @if (customer.isActive) {
+                <span class="badge badge-active">Active</span>
+              } @else {
+                <span class="badge badge-inactive">Inactive</span>
+              }
+            </td>
+
+            <!-- Booking Count -->
+            <td class="td-bookings">
+              <div class="bookings-badge">
+                <svg class="booking-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                <span>{{ customer.bookingCount }}</span>
+              </div>
+            </td>
+
+            <!-- Actions -->
+            <td class="td-actions text-right" (click)="$event.stopPropagation()">
+              <div class="actions-cell">
+                <button
+                  type="button"
+                  class="btn-view-details"
+                  (click)="onRowClick(customer)"
+                  aria-label="View customer details"
+                >
+                  <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Details</span>
+                </button>
+
+                <app-customer-account-actions
+                  [customerId]="customer.customerId"
+                  [customerName]="customer.firstName + ' ' + customer.lastName"
+                  [isActive]="customer.isActive"
+                  (refreshRequested)="onDeactivationDone()"
+                />
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-bar">
+    <div class="pagination-info">
+      Showing <strong>{{ startItem }}</strong> to <strong>{{ endItem }}</strong> of <strong>{{ totalCount }}</strong> customers
+    </div>
+
+    <div class="pagination-controls">
+      <!-- Page Size Selector -->
+      <div class="page-size-wrap">
+        <label for="page-size-select" class="page-size-label">Per page:</label>
+        <select
+          id="page-size-select"
+          class="page-size-select"
+          [value]="pageSize"
+          (change)="onPageSizeSelected($event)"
+          aria-label="Items per page"
+        >
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+
+      <!-- Previous Page Button -->
+      <button
+        type="button"
+        class="pagination-btn"
+        [disabled]="!canGoPrevious"
+        (click)="onPreviousPage()"
+        aria-label="Go to previous page"
+      >
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        <span>Previous</span>
+      </button>
+
+      <!-- Page Indicator -->
+      <span class="page-indicator">
+        Page <strong>{{ page }}</strong> of <strong>{{ totalPages }}</strong>
+      </span>
+
+      <!-- Next Page Button -->
+      <button
+        type="button"
+        class="pagination-btn"
+        [disabled]="!canGoNext"
+        (click)="onNextPage()"
+        aria-label="Go to next page"
+      >
+        <span>Next</span>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

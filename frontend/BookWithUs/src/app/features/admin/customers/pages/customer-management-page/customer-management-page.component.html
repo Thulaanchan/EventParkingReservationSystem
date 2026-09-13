@@ -1,0 +1,130 @@
+<div class="admin-customers-container">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <div class="header-badge-row">
+        <span class="header-badge">Administration</span>
+      </div>
+      <h1 class="page-title">Customer Management</h1>
+      <p class="page-subtitle">
+        Search, inspect, and manage registered customer accounts and reservations.
+      </p>
+    </div>
+  </header>
+
+  <!-- High-Level Metric Statistics -->
+  <app-customer-stats
+    [totalCount]="totalCustomersCount()"
+    [currentPage]="currentPage()"
+    [totalPages]="totalPages()"
+    [pageActiveCount]="pageActiveCount()"
+    [pageVerifiedCount]="pageVerifiedCount()"
+    [isLoading]="isLoading()"
+  />
+
+  <!-- Search & Filter Controls -->
+  <app-customer-search-filter
+    [initialSearch]="searchQuery()"
+    [isLoading]="isLoading()"
+    (searchChange)="onSearchChange($event)"
+    (statusFilterChange)="onStatusFilterChange($event)"
+  />
+
+  <!-- 1. LOADING STATE -->
+  @if (viewState() === 'loading') {
+    <div class="skeleton-table-card" role="status" aria-label="Loading customer directory">
+      <div class="sk-header"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-row"></div>
+      <div class="sk-footer"></div>
+    </div>
+  }
+
+  <!-- 2. ERROR STATE -->
+  @else if (viewState() === 'error') {
+    <section class="state-card error-card" role="alert">
+      <div class="icon-bubble error-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+
+      <h2 class="state-title">Unable to Load Customers</h2>
+      <p class="state-desc">{{ errorMessage() }}</p>
+
+      <div class="state-actions">
+        @if (isSessionExpired()) {
+          <button type="button" class="btn btn-primary" (click)="onGoToLogin()">
+            Sign In Again
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary" (click)="onRetry()">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Retry
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- 3. EMPTY STATE -->
+  @else if (viewState() === 'empty') {
+    <section class="state-card empty-card" role="status">
+      <div class="icon-bubble empty-bubble">
+        <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      </div>
+
+      <h2 class="state-title">No Customers Found</h2>
+
+      @if (searchQuery()) {
+        <p class="state-desc">
+          No customer accounts matched your search for "<strong>{{ searchQuery() }}</strong>".
+        </p>
+        <div class="state-actions">
+          <button type="button" class="btn btn-outline" (click)="onClearSearch()">
+            Clear Search Filter
+          </button>
+        </div>
+      } @else {
+        <p class="state-desc">
+          There are currently no customer accounts matching the selected criteria.
+        </p>
+      }
+    </section>
+  }
+
+  <!-- 4. DATA STATE -->
+  @else if (viewState() === 'data' && pagedResult(); as result) {
+    <app-customer-table
+      [customers]="displayedCustomers()"
+      [page]="currentPage()"
+      [pageSize]="pageSize()"
+      [totalCount]="result.totalCount"
+      [totalPages]="result.totalPages"
+      [isLoading]="isLoading()"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+      (customerSelected)="onCustomerSelected($event)"
+      (customerDeactivated)="onCustomerDeactivated()"
+    />
+  }
+
+  <!-- Slide-Over Customer Details Panel -->
+  <app-customer-detail-panel
+    [customerId]="selectedCustomerId()"
+    [isOpen]="isDetailPanelOpen()"
+    (closePanel)="onCloseDetailPanel()"
+    (customerDeactivated)="onCustomerDeactivated()"
+  />
+</div>

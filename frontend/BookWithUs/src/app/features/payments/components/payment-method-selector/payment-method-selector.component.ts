@@ -1,55 +1,56 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { PaymentMethod } from '../../../../core/models/payments/payment-method.model';
 
-export interface PaymentMethodCard {
+export interface PaymentMethodOption {
   id: PaymentMethod;
-  name: string;
-  description: string;
-  iconType: 'card' | 'wallet' | 'bank' | 'qr';
+  title: string;
+  subtitle: string;
+  icon: string;
+  badge?: string;
 }
 
 @Component({
   selector: 'app-payment-method-selector',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './payment-method-selector.component.html',
-  styleUrl: './payment-method-selector.component.css'
+  styleUrl: './payment-method-selector.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentMethodSelectorComponent {
-  @Input() selectedMethod: PaymentMethod | null = null;
-  @Output() methodSelected = new EventEmitter<PaymentMethod>();
+  @Input() selectedMethod: PaymentMethod = PaymentMethod.Card;
+  @Output() readonly methodSelected = new EventEmitter<PaymentMethod>();
 
-  readonly PaymentMethod = PaymentMethod;
-
-  readonly methods: PaymentMethodCard[] = [
+  readonly methods: PaymentMethodOption[] = [
     {
       id: PaymentMethod.Card,
-      name: 'Credit/Debit Card',
-      description: 'Visa, Master card, Amex',
-      iconType: 'card'
-    },
-    {
-      id: PaymentMethod.MobileWallet,
-      name: 'Mobile Wallet',
-      description: 'eZ Cash, mCash',
-      iconType: 'wallet'
-    },
-    {
-      id: PaymentMethod.NetBanking,
-      name: 'Net Banking',
-      description: 'All major banks',
-      iconType: 'bank'
+      title: 'Credit / Debit Card',
+      subtitle: 'Visa, Mastercard, AMEX',
+      icon: 'card',
+      badge: 'Popular'
     },
     {
       id: PaymentMethod.LankaQr,
-      name: 'LankaQR',
-      description: 'QR Payment',
-      iconType: 'qr'
+      title: 'LankaQR',
+      subtitle: 'Instant QR payment via banking app',
+      icon: 'qr'
+    },
+    {
+      id: PaymentMethod.MobileWallet,
+      title: 'Mobile Wallet',
+      subtitle: 'Genie, FriMi, eZ Cash, mcash',
+      icon: 'wallet'
+    },
+    {
+      id: PaymentMethod.NetBanking,
+      title: 'Internet Banking',
+      subtitle: 'Direct online bank transfer',
+      icon: 'bank'
     }
   ];
 
   select(method: PaymentMethod): void {
+    this.selectedMethod = method;
     this.methodSelected.emit(method);
   }
 }

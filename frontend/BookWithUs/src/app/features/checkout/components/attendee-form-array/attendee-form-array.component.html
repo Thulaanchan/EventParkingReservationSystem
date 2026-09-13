@@ -1,0 +1,90 @@
+<div class="attendee-card">
+  <div class="card-header">
+    <div class="header-titles">
+      <h3 class="card-title">Attendee Details</h3>
+      <p class="card-subtitle">
+        Enter attendee details for each selected seat. Names must match identification for entry.
+      </p>
+    </div>
+    <span *ngIf="seats && seats.length > 0" class="seats-count-badge">
+      {{ seats.length }} {{ seats.length === 1 ? 'Attendee' : 'Attendees' }}
+    </span>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!seats || seats.length === 0" class="empty-state">
+    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"></path>
+    </svg>
+    <p class="empty-message">No seats selected for attendee assignment.</p>
+  </div>
+
+  <!-- FormArray Rows -->
+  <form [formGroup]="form" *ngIf="seats && seats.length > 0">
+    <div formArrayName="attendees" class="attendees-list">
+      <div
+        *ngFor="let row of attendeesArray.controls; let i = index"
+        [formGroupName]="i"
+        class="attendee-row"
+      >
+        <!-- Seat Badge & Location Info -->
+        <div class="seat-badge-container">
+          <span class="seat-dot"></span>
+          <div class="seat-badge-text">
+            <span class="seat-code">{{ getSeat(i)?.seatCode }}</span>
+            <span class="seat-meta" *ngIf="getSeat(i)?.sectionName || getSeat(i)?.rowLabel">
+              {{ getSeat(i)?.sectionName }} • Row {{ getSeat(i)?.rowLabel || '-' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Form Inputs Grid -->
+        <div class="inputs-grid">
+          <!-- Attendee Name -->
+          <div class="form-group name-group">
+            <label [for]="'attendee-name-' + i" class="form-label">
+              Attendee Full Name <span class="required-star">*</span>
+            </label>
+            <input
+              [id]="'attendee-name-' + i"
+              type="text"
+              class="form-input"
+              [class.input-error]="isFieldInvalid(i, 'attendeeName')"
+              formControlName="attendeeName"
+              placeholder="e.g. John Doe"
+              autocomplete="name"
+            />
+            <div *ngIf="isFieldInvalid(i, 'attendeeName')" class="error-feedback">
+              <span *ngIf="row.get('attendeeName')?.hasError('required')">
+                Attendee name is required
+              </span>
+              <span *ngIf="row.get('attendeeName')?.hasError('minlength')">
+                Minimum 3 characters required
+              </span>
+              <span *ngIf="row.get('attendeeName')?.hasError('maxlength')">
+                Maximum 100 characters allowed
+              </span>
+            </div>
+          </div>
+
+          <!-- Attendee Type Dropdown -->
+          <div class="form-group type-group">
+            <label [for]="'attendee-type-' + i" class="form-label">
+              Ticket Type <span class="required-star">*</span>
+            </label>
+            <select
+              [id]="'attendee-type-' + i"
+              class="form-select"
+              formControlName="attendeeType"
+            >
+              <option [ngValue]="1">Adult</option>
+              <option [ngValue]="2">Child</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

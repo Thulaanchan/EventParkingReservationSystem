@@ -1,6 +1,6 @@
-export enum AuthRole {
-  Customer = 'Customer',
-  Administrator = 'Administrator'
-}
+export type AuthRole = 'Customer' | 'Administrator';
 
-export type UserRole = 'Customer' | 'Administrator';
+export const AuthRoles = {
+  Customer: 'Customer' as const,
+  Administrator: 'Administrator' as const
+} as const;

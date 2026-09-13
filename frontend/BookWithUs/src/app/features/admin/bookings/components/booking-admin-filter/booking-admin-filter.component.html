@@ -1,0 +1,84 @@
+<div class="filter-card">
+  <!-- Top Bar: Event Selector & Search -->
+  <div class="filter-top-row">
+    <!-- Event ID Selector Form -->
+    <div class="event-selector-wrap">
+      <label for="event-id-input" class="field-label">Target Event ID:</label>
+      <div class="event-input-group">
+        <input
+          id="event-id-input"
+          type="number"
+          min="1"
+          class="event-id-input"
+          placeholder="Enter Event ID (e.g. 1)"
+          [formControl]="eventIdControl"
+          (keydown.enter)="onEventSubmit()"
+          aria-label="Event identifier"
+        />
+        <button
+          type="button"
+          class="btn-load-event"
+          [disabled]="isLoading || !eventIdControl.value || eventIdControl.value <= 0"
+          (click)="onEventSubmit()"
+        >
+          @if (isLoading) {
+            <span class="spinner-sm" aria-hidden="true"></span>
+            <span>Loading...</span>
+          } @else {
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+            </svg>
+            <span>Load Event</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Input (Only shown when an event is selected) -->
+    @if (selectedEventId) {
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Filter by booking # or customer ID..."
+          [formControl]="searchControl"
+          (input)="onSearchInput($event)"
+          aria-label="Filter bookings by booking number or customer ID"
+        />
+        @if (searchControl.value) {
+          <button
+            type="button"
+            class="clear-btn"
+            (click)="onClearSearch()"
+            aria-label="Clear filter search"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Bottom Bar: Status Filter Tabs (Only shown when an event is selected) -->
+  @if (selectedEventId) {
+    <div class="filter-tabs-row" role="tablist" aria-label="Booking Status Tabs">
+      @for (tab of filterTabs; track tab.value) {
+        <button
+          type="button"
+          role="tab"
+          class="tab-btn"
+          [class.active]="activeFilter === tab.value"
+          [attr.aria-selected]="activeFilter === tab.value"
+          (click)="onSelectTab(tab.value)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+  }
+</div>

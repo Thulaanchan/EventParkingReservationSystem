@@ -1,0 +1,42 @@
+<div class="parking-card">
+  <!-- Header -->
+  <div class="card-header">
+    <div class="header-left">
+      <div class="p-circle" aria-hidden="true">P</div>
+      <h3 class="card-title">Parking Details</h3>
+    </div>
+    @if (parking) {
+      <span class="reserved-badge">Reserved</span>
+    } @else {
+      <span class="none-badge">Not Reserved</span>
+    }
+  </div>
+
+  @if (parking) {
+    <!-- Parking Info Row -->
+    <div class="parking-body">
+      <div class="parking-info">
+        <div class="slot-title">
+          <span class="zone-name">{{ parking.zoneName || 'Parking Zone' }}</span>
+          <span class="bullet">&bull;</span>
+          <span class="slot-code">Slot {{ parking.slotCode }}</span>
+        </div>
+        <div class="parking-sub">
+          <span class="vehicle-type">Vehicle: {{ getVehicleTypeLabel(parking.vehicleType) }}</span>
+          @if (parking.reservedAtUtc) {
+            <span class="bullet">&bull;</span>
+            <span class="reserved-date">Reserved: {{ parking.reservedAtUtc | date:'shortDate' }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="parking-fee">
+        {{ formatCurrency(parking.feeSnapshot) }}
+      </div>
+    </div>
+  } @else {
+    <div class="no-parking-body">
+      <p class="no-parking-text">No parking reservation was selected for this booking.</p>
+    </div>
+  }
+</div>

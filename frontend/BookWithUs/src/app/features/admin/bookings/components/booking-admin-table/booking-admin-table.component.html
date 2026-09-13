@@ -1,0 +1,88 @@
+<div class="table-container" role="region" aria-label="Event Bookings Directory">
+  <div class="table-scroll-wrap">
+    <table class="bookings-table">
+      <thead>
+        <tr>
+          <th scope="col" class="th-booking">Booking #</th>
+          <th scope="col" class="th-customer">Customer</th>
+          <th scope="col" class="th-status">Status</th>
+          <th scope="col" class="th-items">Seats & Parking</th>
+          <th scope="col" class="th-amount">Total Amount</th>
+          <th scope="col" class="th-date">Created At</th>
+          <th scope="col" class="th-actions text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of bookings; track b.bookingId) {
+          <tr class="table-row" (click)="onSelectBooking(b)">
+            <!-- Booking Reference Number -->
+            <td class="td-booking">
+              <span class="booking-ref-badge">{{ b.bookingNumber }}</span>
+            </td>
+
+            <!-- Customer ID -->
+            <td class="td-customer">
+              <div class="customer-cell">
+                <span class="customer-tag">Customer #{{ b.customerId }}</span>
+              </div>
+            </td>
+
+            <!-- Booking Status -->
+            <td class="td-status">
+              @if (b.bookingStatus === 'Confirmed') {
+                <span class="badge badge-confirmed">Confirmed</span>
+              } @else if (b.bookingStatus === 'Pending') {
+                <span class="badge badge-pending">Pending</span>
+              } @else if (b.bookingStatus === 'Cancelled') {
+                <span class="badge badge-cancelled">Cancelled</span>
+              } @else if (b.bookingStatus === 'Expired') {
+                <span class="badge badge-expired">Expired</span>
+              }
+            </td>
+
+            <!-- Seats & Parking summary -->
+            <td class="td-items">
+              <div class="items-cell">
+                <span class="seats-badge">
+                  <svg class="item-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  <span>{{ b.seatCount }} {{ b.seatCount === 1 ? 'seat' : 'seats' }}</span>
+                </span>
+                @if (b.hasParking) {
+                  <span class="parking-badge">Parking</span>
+                }
+              </div>
+            </td>
+
+            <!-- Total Amount -->
+            <td class="td-amount">
+              <span class="amount-value">LKR {{ b.totalAmount | number }}</span>
+            </td>
+
+            <!-- Created At -->
+            <td class="td-date">
+              <span class="date-text">{{ b.createdAt | date:'short' }}</span>
+            </td>
+
+            <!-- Action Button -->
+            <td class="td-actions text-right" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                class="btn-view"
+                (click)="onSelectBooking(b)"
+                aria-label="View booking details"
+              >
+                <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                </svg>
+                <span>Details</span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

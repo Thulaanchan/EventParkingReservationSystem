@@ -1,0 +1,59 @@
+<div class="attendee-row" [formGroup]="formGroup">
+  <!-- Seat Badge & Location Info -->
+  <div class="seat-badge-container">
+    <span class="seat-dot"></span>
+    <div class="seat-badge-text">
+      <span class="seat-code">{{ seatCode }}</span>
+      @if (sectionName || rowLabel) {
+        <span class="seat-meta">
+          {{ sectionName }}@if (sectionName && rowLabel) { • }@if (rowLabel) { Row {{ rowLabel }} }
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Form Inputs Grid -->
+  <div class="inputs-grid">
+    <!-- Attendee Name Input -->
+    <div class="form-group name-group">
+      <label [for]="'attendee-name-' + seatId" class="form-label">
+        Attendee Full Name <span class="required-star">*</span>
+      </label>
+      <input
+        [id]="'attendee-name-' + seatId"
+        type="text"
+        class="form-input"
+        [class.input-error]="isAttendeeNameInvalid"
+        formControlName="attendeeName"
+        placeholder="e.g. John Doe"
+        autocomplete="name"
+      />
+      @if (isAttendeeNameInvalid) {
+        <div class="error-feedback">
+          @if (attendeeNameErrors?.['required']) {
+            <span>Attendee name is required</span>
+          } @else if (attendeeNameErrors?.['minlength']) {
+            <span>Minimum 3 characters required</span>
+          } @else if (attendeeNameErrors?.['maxlength']) {
+            <span>Maximum 100 characters allowed</span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Ticket Type Selector -->
+    <div class="form-group type-group">
+      <label [for]="'attendee-type-' + seatId" class="form-label">
+        Ticket Type <span class="required-star">*</span>
+      </label>
+      <select
+        [id]="'attendee-type-' + seatId"
+        class="form-select"
+        formControlName="attendeeType"
+      >
+        <option [ngValue]="1">Adult</option>
+        <option [ngValue]="2">Child</option>
+      </select>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.seat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #4f46e5;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.seat-count-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+}
+
+/* Seat List */
+.seat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.seat-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 140px;
+}
+
+.seat-code-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  background-color: #ede9fe;
+  color: #4f46e5;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  border: 1px solid #ddd6fe;
+}
+
+.seat-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.row-num {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.attendee-info {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #475569;
+  font-size: 0.8125rem;
+}
+
+.attendee-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+
+.attendee-text {
+  font-weight: 500;
+}
+
+.seat-price {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+/* Footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.total-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.total-value {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #4f46e5;
+}

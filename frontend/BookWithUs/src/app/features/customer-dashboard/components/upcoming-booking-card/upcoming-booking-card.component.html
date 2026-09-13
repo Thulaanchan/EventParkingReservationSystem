@@ -1,0 +1,111 @@
+<div class="dash-card">
+  <!-- Card Header -->
+  <div class="dash-card-header">
+    <div class="header-left">
+      <div class="card-icon-box box-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+      <h3 class="card-title">Upcoming Bookings</h3>
+    </div>
+
+    @if (count > 0) {
+      <span class="badge badge-purple">{{ count }} Upcoming</span>
+    } @else {
+      <span class="badge badge-gray">0 Upcoming</span>
+    }
+  </div>
+
+  <!-- Card Body -->
+  <div class="dash-card-body">
+    @if (booking) {
+      <div class="booking-preview">
+        <!-- Event Poster / Thumbnail -->
+        <div class="booking-poster">
+          @if (booking.posterUrl) {
+            <img [src]="booking.posterUrl" [alt]="booking.eventName" class="poster-img" />
+          } @else {
+            <div class="poster-fallback">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 2 12 7 7 2"></polyline>
+              </svg>
+            </div>
+          }
+        </div>
+
+        <!-- Event Details -->
+        <div class="booking-details">
+          <h4 class="event-name">{{ booking.eventName }}</h4>
+
+          <div class="detail-line">
+            <svg class="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>{{ booking.venueName }}</span>
+          </div>
+
+          <div class="detail-line">
+            <svg class="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>
+              {{ booking.eventDate }}
+              @if (booking.startTime) {
+                &bull; {{ booking.startTime }}
+              }
+            </span>
+          </div>
+
+          <div class="detail-line">
+            <svg class="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+            </svg>
+            <span>Seats: {{ booking.seats }}</span>
+          </div>
+
+          <div class="status-pill-row">
+            <span class="status-pill badge-confirmed">{{ booking.bookingStatus }}</span>
+          </div>
+        </div>
+      </div>
+    } @else if (count > 0) {
+      <div class="active-count-preview">
+        <p class="preview-text">
+          You have <strong>{{ count }}</strong> active upcoming reservation{{ count > 1 ? 's' : '' }}.
+        </p>
+        <a routerLink="/bookings" class="quick-link">View in My Bookings</a>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <p class="empty-text">No upcoming bookings</p>
+        <a routerLink="/events" class="empty-action-link">Explore events</a>
+      </div>
+    }
+  </div>
+
+  <!-- Card Footer -->
+  <div class="dash-card-footer">
+    <a routerLink="/bookings" class="footer-link">
+      <span>View All Bookings</span>
+      <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </div>
+</div>
