@@ -5,5 +5,12 @@ export const paymentRoutes: Routes = [
   {
     path: 'checkout/:bookingId',
     component: PaymentCheckoutPageComponent
+  },
+  {
+    path: 'confirmation/:bookingId',
+    loadComponent: () =>
+      import(
+        './pages/payment-confirmation-page/payment-confirmation-page.component'
+      ).then((m) => m.PaymentConfirmationPageComponent)
   }
 ];

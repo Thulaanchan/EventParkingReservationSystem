@@ -159,7 +159,11 @@ export class PaymentCheckoutPageComponent implements OnInit {
       next: (payment: Payment) => {
         this.paymentResult = payment;
         this.isSubmitting = false;
-        this.router.navigate(['/bookings/confirmation', this.bookingId]);
+        this.router.navigate(['/bookings/confirmation', this.bookingId], {
+          state: {
+            payment: payment
+          }
+        });
       },
       error: (err) => {
         this.isSubmitting = false;
