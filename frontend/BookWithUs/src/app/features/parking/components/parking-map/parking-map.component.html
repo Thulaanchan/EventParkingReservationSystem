@@ -1,0 +1,79 @@
+<div class="parking-map-container">
+  <!-- Status & Vehicle Legend Bar -->
+  @if (showLegend) {
+    <div class="map-legend-wrapper">
+      <app-parking-legend [zones]="zones" />
+    </div>
+  }
+
+  <!-- Scrollable Map Viewport -->
+  <div class="parking-map-viewport" role="region" aria-label="Parking Arena Map">
+    <div class="parking-arena">
+      <!-- Venue Entrance Landmark Banner (matching screen-10.png) -->
+      <div class="venue-entrance-banner" aria-hidden="true">
+        <span class="entrance-arrow">&darr;</span>
+        <span class="entrance-text">{{ entranceLabel }}</span>
+        <span class="entrance-arrow">&darr;</span>
+      </div>
+
+      <!-- Perimeter Road Circuit with Directional Signs -->
+      <div class="arena-road-perimeter">
+        <div class="road-side road-left" aria-hidden="true">
+          <span class="road-sign sign-entry">ENTRY &rarr;</span>
+          <div class="road-lane-divider"></div>
+        </div>
+
+        <!-- Central Parking Field -->
+        <div class="arena-interior">
+          @if (slots.length === 0) {
+            <div class="empty-map-state" role="status">
+              <span class="empty-map-icon" aria-hidden="true">&#x1F17F;&#xFE0F;</span>
+              <p class="empty-map-title">No Parking Slots Available</p>
+              <p class="empty-map-desc">There are no parking slots configured for this event.</p>
+            </div>
+          } @else if (hasCoordinates) {
+            <!-- Coordinate Canvas Positioning -->
+            <div
+              class="coordinate-canvas"
+              [style.width.px]="canvasWidth"
+              [style.height.px]="canvasHeight"
+            >
+              @for (slot of slots; track slot.id) {
+                <div
+                  class="positioned-slot"
+                  [style.left.px]="slot.positionX"
+                  [style.top.px]="slot.positionY"
+                >
+                  <app-parking-slot
+                    [slot]="slot"
+                    [selected]="isSlotSelected(slot.id)"
+                    (slotSelect)="onSlotSelect($event)"
+                  />
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- Zone-Grouped Responsive Fallback Grid (matches screen-10.png) -->
+            <div class="zones-grid-layout">
+              @for (group of groupedZones; track group.zone.id) {
+                <div class="zone-grid-item">
+                  <app-parking-zone
+                    [zone]="group.zone"
+                    [slots]="group.slots"
+                    [selectedParkingSlotId]="selectedParkingSlotId"
+                    (slotSelect)="onSlotSelect($event)"
+                  />
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="road-side road-right" aria-hidden="true">
+          <span class="road-sign sign-exit">EXIT &rarr;</span>
+          <div class="road-lane-divider"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

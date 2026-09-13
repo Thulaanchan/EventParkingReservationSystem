@@ -1,0 +1,29 @@
+<div class="empty-state-card" role="region" [attr.aria-label]="title">
+  @if (icon) {
+    <div class="empty-icon-wrapper" aria-hidden="true">{{ icon }}</div>
+  } @else {
+    <div class="empty-icon-wrapper default-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" class="empty-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+      </svg>
+    </div>
+  }
+
+  <h3 class="empty-title">{{ title }}</h3>
+
+  @if (message) {
+    <p class="empty-message">{{ message }}</p>
+  }
+
+  @if (actionLabel) {
+    <button
+      type="button"
+      class="empty-action-btn"
+      (click)="onAction()"
+      [attr.aria-label]="actionLabel"
+    >
+      {{ actionLabel }}
+    </button>
+  }
+</div>

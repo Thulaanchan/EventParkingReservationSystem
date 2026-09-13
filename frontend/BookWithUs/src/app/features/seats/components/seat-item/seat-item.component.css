@@ -1,0 +1,131 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.seat-item-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  box-sizing: border-box;
+  padding: 0;
+  border-radius: 0.375rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: transparent;
+  background-color: #ffffff;
+  color: #334155;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  user-select: none;
+  position: relative;
+  cursor: pointer;
+}
+
+/* 1. AVAILABLE STATE (Default selectable seat matching screen-09.png) */
+.seat-item-btn.seat-status-available {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.seat-item-btn.seat-status-available:hover:not(:disabled) {
+  background-color: #f5f3ff;
+  border-color: #6366f1;
+  color: #4338ca;
+  box-shadow: 0 2px 4px -1px rgba(79, 70, 229, 0.2);
+  transform: translateY(-1px);
+}
+
+.seat-item-btn.seat-status-available:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* 2. SELECTED STATE (Vibrant purple background with bold number badge) */
+.seat-item-btn.seat-selected {
+  background-color: #4f46e5 !important;
+  border-color: #4338ca !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.5), 0 4px 6px -1px rgba(79, 70, 229, 0.3) !important;
+  font-weight: 700;
+  transform: scale(1.05);
+  cursor: pointer !important;
+}
+
+.seat-item-btn.seat-selected:hover:not(:disabled) {
+  background-color: #4338ca !important;
+  border-color: #3730a3 !important;
+}
+
+/* 3. HELD STATE (Amber/Yellow temporary hold) */
+.seat-item-btn.seat-status-held {
+  background-color: #fbbf24 !important;
+  border-color: #f59e0b !important;
+  color: #78350f !important;
+  cursor: not-allowed !important;
+  opacity: 0.85;
+}
+
+/* 4. BOOKED STATE (Coral/Red booked by others) */
+.seat-item-btn.seat-status-booked {
+  background-color: #f87171 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+  opacity: 0.75;
+}
+
+/* 5. VIP PRE-RESERVED STATE (Dark navy with star icon) */
+.seat-item-btn.seat-vip {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #fbbf24 !important;
+  cursor: not-allowed !important;
+  opacity: 0.95;
+}
+
+/* Focus and accessibility styles */
+.seat-item-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #4f46e5 !important;
+  z-index: 10;
+}
+
+.seat-item-btn:disabled {
+  pointer-events: auto;
+  cursor: not-allowed;
+}
+
+.seat-vip-star {
+  font-size: 0.75rem;
+  line-height: 1;
+  color: #fbbf24;
+}
+
+.seat-badge-number,
+.seat-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

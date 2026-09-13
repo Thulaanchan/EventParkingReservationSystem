@@ -1,0 +1,32 @@
+<aside class="parking-legend-bar" aria-label="Parking Slot Status Legend">
+  <ul class="legend-status-list" role="list">
+    @for (item of statusItems; track item.id) {
+      <li class="legend-status-item" role="listitem">
+        <div class="legend-swatch {{ item.cssClass }}" aria-hidden="true">
+          @if (item.badgeSymbol) {
+            <span class="legend-badge {{ item.badgeClass }}">{{ item.badgeSymbol }}</span>
+          }
+        </div>
+        <div class="legend-text">
+          <span class="legend-label">{{ item.label }}</span>
+          <span class="legend-desc">{{ item.description }}</span>
+        </div>
+      </li>
+    }
+  </ul>
+
+  @if (zones.length > 0) {
+    <div class="legend-divider" aria-hidden="true"></div>
+    <ul class="legend-zone-list" role="list" aria-label="Available Vehicle Types">
+      @for (zone of zones; track zone.id) {
+        <li class="legend-zone-item" role="listitem">
+          <span class="zone-pill-dot" [class.offline-dot]="!zone.isOnlineBookable" aria-hidden="true"></span>
+          <span class="zone-pill-name">{{ zone.name || getVehicleLabel(zone.vehicleType) }}</span>
+          @if (!zone.isOnlineBookable) {
+            <span class="zone-offline-tag">Offline</span>
+          }
+        </li>
+      }
+    </ul>
+  }
+</aside>

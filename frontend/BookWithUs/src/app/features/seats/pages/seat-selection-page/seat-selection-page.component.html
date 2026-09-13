@@ -1,0 +1,214 @@
+<div class="seat-selection-page">
+  <!-- Page Top Navigation Header -->
+  <header class="page-top-bar">
+    <div class="page-container top-bar-content">
+      <button class="back-link-btn" type="button" (click)="onBack()" aria-label="Back to event details">
+        <span class="back-arrow" aria-hidden="true">&larr;</span>
+        <span>Back to Event Details</span>
+      </button>
+
+      <!-- Step Indicator Wizard -->
+      <nav class="step-wizard" aria-label="Reservation Progress">
+        <ol class="step-list">
+          <li class="step-item active" aria-current="step">
+            <span class="step-badge">1</span>
+            <span class="step-title">Seats</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">2</span>
+            <span class="step-title">Parking</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">3</span>
+            <span class="step-title">Review</span>
+          </li>
+          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-item">
+            <span class="step-badge">4</span>
+            <span class="step-title">Payment</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main page-container">
+    <!-- Page Header Heading -->
+    <section class="page-heading">
+      <h1 class="page-title">Select Your Seats</h1>
+      <p class="page-subtitle">Choose your preferred seats on the interactive map</p>
+    </section>
+
+    <!-- State 1: Loading -->
+    <app-loading-spinner
+      *ngIf="isLoading"
+      message="Fetching real-time seat availability for this event..."
+    ></app-loading-spinner>
+
+    <!-- State 2: Error with Retry -->
+    <app-error-message
+      *ngIf="!isLoading && errorMessage"
+      [message]="errorMessage"
+      title="Unable to Load Seats"
+      [showRetry]="true"
+      retryLabel="Try Again"
+      (retry)="reloadSeats()"
+    ></app-error-message>
+
+    <!-- State 3: Empty -->
+    <app-empty-state
+      *ngIf="!isLoading && !errorMessage && seats.length === 0"
+      title="No Seats Available"
+      message="There are currently no seats configured or available for this event layout."
+      actionLabel="Back to Event Details"
+      (action)="onBack()"
+    ></app-empty-state>
+
+    <!-- State 4: Main Seat Selection Workflow -->
+    <div class="selection-workflow" *ngIf="!isLoading && !errorMessage && seats.length > 0">
+      <!-- In-Page Alert: Concurrency Conflict -->
+      <app-alert-banner
+        *ngIf="conflictMessage"
+        variant="warning"
+        [message]="conflictMessage"
+        [dismissible]="true"
+        (dismiss)="conflictMessage = null"
+      ></app-alert-banner>
+
+      <!-- In-Page Alert: User Guidance Notification -->
+      <app-alert-banner
+        *ngIf="notificationMessage"
+        variant="info"
+        [message]="notificationMessage"
+        [dismissible]="true"
+        (dismiss)="notificationMessage = null"
+      ></app-alert-banner>
+
+      <!-- Step 1: Ticket Requirements Component -->
+      <section class="requirements-section" aria-label="Ticket Requirements">
+        <app-ticket-requirements
+          [adultCount]="adultCount"
+          [childCount]="childCount"
+          [childDiscountPercent]="childDiscountPercent"
+          (adultCountChange)="onAdultCountChange($event)"
+          (childCountChange)="onChildCountChange($event)"
+        ></app-ticket-requirements>
+      </section>
+
+      <!-- Main Two-Column Layout -->
+      <div class="selection-grid">
+        <!-- Left Column: Map Card -->
+        <div class="map-column">
+          <section class="map-card" aria-label="Seating Map">
+            <header class="map-card-header">
+              <div class="map-title-wrap">
+                <h2 class="map-heading">Arena Layout</h2>
+                <span class="map-availability-pill">
+                  {{ availableSeatsCount }} of {{ totalSeatsCount }} available
+                </span>
+              </div>
+
+              <!-- Map Toolbar (Zoom / Reset) -->
+              <app-seat-map-toolbar
+                [canZoomIn]="canZoomIn"
+                [canZoomOut]="canZoomOut"
+                [canReset]="canResetZoom"
+                (zoomIn)="onZoomIn()"
+                (zoomOut)="onZoomOut()"
+                (resetMap)="onResetZoom()"
+                (fitMap)="onFitMap()"
+              ></app-seat-map-toolbar>
+            </header>
+
+            <!-- Scaled Interactive Viewport -->
+            <div class="map-viewport-wrapper">
+              <div
+                class="map-zoom-stage"
+                [style.transform]="'scale(' + mapZoom + ')'"
+                [style.transform-origin]="'top center'"
+              >
+                <app-seat-map
+                  [seats]="seats"
+                  [sections]="sections"
+                  [categories]="categories"
+                  [selectedSeatIds]="selectedSeatIds"
+                  [showLegend]="false"
+                  (seatSelect)="onSeatSelect($event)"
+                ></app-seat-map>
+              </div>
+            </div>
+
+            <footer class="map-card-footer">
+              <span class="footer-tip-icon" aria-hidden="true">&#9432;</span>
+              <p class="footer-tip-text">
+                Click an available seat to select it. Click a selected seat again to deselect.
+              </p>
+            </footer>
+          </section>
+        </div>
+
+        <!-- Right Column: Sticky Reservation Sidebar -->
+        <aside class="sidebar-column" aria-label="Booking Summary and Legend">
+          <!-- Selected Seats Summary -->
+          <div class="sidebar-card">
+            <app-selected-seats-summary
+              [selectedSeats]="selectedSeats"
+              [totalRequired]="totalRequiredSeats"
+              (removeSeat)="onRemoveSeat($event)"
+              (clearAll)="onClearAll()"
+            ></app-selected-seats-summary>
+          </div>
+
+          <!-- Price Summary -->
+          <div class="sidebar-card">
+            <app-seat-price-summary
+              [selectedSeats]="selectedSeats"
+              [subtotal]="displaySubtotal"
+              [discountNote]="childDiscountPercent ? ('Children tickets receive a ' + childDiscountPercent + '% discount.') : null"
+            ></app-seat-price-summary>
+          </div>
+
+          <!-- Continue to Parking Action Card -->
+          <div class="sidebar-card action-card">
+            <button
+              class="btn btn-primary continue-btn"
+              type="button"
+              [disabled]="!canContinue"
+              (click)="onContinueToParking()"
+              aria-label="Continue to Parking selection"
+            >
+              <span>Continue to Parking</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+
+            <!-- Helper Guidance Under CTA -->
+            <p class="continue-hint" *ngIf="totalRequiredSeats === 0">
+              Please specify your adult or child ticket quantities above.
+            </p>
+            <p class="continue-hint" *ngIf="totalRequiredSeats > 0 && selectedSeats.length < totalRequiredSeats">
+              Please select {{ totalRequiredSeats - selectedSeats.length }} more seat{{ totalRequiredSeats - selectedSeats.length === 1 ? '' : 's' }} to continue.
+            </p>
+            <p class="continue-hint ready-hint" *ngIf="canContinue">
+              &check; All {{ totalRequiredSeats }} required seat{{ totalRequiredSeats === 1 ? '' : 's' }} selected. Ready to proceed!
+            </p>
+          </div>
+
+          <!-- Seating Legend -->
+          <div class="sidebar-card">
+            <app-seat-legend [categories]="categories"></app-seat-legend>
+          </div>
+
+          <!-- Section Summary -->
+          <div class="sidebar-card">
+            <app-seat-section-summary
+              [sections]="sections"
+              [categories]="categories"
+            ></app-seat-section-summary>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,131 @@
+:host {
+  display: block;
+}
+
+.vehicle-price-list-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+}
+
+.price-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.price-list-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rates-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.rates-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.rate-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  transition: background-color 0.15s ease;
+}
+
+.rate-item:hover {
+  background-color: #f1f5f9;
+}
+
+.rate-item.rate-offline {
+  border-style: dashed;
+  border-color: #cbd5e1;
+  background-color: #fafbfc;
+  opacity: 0.85;
+}
+
+.rate-vehicle-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.vehicle-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.vehicle-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.vehicle-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.vehicle-type-tag {
+  font-size: 0.6875rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.rate-price-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.rate-fee {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.online-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.offline-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.empty-rates {
+  padding: 1rem;
+  text-align: center;
+}
+
+.empty-text {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}

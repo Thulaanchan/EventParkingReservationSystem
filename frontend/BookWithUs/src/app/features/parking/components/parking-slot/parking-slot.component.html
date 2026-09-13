@@ -1,0 +1,25 @@
+<button
+  type="button"
+  class="parking-slot"
+  [appParkingStatus]="slot.status"
+  [class.available]="isSelectable && !selected"
+  [class.selected]="selected"
+  [class.held]="isHeld"
+  [class.occupied]="isOccupied"
+  [class.offline]="isOffline"
+  [disabled]="!isSelectable && !selected"
+  [attr.aria-label]="ariaLabel"
+  [attr.aria-selected]="selected"
+  [attr.aria-disabled]="!isSelectable && !selected"
+  (click)="onSelect()"
+>
+  <span class="slot-code">{{ slot | slotCode }}</span>
+
+  @if (selected) {
+    <span class="status-indicator selected-badge" aria-hidden="true">&#x2713;</span>
+  } @else if (isHeld) {
+    <span class="status-indicator held-badge" aria-hidden="true">&#x1F512;</span>
+  } @else if (isOccupied) {
+    <span class="status-indicator occupied-badge" aria-hidden="true">&#x2715;</span>
+  }
+</button>

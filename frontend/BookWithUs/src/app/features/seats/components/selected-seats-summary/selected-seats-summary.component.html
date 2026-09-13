@@ -1,0 +1,66 @@
+<section class="selected-seats-card" aria-label="Selected Seats List">
+  <div class="selected-seats-header">
+    <h4 class="selected-seats-title">
+      Selected Seats
+      @if (totalRequired != null && totalRequired > 0) {
+        <span class="seat-count-ratio">({{ selectedSeats.length }}/{{ totalRequired }})</span>
+      } @else if (selectedSeats.length > 0) {
+        <span class="seat-count-badge">({{ selectedSeats.length }})</span>
+      }
+    </h4>
+
+    @if (selectedSeats.length > 0) {
+      <button
+        type="button"
+        class="clear-all-btn"
+        (click)="onClearAll()"
+        aria-label="Clear all selected seats"
+      >
+        Clear All
+      </button>
+    }
+  </div>
+
+  @if (selectedSeats.length === 0) {
+    <div class="empty-selection" role="status">
+      <p class="empty-selection-text">No seats selected yet.</p>
+    </div>
+  } @else {
+    <div class="selected-seats-list" role="list">
+      @for (seat of selectedSeats; track seat.seatId) {
+        <div class="selected-seat-item" role="listitem">
+          <div class="seat-item-left">
+            <span
+              class="category-dot"
+              [ngClass]="getCategoryDotClass(seat.categoryName || seat.categoryCode)"
+              aria-hidden="true"
+            ></span>
+            <div class="seat-details">
+              <span class="seat-name-code">
+                {{ seat.categoryName }} ({{ seat.seatCode }})
+              </span>
+              <span class="seat-attendee-type">
+                {{ getAttendeeLabel(seat.attendeeType) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="seat-item-right">
+            <span class="seat-price">
+              LKR {{ seat.price | number:'1.0-0' }}
+            </span>
+            <button
+              type="button"
+              class="remove-seat-btn"
+              [attr.aria-label]="'Remove seat ' + seat.seatCode"
+              [title]="'Remove seat ' + seat.seatCode"
+              (click)="onRemove(seat.seatId, $event)"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

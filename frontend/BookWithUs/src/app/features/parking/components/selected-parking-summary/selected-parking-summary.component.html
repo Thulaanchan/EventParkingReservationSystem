@@ -1,0 +1,46 @@
+<aside class="selected-parking-card" aria-label="Selected Parking Summary">
+  <header class="card-header">
+    <h3 class="card-title">Your Parking</h3>
+    @if (isSelected) {
+      <span class="selection-status-badge">1 Slot Selected</span>
+    }
+  </header>
+
+  @if (isSelected) {
+    <div class="selected-parking-content">
+      <div class="slot-details-box">
+        <div class="slot-icon-badge" aria-hidden="true">{{ vehicleIcon }}</div>
+        <div class="slot-info">
+          <div class="slot-code-row">
+            <span class="slot-code">Slot {{ selectedParking | slotCode }}</span>
+            <span class="slot-zone">{{ zoneName }}</span>
+          </div>
+          <span class="slot-vehicle">{{ vehicleLabel }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="remove-btn"
+          [attr.aria-label]="removeAriaLabel"
+          (click)="onRemove()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="remove-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span class="remove-label">Remove</span>
+        </button>
+      </div>
+
+      <div class="parking-fee-row">
+        <span class="fee-label">Parking Fee</span>
+        <span class="fee-amount">{{ formattedFee }}</span>
+      </div>
+    </div>
+  } @else {
+    <div class="no-parking-content">
+      <p class="no-parking-message">No parking selected.</p>
+      <p class="no-parking-hint">Parking is optional. Select a slot from the map or proceed without parking.</p>
+    </div>
+  }
+</aside>
