@@ -111,7 +111,7 @@
               <div class="seat-item">
                 <div class="seat-main">
                   <span class="seat-code">{{ seat.seatCode }}</span>
-                  <span class="seat-section">{{ seat.categoryName || 'Standard' }}</span>
+                  <span class="seat-section">{{ seat.categoryName || seat.sectionName || 'Standard' }}</span>
                 </div>
                 <div class="seat-meta">
                   @if (seat.attendeeName) {
@@ -135,7 +135,7 @@
               </div>
               <div class="parking-fee">
                 <span>Parking Fee:</span>
-                <strong>LKR {{ b.parking.parkingFeeSnapshot | number }}</strong>
+                <strong>LKR {{ (b.parking.parkingFeeSnapshot ?? b.parking.feeSnapshot) | number }}</strong>
               </div>
             </div>
           </div>

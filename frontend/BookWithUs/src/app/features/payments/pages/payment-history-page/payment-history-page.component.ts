@@ -40,11 +40,11 @@ export class PaymentHistoryPageComponent implements OnInit {
     this.errorMessage = '';
 
     this.paymentService.getCustomerPaymentHistory(customerId).subscribe({
-      next: (payments) => {
+      next: (payments: PaymentSummary[]) => {
         this.payments = payments ?? [];
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.errorMessage =
           err?.error?.message ??

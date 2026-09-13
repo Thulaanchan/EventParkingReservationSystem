@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Venue } from '../../../../../../core/models/venues/venue.model';
+import { Venue } from '../../../../../core/models/venues/venue.model';
 
 /**
  * Presentational component displaying venue capacity metrics, allocation,

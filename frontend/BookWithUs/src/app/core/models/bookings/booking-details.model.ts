@@ -28,6 +28,7 @@ export interface BookingParkingDetail {
   zoneName: string;
   vehicleType: number | string;
   feeSnapshot: number;
+  parkingFeeSnapshot?: number;
   reservedAtUtc: string;
 }
 

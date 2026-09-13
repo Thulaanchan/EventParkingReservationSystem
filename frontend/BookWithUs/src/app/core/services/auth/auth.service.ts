@@ -12,6 +12,7 @@ import { ResetPasswordRequest } from '../../models/auth/reset-password-request.m
 import { VerifyEmailRequest } from '../../models/auth/verify-email-request.model';
 import { Customer } from '../../models/customers/customer.model';
 import { AuthSessionService } from './auth-session.service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ import { AuthSessionService } from './auth-session.service';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly sessionService = inject(AuthSessionService);
-  private readonly baseUrl = '/api/auth';
+  private readonly baseUrl = `${environment.apiUrl}/auth`;
 
   // Signals (Single source of truth delegated from AuthSessionService)
   readonly session = this.sessionService.session;
@@ -53,7 +54,7 @@ export class AuthService {
    * Backend endpoint: POST /api/customers/register
    */
   register(request: RegisterRequest): Observable<Customer> {
-    return this.http.post<Customer>('/api/customers/register', request);
+    return this.http.post<Customer>(`${environment.apiUrl}/customers/register`, request);
   }
 
   /**

@@ -20,3 +20,4 @@ export interface PaymentResult {
 }
 
 export type PaymentResultDto = PaymentResult;
+export type Payment = PaymentResult;

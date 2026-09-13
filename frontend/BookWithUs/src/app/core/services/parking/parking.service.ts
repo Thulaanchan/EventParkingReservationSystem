@@ -9,13 +9,14 @@ import { CreateParkingSlotRequest } from '../../models/parking/create-parking-sl
 import { UpdateParkingSlotRequest } from '../../models/parking/update-parking-slot-request.model';
 import { CreateParkingZoneRequest } from '../../models/parking/create-parking-zone-request.model';
 import { UpdateParkingZoneRequest } from '../../models/parking/update-parking-zone-request.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParkingService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:7031/api';
+  private readonly baseUrl = environment.apiUrl;
 
   // =========================================================================
   // CUSTOMER ENDPOINTS (Public / Customer-Safe)

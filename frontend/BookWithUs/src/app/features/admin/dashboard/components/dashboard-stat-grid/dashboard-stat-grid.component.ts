@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { AdminDashboardSummary } from '../../../../../../core/models/dashboards/admin-dashboard.model';
+import { AdminDashboardSummary } from '../../../../../core/models/dashboards/admin-dashboard.model';
 
 export type StatIconType =
   | 'events'

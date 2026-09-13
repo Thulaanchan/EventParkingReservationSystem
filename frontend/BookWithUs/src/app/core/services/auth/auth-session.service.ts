@@ -29,6 +29,13 @@ export class AuthSessionService {
     return this.currentUser()?.role === AuthRoles.Administrator;
   });
 
+  /**
+   * Returns current authenticated customer ID snapshot or null.
+   */
+  get currentCustomerId(): number | null {
+    return this.currentUser()?.customerId ?? null;
+  }
+
   // Observables (RxJS streams for async pipes, routing guards and interceptors)
   readonly session$: Observable<AuthSession | null> = this.sessionSubject.asObservable();
   readonly currentUser$: Observable<AuthUser | null> = this.session$.pipe(
@@ -130,6 +137,13 @@ export class AuthSessionService {
    */
   getCurrentUser(): AuthUser | null {
     return this.currentUser();
+  }
+
+  /**
+   * Returns current authenticated customer ID snapshot or null.
+   */
+  getCurrentCustomerId(): number | null {
+    return this.currentCustomerId;
   }
 
   /**

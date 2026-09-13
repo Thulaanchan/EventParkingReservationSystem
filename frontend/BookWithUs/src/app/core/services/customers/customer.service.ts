@@ -5,13 +5,14 @@ import { PagedResult } from '../../models/common/paged-result.model';
 import { Customer } from '../../models/customers/customer.model';
 import { CustomerSummary } from '../../models/customers/customer-summary.model';
 import { UpdateCustomerRequest } from '../../models/customers/update-customer-request.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/customers';
+  private readonly baseUrl = `${environment.apiUrl}/customers`;
 
   /**
    * Searches/retrieves paginated customers for administrator.

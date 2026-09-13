@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EventFilter } from '../../../../../../core/models/events/event-filter.model';
-import { Venue } from '../../../../../../core/models/venues/venue.model';
-import { EventCategory } from '../../../../../../core/models/categories/event-category.model';
+import { EventFilter } from '../../../../../core/models/events/event-filter.model';
+import { Venue } from '../../../../../core/models/venues/venue.model';
+import { EventCategory } from '../../../../../core/models/categories/event-category.model';
 
 @Component({
   selector: 'app-admin-event-filter',

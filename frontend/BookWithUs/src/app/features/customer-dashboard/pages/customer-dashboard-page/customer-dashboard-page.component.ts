@@ -84,7 +84,7 @@ export class CustomerDashboardPageComponent implements OnInit {
     this.errorMessage.set(null);
 
     forkJoin({
-      summary: this.dashboardService.getSummary(),
+      summary: this.dashboardService.getCustomerSummary(),
       booking: this.dashboardService.getUpcomingBooking(customerId),
       recommended: this.dashboardService.getRecommendedEvents(),
       payment: this.dashboardService.getRecentPayment(customerId),

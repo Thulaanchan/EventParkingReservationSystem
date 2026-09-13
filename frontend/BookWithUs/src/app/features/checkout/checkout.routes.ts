@@ -37,4 +37,5 @@ export const CHECKOUT_ROUTES: Routes = [
   }
 ];
 
+export const checkoutRoutes: Routes = CHECKOUT_ROUTES;
 export default CHECKOUT_ROUTES;

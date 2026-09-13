@@ -7,7 +7,7 @@ import {
   Output
 } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { EventSummary } from '../../../../../../core/models/events/event-summary.model';
+import { EventSummary } from '../../../../../core/models/events/event-summary.model';
 
 @Component({
   selector: 'app-admin-event-table',

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { UpcomingEvent } from '../../../../../../core/models/dashboards/admin-dashboard.model';
+import { UpcomingEvent } from '../../../../../core/models/dashboards/admin-dashboard.model';
 
 /**
  * Presentational table component for the Admin Dashboard Upcoming Events section.

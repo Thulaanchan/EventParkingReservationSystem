@@ -14,13 +14,14 @@ import {
 } from '../../models/bookings/booking.model';
 import { BookingSummary, BookingSummaryDto } from '../../models/bookings/booking-summary.model';
 import { CreateBookingRequest } from '../../models/bookings/create-booking-request.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/bookings';
+  private readonly baseUrl = `${environment.apiUrl}/bookings`;
 
   /**
    * Creates a new booking with selected seats and optional parking reservation.

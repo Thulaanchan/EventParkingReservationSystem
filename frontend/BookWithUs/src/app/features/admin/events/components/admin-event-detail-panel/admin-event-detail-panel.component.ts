@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { environment } from '../../../../../../environments/environment';
-import { EventDetails } from '../../../../../../core/models/events/event-details.model';
+import { EventDetails } from '../../../../../core/models/events/event-details.model';
 
 /**
  * Admin event detail drawer/panel presentational component.
