@@ -14,7 +14,7 @@ import { BookingParkingDetailsComponent } from '../../components/booking-parking
 import { BookingSeatDetailsComponent } from '../../components/booking-seat-details/booking-seat-details.component';
 import { BookingStatusSummaryComponent } from '../../components/booking-status-summary/booking-status-summary.component';
 import { CancelBookingActionComponent } from '../../components/cancel-booking-action/cancel-booking-action.component';
-import { EventflowPassComponent } from '../../components/eventflow-pass/eventflow-pass.component';
+import { BookWithUsPassComponent } from '../../components/bookwithus-pass/bookwithus-pass.component';
 
 export type BookingDetailsState = 'loading' | 'error' | 'not-found' | 'access-denied' | 'data';
 
@@ -29,7 +29,7 @@ export type BookingDetailsState = 'loading' | 'error' | 'not-found' | 'access-de
     BookingSeatDetailsComponent,
     BookingParkingDetailsComponent,
     BookingStatusSummaryComponent,
-    EventflowPassComponent,
+    BookWithUsPassComponent,
     CancelBookingActionComponent
   ],
   templateUrl: './booking-details-page.component.html',

@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Models.Entities.Events;
+using EventParkingReservationSystem.API.Models.Entities.Events;
 
 namespace EventParkingReservationSystem.API.Data.Seed.Events;
 
@@ -9,7 +9,7 @@ public static class EventSeedData
         new Event
         {
             Id = 1,
-            Name = "EventFlow Demo Concert",
+            Name = "BookWithUs Demo Concert",
             Description = "Demo event for development and testing.",
             VenueId = 1,
             CategoryId = 1,

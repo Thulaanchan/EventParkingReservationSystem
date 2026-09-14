@@ -1,6 +1,6 @@
 import { BookingStatus } from './booking-status.model';
 
-export interface EventFlowPassSeat {
+export interface BookWithUsPassSeat {
   seatId: number;
   seatCode: string;
   rowLabel: string;
@@ -9,7 +9,7 @@ export interface EventFlowPassSeat {
   attendeeName: string;
 }
 
-export interface EventFlowPass {
+export interface BookWithUsPass {
   bookingId: number;
   bookingNumber: string;
   bookingStatus: BookingStatus;
@@ -17,7 +17,7 @@ export interface EventFlowPass {
   eventDate: string;
   startTime: string;
   venueName: string;
-  seats: EventFlowPassSeat[];
+  seats: BookWithUsPassSeat[];
   parkingSlotCode?: string | null;
   qrCodeValue?: string;
   issuedAt: string;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -394,12 +394,12 @@ namespace EventParkingReservationSystem.API.Migrations
             migrationBuilder.InsertData(
                 table: "Venues",
                 columns: new[] { "Id", "Address", "CreatedAt", "Name", "TotalCapacity", "UpdatedAt" },
-                values: new object[] { 1, "Colombo, Sri Lanka", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "EventFlow Main Hall", 1500, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+                values: new object[] { 1, "Colombo, Sri Lanka", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "BookWithUs Main Hall", 1500, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[] { "Id", "Capacity", "CategoryId", "ChildDiscountPercent", "CreatedAt", "Description", "EndTime", "EventDate", "Name", "PosterUrl", "StageLayout", "StartTime", "TicketPrice", "UpdatedAt", "VenueId" },
-                values: new object[] { 1, 1000, 1, 50m, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Demo event for development and testing.", new TimeOnly(22, 0, 0), new DateOnly(2030, 1, 20), "EventFlow Demo Concert", null, "Standard", new TimeOnly(18, 0, 0), 5000m, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1 });
+                values: new object[] { 1, 1000, 1, 50m, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Demo event for development and testing.", new TimeOnly(22, 0, 0), new DateOnly(2030, 1, 20), "BookWithUs Demo Concert", null, "Standard", new TimeOnly(18, 0, 0), 5000m, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_BookingNumber",

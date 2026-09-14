@@ -3,21 +3,21 @@ import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/co
 import { BookingStatus } from '../../../../core/models/bookings/booking-status.model';
 
 @Component({
-  selector: 'app-eventflow-pass',
+  selector: 'app-bookwithus-pass',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './eventflow-pass.component.html',
-  styleUrl: './eventflow-pass.component.css',
+  templateUrl: './bookwithus-pass.component.html',
+  styleUrl: './bookwithus-pass.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EventflowPassComponent {
+export class BookWithUsPassComponent {
   @Input({ required: true }) bookingNumber!: string;
   @Input({ required: true }) bookingStatus!: BookingStatus;
   @Input() bookingId?: number | null;
 
   /**
    * Deterministically derived QR payload from the authoritative booking identifier.
-   * Format: EVENTFLOW:{bookingNumber}:{bookingId}
+   * Format: BOOKWITHUS:{bookingNumber}:{bookingId}
    * No fake/random pass tokens or invented backend fields.
    */
   readonly qrPayload = computed<string>(() => {

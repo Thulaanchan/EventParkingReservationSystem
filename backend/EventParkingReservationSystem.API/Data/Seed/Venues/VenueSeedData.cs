@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Models.Entities.Venues;
+using EventParkingReservationSystem.API.Models.Entities.Venues;
 
 namespace EventParkingReservationSystem.API.Data.Seed.Venues;
 
@@ -9,7 +9,7 @@ public static class VenueSeedData
         new Venue
         {
             Id = 1,
-            Name = "EventFlow Main Hall",
+            Name = "BookWithUs Main Hall",
             Address = "Colombo, Sri Lanka",
             TotalCapacity = 1500,
             CreatedAt = new DateTime(
