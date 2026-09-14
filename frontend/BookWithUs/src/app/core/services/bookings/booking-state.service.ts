@@ -157,6 +157,17 @@ export class BookingStateService {
       errors.push('At least one seat must be selected.');
     }
 
+    const adultCount = seats.filter(
+      (s) => s.attendeeType === AttendeeType.Adult || (s.attendeeType as number) === 1
+    ).length;
+    const childCount = seats.filter(
+      (s) => s.attendeeType === AttendeeType.Child || (s.attendeeType as number) === 2
+    ).length;
+
+    if (childCount > 0 && adultCount === 0) {
+      errors.push('Children tickets cannot be booked without at least one accompanying adult.');
+    }
+
     for (const seat of seats) {
       if (!seat.attendeeName || seat.attendeeName.trim().length === 0) {
         errors.push(

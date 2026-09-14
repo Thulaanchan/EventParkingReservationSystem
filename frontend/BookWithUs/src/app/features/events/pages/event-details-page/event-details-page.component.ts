@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 import { EventService } from '../../../../core/services/events/event.service';
 import { EventDetails } from '../../../../core/models/events/event-details.model';
 import { EventDetailsHeroComponent } from '../../components/event-details-hero/event-details-hero.component';
@@ -24,11 +25,14 @@ import { BookingStateService } from '../../../../core/services/bookings/booking-
   templateUrl: './event-details-page.component.html',
   styleUrl: './event-details-page.component.css'
 })
-export class EventDetailsPageComponent implements OnInit {
+export class EventDetailsPageComponent implements OnInit, OnDestroy {
   private readonly eventService = inject(EventService);
   private readonly bookingStateService = inject(BookingStateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  private paramsSubscription?: Subscription;
 
   eventId: number | null = null;
   event: EventDetails | null = null;
@@ -37,36 +41,47 @@ export class EventDetailsPageComponent implements OnInit {
   errorMessage: string | null = null;
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) {
-      this.loading = false;
-      this.errorMessage = 'No event ID was provided.';
-      return;
-    }
+    this.paramsSubscription = this.route.paramMap.subscribe((params) => {
+      const idParam = params.get('id');
+      if (!idParam) {
+        this.loading = false;
+        this.errorMessage = 'No event ID was provided.';
+        this.cdr.markForCheck();
+        return;
+      }
 
-    const parsedId = Number(idParam);
-    if (isNaN(parsedId) || parsedId <= 0) {
-      this.loading = false;
-      this.errorMessage = 'Invalid event ID provided.';
-      return;
-    }
+      const parsedId = Number(idParam);
+      if (isNaN(parsedId) || parsedId <= 0) {
+        this.loading = false;
+        this.errorMessage = 'Invalid event ID provided.';
+        this.cdr.markForCheck();
+        return;
+      }
 
-    this.eventId = parsedId;
-    this.loadEvent(parsedId);
+      this.eventId = parsedId;
+      this.loadEvent(parsedId);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.paramsSubscription?.unsubscribe();
   }
 
   loadEvent(id: number): void {
     this.loading = true;
     this.errorMessage = null;
+    this.cdr.markForCheck();
 
     this.eventService.getEvent(id).subscribe({
       next: (data: EventDetails) => {
         this.event = data;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err: unknown) => {
         this.loading = false;
         this.handleLoadError(err);
+        this.cdr.markForCheck();
       }
     });
   }

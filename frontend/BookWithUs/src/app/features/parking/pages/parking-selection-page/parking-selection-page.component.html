@@ -1,148 +1,279 @@
-<div class="parking-page-container">
-  <!-- Booking Flow Stepper (matching screen-10.png) -->
-  <nav class="booking-stepper" aria-label="Booking steps">
-    <ol class="stepper-list">
-      <li class="step-item step-completed">
-        <span class="step-badge" aria-hidden="true">&#x2713;</span>
-        <span class="step-label">Seats</span>
-      </li>
-      <li class="step-divider" aria-hidden="true"></li>
-
-      <li class="step-item step-active" aria-current="step">
-        <span class="step-badge">2</span>
-        <span class="step-label">Parking</span>
-      </li>
-      <li class="step-divider" aria-hidden="true"></li>
-
-      <li class="step-item step-upcoming">
-        <span class="step-badge">3</span>
-        <span class="step-label">Review</span>
-      </li>
-      <li class="step-divider" aria-hidden="true"></li>
-
-      <li class="step-item step-upcoming">
-        <span class="step-badge">4</span>
-        <span class="step-label">Payment</span>
-      </li>
-    </ol>
-  </nav>
-
-  <!-- Notification Banners -->
-  @if (notificationMessage) {
-    <app-alert-banner
-      variant="info"
-      [message]="notificationMessage"
-      [dismissible]="true"
-      (dismiss)="notificationMessage = null"
-    />
-  }
-
-  @if (conflictMessage) {
-    <app-alert-banner
-      variant="warning"
-      [message]="conflictMessage"
-      [dismissible]="true"
-      (dismiss)="conflictMessage = null"
-    />
-  }
-
-  @if (errorMessage && hasParkingConfigured) {
-    <app-alert-banner
-      variant="error"
-      [message]="errorMessage"
-      [dismissible]="true"
-      (dismiss)="errorMessage = null"
-    />
-  }
-
-  <!-- Main Grid Layout -->
-  <div class="parking-page-grid">
-    <!-- Left Column: Map Area -->
-    <main class="parking-main-col">
-      <header class="page-header">
-        <h1 class="page-title">Select Parking</h1>
-        <p class="page-subtitle">
-          Choose an optional parking space for your vehicle, or skip to continue to review.
-        </p>
-      </header>
-
-      @if (isLoading) {
-        <app-loading-spinner message="Loading parking availability..." />
-      } @else if (errorMessage && !hasParkingConfigured) {
-        <app-error-message
-          [message]="errorMessage"
-          title="Unable to Load Parking"
-          [showRetry]="true"
-          retryLabel="Retry"
-          (retry)="reloadParking()"
-        />
-      } @else if (!hasParkingConfigured) {
-        <app-empty-state
-          title="No Parking Available"
-          message="No online parking spaces are configured for this event. You can continue to review."
-          actionLabel="Continue Without Parking"
-          (action)="onSkipParking()"
-        />
-      } @else {
-        <!-- Interactive Map Toolbar -->
-        <div class="map-toolbar-row">
-          <app-parking-map-toolbar
-            [canReset]="canResetMap"
-            [canZoomIn]="canZoomIn"
-            [canZoomOut]="canZoomOut"
-            (resetMap)="onResetMap()"
-            (zoomIn)="onZoomIn()"
-            (zoomOut)="onZoomOut()"
-            (fitMap)="onFitMap()"
-          />
+<div class="parking-page-wrapper">
+  <!-- 1. TOP BOOKING FLOW STEPPER (Exact Match to Image 1) -->
+  <header class="flow-stepper-container">
+    <nav class="flow-stepper" aria-label="Booking flow progress">
+      <!-- Step 1: Seats (Completed) -->
+      <div class="step-node step-completed" (click)="onBackToSeats()" role="button" tabindex="0">
+        <div class="step-circle circle-completed">
+          <span class="step-check">&#10003;</span>
         </div>
+        <span class="step-label">Seats</span>
+      </div>
 
-        <!-- Visual Parking Map with Transform Stage -->
-        <div class="map-viewport-wrapper">
-          <div
-            class="map-zoom-stage"
-            [style.transform]="'scale(' + mapZoom + ')'"
-            [style.transform-origin]="'top center'"
-          >
-            <app-parking-map
-              [slots]="slots"
-              [zones]="zones"
-              [selectedParkingSlotId]="selectedParkingSlotId"
-              (slotSelect)="onSlotSelect($event)"
-            />
+      <div class="step-connector" aria-hidden="true"></div>
+
+      <!-- Step 2: Parking (Active with Underline Indicator) -->
+      <div class="step-node step-active" aria-current="step">
+        <div class="step-circle circle-active">
+          <span class="step-p">P</span>
+        </div>
+        <span class="step-label">Parking</span>
+        <div class="active-indicator-bar" aria-hidden="true"></div>
+      </div>
+
+      <div class="step-connector" aria-hidden="true"></div>
+
+      <!-- Step 3: Review -->
+      <div class="step-node step-upcoming">
+        <div class="step-circle circle-upcoming">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <span class="step-label">Review</span>
+      </div>
+
+      <div class="step-connector" aria-hidden="true"></div>
+
+      <!-- Step 4: Payment -->
+      <div class="step-node step-upcoming">
+        <div class="step-circle circle-upcoming">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+        <span class="step-label">Payment</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- 2. STATUS LEGEND CARD (Exact Match to Image 1) -->
+  <section class="legend-card-wrapper" aria-label="Parking Slot Status Legend">
+    <div class="legend-card">
+      <!-- Available -->
+      <div class="legend-item">
+        <span class="legend-box box-available" aria-hidden="true"></span>
+        <div class="legend-texts">
+          <span class="legend-title">Available</span>
+          <span class="legend-desc">Free to book</span>
+        </div>
+      </div>
+
+      <!-- Selected -->
+      <div class="legend-item">
+        <span class="legend-box box-selected" aria-hidden="true"></span>
+        <div class="legend-texts">
+          <span class="legend-title">Selected</span>
+          <span class="legend-desc">Your selection</span>
+        </div>
+      </div>
+
+      <!-- Held -->
+      <div class="legend-item">
+        <span class="legend-box box-held" aria-hidden="true">&#128274;</span>
+        <div class="legend-texts">
+          <span class="legend-title">Held</span>
+          <span class="legend-desc">Temporarily held</span>
+        </div>
+      </div>
+
+      <!-- Occupied -->
+      <div class="legend-item">
+        <span class="legend-box box-occupied" aria-hidden="true">&#10005;</span>
+        <div class="legend-texts">
+          <span class="legend-title">Occupied</span>
+          <span class="legend-desc">Not available</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. MAIN WORKSPACE GRID: Map (Left) + Sidebar (Right) -->
+  <main class="parking-main-grid">
+    <!-- Left Column: Visual Architectural Parking Map -->
+    <section class="map-column" aria-label="Interactive Parking Map">
+      <app-parking-map
+        [selectedSlotCode]="selectedSlotCode"
+        [slots]="visualSlots"
+        (slotSelect)="onVisualSlotSelect($event)"
+      />
+    </section>
+
+    <!-- Right Column: "Your Selection" Card (Exact Match to Image 1) -->
+    <aside class="sidebar-column" aria-label="Selected Parking & Pricing">
+      <div class="selection-card">
+        <h2 class="card-headline">Your Selection</h2>
+
+        <!-- Event Details Block -->
+        <div class="event-meta-block">
+          <span class="meta-label">Event</span>
+          <h3 class="event-title">{{ eventTitle }}</h3>
+          <div class="event-info-row">
+            <span class="info-icon">&#128197;</span>
+            <span class="info-text">{{ eventDate }}</span>
+          </div>
+          <div class="event-info-row">
+            <span class="info-icon">&#128205;</span>
+            <span class="info-text">{{ venueName }}</span>
           </div>
         </div>
-      }
-    </main>
 
-    <!-- Right Column: Sidebar -->
-    <aside class="parking-sidebar-col" aria-label="Booking & Parking Details">
-      <!-- Event Metadata Summary -->
-      <app-parking-event-summary [event]="eventInfo" />
+        <hr class="card-divider" />
 
-      <!-- Vehicle Rates Reference -->
-      <app-vehicle-price-list [zones]="zones" />
+        <!-- Parking Type -->
+        <div class="parking-type-block">
+          <span class="meta-label">Parking Type</span>
+          <span class="meta-value">{{ selectedSlot ? selectedSlot.vehicleType : 'None' }}</span>
+        </div>
 
-      <!-- Customer Selected Parking Summary -->
-      <app-selected-parking-summary
-        [selectedParking]="selectedParking"
-        (removeParking)="onRemoveParking()"
-      />
+        <!-- Selected Slot Card -->
+        <div class="selected-slot-card">
+          <div class="slot-icon-col">
+            @if (selectedSlot?.zoneKey === 'threeWheeler') {
+              <svg class="selected-veh-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+                <circle cx="5" cy="18" r="3"/>
+                <circle cx="19" cy="18" r="3"/>
+                <path d="M5 15h14"/>
+                <path d="M2 12l3-7h8l2 5h4l3 3v2h-2"/>
+              </svg>
+            } @else if (selectedSlot?.zoneKey === 'van') {
+              <svg class="selected-veh-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+                <path d="M2 7h13v10H2z"/>
+                <path d="M15 9h4l3 3v5h-7z"/>
+                <circle cx="6" cy="17" r="2.5"/>
+                <circle cx="18" cy="17" r="2.5"/>
+              </svg>
+            } @else {
+              <svg class="selected-veh-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+                <path d="M5 11l2-4h10l2 4"/>
+                <rect x="3" y="11" width="18" height="6" rx="2"/>
+                <circle cx="7" cy="17" r="2"/>
+                <circle cx="17" cy="17" r="2"/>
+              </svg>
+            }
+          </div>
 
-      <!-- Action Card -->
-      <div class="sidebar-actions-card">
+          <div class="slot-code-col">
+            <span class="slot-code-display">{{ selectedSlot ? selectedSlot.code : 'None' }}</span>
+          </div>
+
+          <div class="slot-badge-col">
+            <span class="badge-selected-pill">{{ selectedSlot ? 'Selected' : 'No Slot' }}</span>
+          </div>
+        </div>
+
+        <!-- Pricing By Vehicle Type List -->
+        <div class="pricing-type-section">
+          <h4 class="pricing-title">Pricing (By Vehicle Type)</h4>
+          <div class="pricing-list">
+            <!-- Three-Wheeler -->
+            <div
+              class="pricing-item"
+              [class.pricing-item-active]="selectedSlot?.zoneKey === 'threeWheeler'"
+            >
+              <div class="item-left">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="5" cy="18" r="3"/>
+                  <circle cx="19" cy="18" r="3"/>
+                  <path d="M5 15h14"/>
+                  <path d="M2 12l3-7h8l2 5h4l3 3v2h-2"/>
+                </svg>
+                <span class="item-name">Three-Wheeler</span>
+              </div>
+              <span class="item-price">LKR 300</span>
+            </div>
+
+            <!-- Car -->
+            <div
+              class="pricing-item"
+              [class.pricing-item-active]="selectedSlot?.zoneKey === 'car'"
+            >
+              <div class="item-left">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 11l2-4h10l2 4"/>
+                  <rect x="3" y="11" width="18" height="6" rx="2"/>
+                  <circle cx="7" cy="17" r="2"/>
+                  <circle cx="17" cy="17" r="2"/>
+                </svg>
+                <span class="item-name">Car</span>
+              </div>
+              <span class="item-price">LKR 500</span>
+            </div>
+
+            <!-- Van -->
+            <div
+              class="pricing-item"
+              [class.pricing-item-active]="selectedSlot?.zoneKey === 'van'"
+            >
+              <div class="item-left">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 7h13v10H2z"/>
+                  <path d="M15 9h4l3 3v5h-7z"/>
+                  <circle cx="6" cy="17" r="2.5"/>
+                  <circle cx="18" cy="17" r="2.5"/>
+                </svg>
+                <span class="item-name">Van</span>
+              </div>
+              <span class="item-price">LKR 500</span>
+            </div>
+
+            <!-- Motorbike -->
+            <div class="pricing-item item-disabled">
+              <div class="item-left">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="5.5" cy="17.5" r="3.5"/>
+                  <circle cx="18.5" cy="17.5" r="3.5"/>
+                  <path d="M15 6h-3l-4 8h7.5l2-4h3.5"/>
+                </svg>
+                <span class="item-name">Motorbike</span>
+              </div>
+              <span class="item-unavailable">Not available<br>for online booking</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="card-divider" />
+
+        <!-- Total Breakdown -->
+        <div class="fee-summary-row">
+          <span class="fee-label">Parking Fee</span>
+          <span class="fee-value">LKR {{ selectedSlot ? selectedSlot.fee : 0 }}</span>
+        </div>
+
+        <div class="total-summary-row">
+          <span class="total-label">Total</span>
+          <span class="total-amount">LKR {{ selectedSlot ? selectedSlot.fee : 0 }}</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 4. STICKY BOTTOM ACTION BAR (Exact Match to Image 1) -->
+  <footer class="bottom-action-bar">
+    <div class="bottom-bar-content">
+      <!-- Left: Selected Parking Summary Text -->
+      <div class="bottom-summary-left">
+        <span class="bottom-summary-label">Selected Parking</span>
+        <div class="bottom-summary-value">
+          @if (selectedSlot) {
+            <span class="selection-text">{{ selectedSlot.zoneName }} &bull; Slot {{ selectedSlot.code }}</span>
+            <span class="selection-fee">(+LKR {{ selectedSlot.fee }})</span>
+          } @else {
+            <span class="selection-empty">No parking selected</span>
+          }
+        </div>
+      </div>
+
+      <!-- Right: Buttons (Skip Parking / Continue) -->
+      <div class="bottom-buttons-right">
         <button
           type="button"
-          class="btn btn-primary btn-cta"
-          [disabled]="!selectedParking"
-          (click)="onContinueToReview()"
-        >
-          Continue to Review &rarr;
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-outline btn-cta"
+          class="btn btn-skip"
           (click)="onSkipParking()"
         >
           Skip Parking
@@ -150,12 +281,13 @@
 
         <button
           type="button"
-          class="btn-link btn-back"
-          (click)="onBackToSeats()"
+          class="btn btn-continue"
+          (click)="onContinueToReview()"
         >
-          &larr; Back to Seats
+          <span>Continue</span>
+          <span class="continue-arrow">&rarr;</span>
         </button>
       </div>
-    </aside>
-  </div>
+    </div>
+  </footer>
 </div>

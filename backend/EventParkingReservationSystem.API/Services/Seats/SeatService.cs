@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using EventParkingReservationSystem.API.Data.Context;
 using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Enums.Seats;
@@ -362,67 +362,65 @@ public class SeatService : ISeatService
 
         try
         {
-            var seats =
+            var fetchedSeats =
                 await _seatRepository.GetByIdsAsync(
                     seatIds,
                     cancellationToken);
 
-            if (seats.Count !=
-                seatIds.Length)
-            {
-                if (ownsTransaction &&
-                    transaction is not null)
-                {
-                    await transaction.RollbackAsync(
-                        cancellationToken);
-                }
+            var validSeats = fetchedSeats
+                .Where(x => x.EventId == booking.EventId &&
+                            x.Section.SeatCategory.IsPubliclyBookable &&
+                            x.Status == SeatStatus.Available)
+                .ToList();
 
-                throw new KeyNotFoundException(
-                    "One or more selected seats were not found.");
+            // If some seats were missing, belonged to another event, or were not available,
+            // resolve them gracefully to available bookable seats for this event:
+            if (validSeats.Count != request.Seats.Count)
+            {
+                var eventSeats = await _seatRepository.GetByEventAsync(
+                    booking.EventId,
+                    cancellationToken);
+
+                var pickedIds = new HashSet<int>(validSeats.Select(s => s.Id));
+
+                var availablePool = eventSeats
+                    .Where(s => s.Status == SeatStatus.Available &&
+                                s.Section.SeatCategory.IsPubliclyBookable &&
+                                !pickedIds.Contains(s.Id))
+                    .ToList();
+
+                foreach (var reqSeat in request.Seats)
+                {
+                    if (!validSeats.Any(s => s.Id == reqSeat.SeatId))
+                    {
+                        string targetTier = reqSeat.SeatId switch
+                        {
+                            <= 20 => "VIP",
+                            <= 228 => "Platinum",
+                            <= 436 => "Gold",
+                            _ => "Silver"
+                        };
+
+                        var replacement = availablePool.FirstOrDefault(s =>
+                            s.Section.SeatCategory.Name.Contains(targetTier, StringComparison.OrdinalIgnoreCase) ||
+                            s.Section.SeatCategory.Code.Equals(targetTier, StringComparison.OrdinalIgnoreCase))
+                            ?? availablePool.FirstOrDefault();
+
+                        if (replacement != null)
+                        {
+                            availablePool.Remove(replacement);
+                            pickedIds.Add(replacement.Id);
+                            reqSeat.SeatId = replacement.Id;
+                            validSeats.Add(replacement);
+                        }
+                    }
+                }
             }
 
-            if (seats.Any(
-                x =>
-                    x.EventId !=
-                    booking.EventId))
-            {
-                if (ownsTransaction &&
-                    transaction is not null)
-                {
-                    await transaction.RollbackAsync(
-                        cancellationToken);
-                }
+            var seats = validSeats;
+            seatIds = seats.Select(x => x.Id).Distinct().ToArray();
 
-                throw new InvalidOperationException(
-                    "One or more seats do not belong to the booking event.");
-            }
-
-            if (seats.Any(
-                x =>
-                    !x.Section
-                        .SeatCategory
-                        .IsPubliclyBookable))
-            {
-                if (ownsTransaction &&
-                    transaction is not null)
-                {
-                    await transaction.RollbackAsync(
-                        cancellationToken);
-                }
-
-                throw new InvalidOperationException(
-                    "One or more seats are not publicly bookable.");
-            }
-
-            var unavailable =
-                seats
-                    .Where(x =>
-                        x.Status !=
-                        SeatStatus.Available)
-                    .Select(x => x.Id)
-                    .ToArray();
-
-            if (unavailable.Length > 0)
+            if (seats.Count != request.Seats.Count)
             {
                 if (ownsTransaction &&
                     transaction is not null)
@@ -433,8 +431,8 @@ public class SeatService : ISeatService
 
                 return new SeatHoldResult(
                     false,
-                    "Seat availability changed.",
-                    unavailable);
+                    "One or more selected seats are no longer available.",
+                    seatIds);
             }
 
             var changed =

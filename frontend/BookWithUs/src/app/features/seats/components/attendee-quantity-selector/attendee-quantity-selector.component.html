@@ -1,4 +1,4 @@
-<div class="attendee-selector-container">
+<div class="attendee-selector-container" [class.is-disabled]="disabled">
   <div class="attendee-info">
     <div class="attendee-icon" [ngClass]="iconType" aria-hidden="true">
       @if (iconType === 'adult') {

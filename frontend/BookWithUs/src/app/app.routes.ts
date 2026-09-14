@@ -34,6 +34,46 @@ export const routes: Routes = [
   },
 
 
+  // Direct Verify Email Route (supports links clicked directly in verification emails)
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/auth/pages/verify-email-sent-page/verify-email-sent-page.component')
+        .then((m) => m.VerifyEmailSentPageComponent),
+    title: 'Verify Email - BookWithUs'
+  },
+
+
+  // Direct Verify Email Sent Route
+  {
+    path: 'verify-email-sent',
+    loadComponent: () =>
+      import('./features/auth/pages/verify-email-sent-page/verify-email-sent-page.component')
+        .then((m) => m.VerifyEmailSentPageComponent),
+    title: 'Verify Email - BookWithUs'
+  },
+
+
+  // Direct Forgot Password Route
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/pages/forgot-password-page/forgot-password-page.component')
+        .then((m) => m.ForgotPasswordPageComponent),
+    title: 'Forgot Password - BookWithUs'
+  },
+
+
+  // Direct Reset Password Route (supports links clicked directly in reset emails)
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/pages/reset-password-page/reset-password-page.component')
+        .then((m) => m.ResetPasswordPageComponent),
+    title: 'Reset Password - BookWithUs'
+  },
+
+
   // Auth Module
   // Existing:
   // /auth/login

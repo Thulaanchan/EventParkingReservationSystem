@@ -56,9 +56,20 @@ export class TicketRequirementsComponent {
   }
 
   /**
+   * Child tickets are disabled if entire component is disabled or adultCount is 0.
+   */
+  get isChildDisabled(): boolean {
+    return this.disabled || (this.adultCount || 0) === 0;
+  }
+
+  /**
    * Dynamic description for child ticket pricing derived from input.
+   * If adultCount is 0, alerts user that at least 1 adult is required.
    */
   get childDescription(): string {
+    if ((this.adultCount || 0) === 0) {
+      return 'Requires at least 1 adult';
+    }
     if (this.childDiscountPercent != null && this.childDiscountPercent > 0) {
       return `Ages 2–12 (${this.childDiscountPercent}% discount)`;
     }
@@ -66,10 +77,21 @@ export class TicketRequirementsComponent {
   }
 
   onAdultCountChange(count: number): void {
-    this.adultCountChange.emit(count);
+    const nextAdult = Math.max(0, count);
+    this.adultCountChange.emit(nextAdult);
+
+    // If adults reduced to 0, automatically reset children to 0
+    if (nextAdult === 0 && this.childCount > 0) {
+      this.childCountChange.emit(0);
+    }
   }
 
   onChildCountChange(count: number): void {
-    this.childCountChange.emit(count);
+    // Selection of children is strictly not allowed without adults
+    if ((this.adultCount || 0) === 0) {
+      this.childCountChange.emit(0);
+      return;
+    }
+    this.childCountChange.emit(Math.max(0, count));
   }
 }

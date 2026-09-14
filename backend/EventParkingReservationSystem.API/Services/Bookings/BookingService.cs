@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using EventParkingReservationSystem.API.Common.Exceptions;
 using EventParkingReservationSystem.API.Configurations.Booking;
 using EventParkingReservationSystem.API.Data.Context;
@@ -64,6 +64,13 @@ public class BookingService : IBookingService
         {
             throw new ArgumentException(
                 "At least one seat must be selected.");
+        }
+
+        if (request.Seats.Any(seat => seat.AttendeeType == AttendeeType.Child) &&
+            !request.Seats.Any(seat => seat.AttendeeType == AttendeeType.Adult))
+        {
+            throw new ArgumentException(
+                "Children cannot be booked without at least one accompanying adult.");
         }
 
         var utcNow =

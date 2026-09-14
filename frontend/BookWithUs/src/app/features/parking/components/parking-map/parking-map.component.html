@@ -1,78 +1,439 @@
-<div class="parking-map-container">
-  <!-- Status & Vehicle Legend Bar -->
-  @if (showLegend) {
-    <div class="map-legend-wrapper">
-      <app-parking-legend [zones]="zones" />
+<div class="arena-outer-container">
+  <!-- Top Center: Venue Entrance Landmark & Directional Flow -->
+  <div class="entrance-area">
+    <div class="entrance-badge">
+      <svg class="entrance-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L2 7v2h20V7L12 2zm-8 8v8h2v-8H4zm5 0v8h2v-8H9zm5 0v8h2v-8h-2zm5 0v8h2v-8h-2zM2 20v2h20v-2H2z"/>
+      </svg>
+      <span class="entrance-text">VENUE ENTRANCE</span>
+      <span class="entrance-arrow">&darr;</span>
     </div>
-  }
+    <div class="entrance-road-arrows" aria-hidden="true">
+      <span class="road-arrow">&darr;</span>
+      <span class="road-arrow">&darr;</span>
+      <span class="road-arrow">&darr;</span>
+      <span class="road-arrow">&darr;</span>
+    </div>
+  </div>
 
-  <!-- Scrollable Map Viewport -->
-  <div class="parking-map-viewport" role="region" aria-label="Parking Arena Map">
-    <div class="parking-arena">
-      <!-- Venue Entrance Landmark Banner (matching screen-10.png) -->
-      <div class="venue-entrance-banner" aria-hidden="true">
-        <span class="entrance-arrow">&darr;</span>
-        <span class="entrance-text">{{ entranceLabel }}</span>
-        <span class="entrance-arrow">&darr;</span>
+  <!-- Main Parking Grounds Layout (Perimeter Roadway + Landscaping + Zone Cards) -->
+  <div class="arena-grounds-layout">
+    <!-- LEFT PERIMETER: Trees, Entry Badge, Driving Road -->
+    <div class="perimeter-flank flank-left">
+      <!-- Outer Grass Island with 3D Trees -->
+      <div class="tree-island tree-island-outer">
+        <div class="tree-cluster tc-1"></div>
+        <div class="tree-cluster tc-2"></div>
+        <div class="tree-cluster tc-3"></div>
       </div>
 
-      <!-- Perimeter Road Circuit with Directional Signs -->
-      <div class="arena-road-perimeter">
-        <div class="road-side road-left" aria-hidden="true">
-          <span class="road-sign sign-entry">ENTRY &rarr;</span>
-          <div class="road-lane-divider"></div>
+      <!-- ENTRY Indicator -->
+      <div class="gate-indicator gate-entry">
+        <div class="gate-icon-wrapper">
+          <svg class="gate-vehicle-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+            <path d="M5 11l2-4h10l2 4"/>
+            <rect x="3" y="11" width="18" height="6" rx="2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+        </div>
+        <div class="gate-badge">ENTRY</div>
+        <span class="gate-arrow">&rarr;</span>
+      </div>
+
+      <!-- Lower Outer Trees -->
+      <div class="tree-island tree-island-outer-lower">
+        <div class="tree-cluster tc-4"></div>
+        <div class="tree-cluster tc-5"></div>
+      </div>
+    </div>
+
+    <!-- Road Lane Left with Traffic Flow Arrow -->
+    <div class="traffic-lane lane-left-vertical">
+      <span class="road-arrow-white lane-arrow-up">&uarr;</span>
+    </div>
+
+    <!-- INNER AREA: Upper Zones Row, Cross Road, Car Zone -->
+    <div class="arena-center-field">
+      <!-- Top Zone Row (Motorbike, Three-Wheeler, Van) -->
+      <div class="top-zones-row">
+        <!-- 1. MOTORBIKE ZONE -->
+        <div class="zone-card motorbike-card">
+          <div class="zone-header">
+            <svg class="zone-header-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+              <circle cx="5.5" cy="17.5" r="3.5"/>
+              <circle cx="18.5" cy="17.5" r="3.5"/>
+              <path d="M15 6h-3l-4 8h7.5l2-4h3.5"/>
+              <circle cx="17" cy="8" r="1.5"/>
+            </svg>
+            <span class="zone-header-title">MOTORBIKE ZONE</span>
+          </div>
+
+          <div class="mb-text-block">
+            <span class="mb-reserved">Reserved Area</span>
+            <span class="mb-not-available">Not Available for<br>Online Booking</span>
+          </div>
+
+          <div class="mb-graphic">
+            <svg viewBox="0 0 70 42" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="15" cy="30" r="9"/>
+              <circle cx="55" cy="30" r="9"/>
+              <path d="M15 30l13-16h16l11 16"/>
+              <path d="M28 14l-7-8h-7"/>
+              <path d="M41 14l5 16"/>
+              <path d="M24 30h20"/>
+            </svg>
+          </div>
         </div>
 
-        <!-- Central Parking Field -->
-        <div class="arena-interior">
-          @if (slots.length === 0) {
-            <div class="empty-map-state" role="status">
-              <span class="empty-map-icon" aria-hidden="true">&#x1F17F;&#xFE0F;</span>
-              <p class="empty-map-title">No Parking Slots Available</p>
-              <p class="empty-map-desc">There are no parking slots configured for this event.</p>
-            </div>
-          } @else if (hasCoordinates) {
-            <!-- Coordinate Canvas Positioning -->
-            <div
-              class="coordinate-canvas"
-              [style.width.px]="canvasWidth"
-              [style.height.px]="canvasHeight"
-            >
-              @for (slot of slots; track slot.id) {
-                <div
-                  class="positioned-slot"
-                  [style.left.px]="slot.positionX"
-                  [style.top.px]="slot.positionY"
+        <!-- 2. THREE-WHEELER ZONE -->
+        <div class="zone-card three-wheeler-card">
+          <div class="zone-header">
+            <svg class="zone-header-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+              <circle cx="5" cy="18" r="3"/>
+              <circle cx="19" cy="18" r="3"/>
+              <path d="M5 15h14"/>
+              <path d="M2 12l3-7h8l2 5h4l3 3v2h-2"/>
+              <path d="M13 5v7"/>
+              <circle cx="8" cy="10" r="1.5"/>
+            </svg>
+            <span class="zone-header-title">THREE-WHEELER ZONE</span>
+          </div>
+
+          <div class="slots-grid tw-grid">
+            <div class="slots-row">
+              @for (slot of twRow1; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
                 >
-                  <app-parking-slot
-                    [slot]="slot"
-                    [selected]="isSlotSelected(slot.id)"
-                    (slotSelect)="onSlotSelect($event)"
-                  />
-                </div>
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
               }
             </div>
-          } @else {
-            <!-- Zone-Grouped Responsive Fallback Grid (matches screen-10.png) -->
-            <div class="zones-grid-layout">
-              @for (group of groupedZones; track group.zone.id) {
-                <div class="zone-grid-item">
-                  <app-parking-zone
-                    [zone]="group.zone"
-                    [slots]="group.slots"
-                    [selectedParkingSlotId]="selectedParkingSlotId"
-                    (slotSelect)="onSlotSelect($event)"
-                  />
-                </div>
+
+            <div class="slots-row">
+              @for (slot of twRow2; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
               }
             </div>
-          }
+          </div>
         </div>
 
-        <div class="road-side road-right" aria-hidden="true">
-          <span class="road-sign sign-exit">EXIT &rarr;</span>
-          <div class="road-lane-divider"></div>
+        <!-- 3. VAN ZONE -->
+        <div class="zone-card van-card">
+          <div class="zone-header">
+            <svg class="zone-header-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+              <path d="M2 7h13v10H2z"/>
+              <path d="M15 9h4l3 3v5h-7z"/>
+              <circle cx="6" cy="17" r="2.5"/>
+              <circle cx="18" cy="17" r="2.5"/>
+            </svg>
+            <span class="zone-header-title">VAN ZONE</span>
+          </div>
+
+          <div class="slots-grid van-grid">
+            <div class="slots-row">
+              @for (slot of vanRow1; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <div class="slots-row">
+              @for (slot of vanRow2; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Cross Roadway with Directional Flow Arrows -->
+      <div class="cross-roadway" aria-hidden="true">
+        <span class="road-arrow-white">&larr;</span>
+        <span class="road-arrow-white road-arrow-down">&darr;</span>
+        <span class="road-arrow-white">&rarr;</span>
+      </div>
+
+      <!-- CAR ZONE FLANKED BY INNER TREE ISLANDS -->
+      <div class="car-zone-wrapper">
+        <!-- Inner Left Tree Island -->
+        <div class="tree-island tree-island-inner">
+          <div class="tree-cluster tc-inner-1"></div>
+          <div class="tree-cluster tc-inner-2"></div>
+          <div class="tree-cluster tc-inner-3"></div>
+          <div class="tree-cluster tc-inner-4"></div>
+        </div>
+
+        <!-- 4. CAR ZONE CARD -->
+        <div class="zone-card car-card">
+          <div class="zone-header car-header">
+            <svg class="zone-header-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+              <path d="M5 11l2-4h10l2 4"/>
+              <rect x="3" y="11" width="18" height="6" rx="2"/>
+              <circle cx="7" cy="17" r="2"/>
+              <circle cx="17" cy="17" r="2"/>
+            </svg>
+            <span class="zone-header-title">CAR ZONE</span>
+          </div>
+
+          <div class="car-slots-field">
+            <!-- Row 1: C1 to C10 -->
+            <div class="slots-row car-row">
+              @for (slot of carRow1; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- Driving Aisle 1 (Left Arrow) -->
+            <div class="driving-aisle" aria-hidden="true">
+              <span class="aisle-arrow">&larr;</span>
+            </div>
+
+            <!-- Row 2: C11 to C20 -->
+            <div class="slots-row car-row">
+              @for (slot of carRow2; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- Driving Aisle 2 (Right Arrow) -->
+            <div class="driving-aisle" aria-hidden="true">
+              <span class="aisle-arrow">&rarr;</span>
+            </div>
+
+            <!-- Row 3: C21 to C30 -->
+            <div class="slots-row car-row">
+              @for (slot of carRow3; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- Driving Aisle 3 (Left Arrow) -->
+            <div class="driving-aisle" aria-hidden="true">
+              <span class="aisle-arrow">&larr;</span>
+            </div>
+
+            <!-- Row 4: C31 to C40 -->
+            <div class="slots-row car-row">
+              @for (slot of carRow4; track slot.code) {
+                <button
+                  type="button"
+                  class="slot-cell"
+                  [class.is-available]="slot.status === 'Available'"
+                  [class.is-selected]="isSelected(slot)"
+                  [class.is-held]="slot.status === 'Held'"
+                  [class.is-occupied]="slot.status === 'Occupied'"
+                  [disabled]="slot.status !== 'Available'"
+                  (click)="onSlotClick(slot)"
+                  [attr.aria-label]="slot.code + ' ' + slot.status"
+                >
+                  <span class="slot-name">{{ slot.code }}</span>
+                  @if (isSelected(slot)) {
+                    <span class="slot-check-badge">&#10003;</span>
+                  }
+                  @if (slot.status === 'Held') {
+                    <span class="slot-status-icon lock-icon">&#128274;</span>
+                  }
+                  @if (slot.status === 'Occupied') {
+                    <span class="slot-status-icon cross-icon">&#10005;</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Inner Right Tree Island -->
+        <div class="tree-island tree-island-inner">
+          <div class="tree-cluster tc-inner-1"></div>
+          <div class="tree-cluster tc-inner-2"></div>
+          <div class="tree-cluster tc-inner-3"></div>
+          <div class="tree-cluster tc-inner-4"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Roadway Strip with Exit Arrows -->
+      <div class="bottom-roadway" aria-hidden="true">
+        <span class="road-arrow-white">&larr;</span>
+        <span class="road-arrow-white">&rarr;</span>
+      </div>
+    </div>
+
+    <!-- Road Lane Right with Traffic Flow Arrow -->
+    <div class="traffic-lane lane-right-vertical">
+      <span class="road-arrow-white lane-arrow-down">&darr;</span>
+    </div>
+
+    <!-- RIGHT PERIMETER: Trees, Exit Badge, Driving Road -->
+    <div class="perimeter-flank flank-right">
+      <!-- Upper Outer Trees -->
+      <div class="tree-island tree-island-outer">
+        <div class="tree-cluster tc-1"></div>
+        <div class="tree-cluster tc-2"></div>
+      </div>
+
+      <!-- EXIT Indicator -->
+      <div class="gate-indicator gate-exit">
+        <div class="gate-icon-wrapper">
+          <svg class="gate-vehicle-icon" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2">
+            <path d="M2 7h13v10H2z"/>
+            <path d="M15 9h4l3 3v5h-7z"/>
+            <circle cx="6" cy="17" r="2.5"/>
+            <circle cx="18" cy="17" r="2.5"/>
+          </svg>
+        </div>
+        <div class="gate-badge">EXIT</div>
+        <span class="gate-arrow">&rarr;</span>
+      </div>
+
+      <!-- Lower Outer Trees -->
+      <div class="tree-island tree-island-outer-lower">
+        <div class="tree-cluster tc-3"></div>
+        <div class="tree-cluster tc-4"></div>
+        <div class="tree-cluster tc-5"></div>
       </div>
     </div>
   </div>

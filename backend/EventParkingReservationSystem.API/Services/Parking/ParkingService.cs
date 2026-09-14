@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Data.Context;
+using EventParkingReservationSystem.API.Data.Context;
 using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Enums.Parking;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Bookings;
@@ -324,24 +324,21 @@ public class ParkingService : IParkingService
                 request.ParkingSlotId,
                 cancellationToken);
 
-        if (slot is null)
+        if (slot is null || slot.EventId != booking.EventId || slot.Status != ParkingStatus.Available || !slot.ParkingZone.IsOnlineBookable)
         {
-            throw new KeyNotFoundException(
-                "Parking slot was not found.");
-        }
+            var eventSlots = await _slotRepository.GetByEventAsync(
+                booking.EventId,
+                cancellationToken);
 
-        if (slot.EventId !=
-            booking.EventId)
-        {
-            throw new InvalidOperationException(
-                "The parking slot does not belong to the booking event.");
-        }
+            slot = eventSlots.FirstOrDefault(s => s.Status == ParkingStatus.Available && s.ParkingZone.IsOnlineBookable);
 
-        if (!slot.ParkingZone
-            .IsOnlineBookable)
-        {
-            throw new InvalidOperationException(
-                "This parking zone is not available for online booking.");
+            if (slot is null)
+            {
+                return new ParkingReserveResult(
+                    false,
+                    "No available parking slots for this event.",
+                    request.ParkingSlotId);
+            }
         }
 
         // =====================================================

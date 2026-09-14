@@ -13,11 +13,29 @@
   border-radius: 0.625rem;
   background-color: #ffffff;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.attendee-selector-container:hover {
+.attendee-selector-container:hover:not(.is-disabled) {
   border-color: #cbd5e1;
+}
+
+.attendee-selector-container.is-disabled {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  opacity: 0.75;
+}
+
+.attendee-selector-container.is-disabled .attendee-icon {
+  opacity: 0.6;
+}
+
+.attendee-selector-container.is-disabled .attendee-label {
+  color: #64748b;
+}
+
+.attendee-selector-container.is-disabled .attendee-description {
+  color: #94a3b8;
 }
 
 .attendee-info {

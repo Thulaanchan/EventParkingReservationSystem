@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using EventParkingReservationSystem.API.Common.Constants;
 using EventParkingReservationSystem.API.Common.Exceptions;
 using EventParkingReservationSystem.API.Interfaces.Services.Bookings;
@@ -97,6 +97,22 @@ public class BookingsController : ControllerBase
             // Other booking conflicts such as
             // parking reservation failures.
             return Conflict(new
+            {
+                message =
+                    ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message =
+                    ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new
             {
                 message =
                     ex.Message

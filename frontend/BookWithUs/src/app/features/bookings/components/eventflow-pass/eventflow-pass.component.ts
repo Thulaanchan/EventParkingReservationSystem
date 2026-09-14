@@ -23,7 +23,7 @@ export class EventflowPassComponent {
   readonly qrPayload = computed<string>(() => {
     const ref = this.bookingNumber || '';
     const id = this.bookingId ? `:${this.bookingId}` : '';
-    return `EVENTFLOW:${ref}${id}`;
+    return `BOOKWITHUS:${ref}${id}`;
   });
 
   getStatusBadgeClass(): string {

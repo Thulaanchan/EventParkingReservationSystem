@@ -23,7 +23,7 @@ export const MAX_SEATS_PER_BOOKING = 10;
 /**
  * Session storage key for transient booking selection state.
  */
-export const BOOKING_SELECTION_STORAGE_KEY = 'eventflow_booking_selection';
+export const BOOKING_SELECTION_STORAGE_KEY = 'bookwithus_booking_selection';
 
 /**
  * Centralized booking constants definition.

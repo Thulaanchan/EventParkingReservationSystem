@@ -36,7 +36,7 @@ public class EmailService : IEmailService
             WebUtility.HtmlEncode(displayName);
 
         const string subject =
-            "Verify your EventFlow email address";
+            "Verify your BookWithUs email address";
 
         var body = $"""
             <html>
@@ -46,7 +46,7 @@ public class EmailService : IEmailService
                 <p>Hello {safeDisplayName},</p>
 
                 <p>
-                    Thank you for registering with EventFlow.
+                    Thank you for registering with BookWithUs.
                     Please verify your email address before signing in.
                 </p>
 
@@ -93,7 +93,7 @@ public class EmailService : IEmailService
             WebUtility.HtmlEncode(displayName);
 
         const string subject =
-            "Reset your EventFlow password";
+            "Reset your BookWithUs password";
 
         var body = $"""
             <html>
@@ -104,7 +104,7 @@ public class EmailService : IEmailService
 
                 <p>
                     We received a request to reset
-                    your EventFlow password.
+                    your BookWithUs password.
                 </p>
 
                 <p>
@@ -149,7 +149,7 @@ public class EmailService : IEmailService
 
         var fromName =
             _configuration["Smtp:FromName"]
-            ?? "EventFlow";
+            ?? "BookWithUs";
 
         var enableSsl =
             _configuration.GetValue<bool?>(

@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Interfaces.Services.Auth;
+using EventParkingReservationSystem.API.Interfaces.Services.Auth;
 using EventParkingReservationSystem.API.Models.DTOs.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

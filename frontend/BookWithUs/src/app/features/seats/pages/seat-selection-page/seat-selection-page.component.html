@@ -1,53 +1,96 @@
 <div class="seat-selection-page">
-  <!-- Page Top Navigation Header -->
+  <!-- Top Navigation Bar matching Image 2 -->
   <header class="page-top-bar">
-    <div class="page-container top-bar-content">
-      <button class="back-link-btn" type="button" (click)="onBack()" aria-label="Back to event details">
-        <span class="back-arrow" aria-hidden="true">&larr;</span>
-        <span>Back to Event Details</span>
-      </button>
+    <div class="top-bar-container">
+      <!-- Left: Back Button + BookWithUs Brand Logo -->
+      <div class="brand-nav-group">
+        <button class="btn-back" type="button" (click)="onBack()" aria-label="Back to event details">
+          <svg class="icon-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
 
-      <!-- Step Indicator Wizard -->
-      <nav class="step-wizard" aria-label="Reservation Progress">
+        <div class="brand-logo" (click)="onBack()">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#6366f1"/>
+              <path d="M2 17L12 22L22 17" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="brand-name">BookWithUs</span>
+        </div>
+      </div>
+
+      <!-- Center: 4-Step Wizard Progress -->
+      <nav class="step-wizard" aria-label="Reservation Steps">
         <ol class="step-list">
           <li class="step-item active" aria-current="step">
             <span class="step-badge">1</span>
             <span class="step-title">Seats</span>
           </li>
-          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-line" aria-hidden="true"></li>
           <li class="step-item">
             <span class="step-badge">2</span>
             <span class="step-title">Parking</span>
           </li>
-          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-line" aria-hidden="true"></li>
           <li class="step-item">
             <span class="step-badge">3</span>
             <span class="step-title">Review</span>
           </li>
-          <li class="step-separator" aria-hidden="true"></li>
+          <li class="step-line" aria-hidden="true"></li>
           <li class="step-item">
             <span class="step-badge">4</span>
             <span class="step-title">Payment</span>
           </li>
         </ol>
       </nav>
+
+      <!-- Right: Event Metadata Summary -->
+      <div class="top-event-summary">
+        <div class="top-event-title" [title]="eventTitle">{{ eventTitle }}</div>
+        <div class="top-event-meta">
+          <span class="meta-item">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            {{ eventDateFormatted }}
+          </span>
+          <span class="meta-bullet">&bull;</span>
+          <span class="meta-item">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            {{ eventTimeFormatted }}
+          </span>
+          <span class="meta-bullet">&bull;</span>
+          <span class="meta-item">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            {{ eventVenueFormatted }}
+          </span>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="page-main page-container">
-    <!-- Page Header Heading -->
-    <section class="page-heading">
-      <h1 class="page-title">Select Your Seats</h1>
-      <p class="page-subtitle">Choose your preferred seats on the interactive map</p>
-    </section>
-
-    <!-- State 1: Loading -->
+  <!-- Main Body Content -->
+  <main class="page-main-body">
+    <!-- State 1: Loading Spinner -->
     <app-loading-spinner
       *ngIf="isLoading"
-      message="Fetching real-time seat availability for this event..."
+      message="Loading stadium arena configuration..."
     ></app-loading-spinner>
 
-    <!-- State 2: Error with Retry -->
+    <!-- State 2: Error Message with Retry -->
     <app-error-message
       *ngIf="!isLoading && errorMessage"
       [message]="errorMessage"
@@ -57,155 +100,332 @@
       (retry)="reloadSeats()"
     ></app-error-message>
 
-    <!-- State 3: Empty -->
-    <app-empty-state
-      *ngIf="!isLoading && !errorMessage && seats.length === 0"
-      title="No Seats Available"
-      message="There are currently no seats configured or available for this event layout."
-      actionLabel="Back to Event Details"
-      (action)="onBack()"
-    ></app-empty-state>
+    <!-- State 3: Normal Seating Workspace Grid -->
+    <div class="workspace-grid" *ngIf="!isLoading">
+      <!-- In-Page Alerts if any -->
+      <div class="alerts-container" *ngIf="conflictMessage || notificationMessage">
+        <app-alert-banner
+          *ngIf="conflictMessage"
+          variant="warning"
+          [message]="conflictMessage"
+          [dismissible]="true"
+          (dismiss)="conflictMessage = null"
+        ></app-alert-banner>
+        <app-alert-banner
+          *ngIf="notificationMessage"
+          variant="info"
+          [message]="notificationMessage"
+          [dismissible]="true"
+          (dismiss)="notificationMessage = null"
+        ></app-alert-banner>
+      </div>
 
-    <!-- State 4: Main Seat Selection Workflow -->
-    <div class="selection-workflow" *ngIf="!isLoading && !errorMessage && seats.length > 0">
-      <!-- In-Page Alert: Concurrency Conflict -->
-      <app-alert-banner
-        *ngIf="conflictMessage"
-        variant="warning"
-        [message]="conflictMessage"
-        [dismissible]="true"
-        (dismiss)="conflictMessage = null"
-      ></app-alert-banner>
+      <div class="two-column-layout">
+        <!-- LEFT COLUMN: Ticket Requirements Card + Arena Layout Card -->
+        <div class="main-left-column">
+          <!-- Card 1: Ticket Requirements matching Image 2 -->
+          <section class="requirements-card-container">
+            <app-ticket-requirements
+              [adultCount]="adultCount"
+              [childCount]="childCount"
+              [childDiscountPercent]="childDiscountPercent"
+              (adultCountChange)="onAdultCountChange($event)"
+              (childCountChange)="onChildCountChange($event)"
+            ></app-ticket-requirements>
+          </section>
 
-      <!-- In-Page Alert: User Guidance Notification -->
-      <app-alert-banner
-        *ngIf="notificationMessage"
-        variant="info"
-        [message]="notificationMessage"
-        [dismissible]="true"
-        (dismiss)="notificationMessage = null"
-      ></app-alert-banner>
-
-      <!-- Step 1: Ticket Requirements Component -->
-      <section class="requirements-section" aria-label="Ticket Requirements">
-        <app-ticket-requirements
-          [adultCount]="adultCount"
-          [childCount]="childCount"
-          [childDiscountPercent]="childDiscountPercent"
-          (adultCountChange)="onAdultCountChange($event)"
-          (childCountChange)="onChildCountChange($event)"
-        ></app-ticket-requirements>
-      </section>
-
-      <!-- Main Two-Column Layout -->
-      <div class="selection-grid">
-        <!-- Left Column: Map Card -->
-        <div class="map-column">
-          <section class="map-card" aria-label="Seating Map">
-            <header class="map-card-header">
-              <div class="map-title-wrap">
-                <h2 class="map-heading">Arena Layout</h2>
-                <span class="map-availability-pill">
-                  {{ availableSeatsCount }} of {{ totalSeatsCount }} available
-                </span>
+          <!-- Card 2: Arena Layout with SVG Map -->
+          <section class="arena-card" aria-label="Arena Seating Layout">
+            <!-- Arena Card Header: Title + Inline Status Legend + Zoom Controls -->
+            <header class="arena-card-header">
+              <div class="arena-header-left">
+                <h2 class="arena-title">Arena Layout</h2>
+                <p class="arena-subtitle">{{ arenaSubtitle }}</p>
               </div>
 
-              <!-- Map Toolbar (Zoom / Reset) -->
-              <app-seat-map-toolbar
-                [canZoomIn]="canZoomIn"
-                [canZoomOut]="canZoomOut"
-                [canReset]="canResetZoom"
-                (zoomIn)="onZoomIn()"
-                (zoomOut)="onZoomOut()"
-                (resetMap)="onResetZoom()"
-                (fitMap)="onFitMap()"
-              ></app-seat-map-toolbar>
+              <!-- Inline Status Legend matching Image 2 -->
+              <div class="arena-inline-legend" aria-label="Seat Status Legend">
+                <div class="legend-pill">
+                  <span class="legend-box box-available"></span>
+                  <span class="legend-label">Available</span>
+                </div>
+                <div class="legend-pill">
+                  <span class="legend-box box-selected"></span>
+                  <span class="legend-label">Selected</span>
+                </div>
+                <div class="legend-pill">
+                  <span class="legend-box box-booked"></span>
+                  <span class="legend-label">Booked</span>
+                </div>
+                <div class="legend-pill">
+                  <span class="legend-box box-held"></span>
+                  <span class="legend-label">Held</span>
+                </div>
+                <div class="legend-pill">
+                  <span class="legend-box box-vip">★</span>
+                  <span class="legend-label">VIP Pre-Reserved</span>
+                </div>
+              </div>
+
+              <!-- Map Toolbar (Reset, Zoom In, Zoom Out, Fit) -->
+              <div class="arena-toolbar-group" role="toolbar" aria-label="Map Zoom and Pan Controls">
+                <button
+                  type="button"
+                  class="btn-tool"
+                  (click)="onResetZoom()"
+                  [disabled]="!canResetZoom"
+                  title="Reset Zoom"
+                >
+                  <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  <span>Reset</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-tool"
+                  (click)="onZoomIn()"
+                  [disabled]="!canZoomIn"
+                  title="Zoom In"
+                >
+                  <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Zoom In</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-tool"
+                  (click)="onZoomOut()"
+                  [disabled]="!canZoomOut"
+                  title="Zoom Out"
+                >
+                  <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Zoom Out</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-tool"
+                  (click)="onFitMap()"
+                  title="Fit Map to Viewport"
+                >
+                  <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <polyline points="9 21 3 21 3 15"></polyline>
+                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                  </svg>
+                  <span>Fit</span>
+                </button>
+              </div>
             </header>
 
-            <!-- Scaled Interactive Viewport -->
-            <div class="map-viewport-wrapper">
-              <div
-                class="map-zoom-stage"
-                [style.transform]="'scale(' + mapZoom + ')'"
-                [style.transform-origin]="'top center'"
-              >
-                <app-seat-map
-                  [seats]="seats"
-                  [sections]="sections"
-                  [categories]="categories"
-                  [selectedSeatIds]="selectedSeatIds"
-                  [showLegend]="false"
-                  (seatSelect)="onSeatSelect($event)"
-                ></app-seat-map>
-              </div>
+            <!-- Interactive Arena SVG Viewport -->
+            <div class="arena-map-viewport">
+              <app-seat-map
+                [seats]="seats"
+                [selectedSeatIds]="selectedSeatIds"
+                [zoom]="mapZoom"
+                (seatSelect)="onSeatSelect($event)"
+              ></app-seat-map>
             </div>
-
-            <footer class="map-card-footer">
-              <span class="footer-tip-icon" aria-hidden="true">&#9432;</span>
-              <p class="footer-tip-text">
-                Click an available seat to select it. Click a selected seat again to deselect.
-              </p>
-            </footer>
           </section>
         </div>
 
-        <!-- Right Column: Sticky Reservation Sidebar -->
-        <aside class="sidebar-column" aria-label="Booking Summary and Legend">
-          <!-- Selected Seats Summary -->
-          <div class="sidebar-card">
-            <app-selected-seats-summary
-              [selectedSeats]="selectedSeats"
-              [totalRequired]="totalRequiredSeats"
-              (removeSeat)="onRemoveSeat($event)"
-              (clearAll)="onClearAll()"
-            ></app-selected-seats-summary>
+        <!-- RIGHT COLUMN: Sticky Sidebar matching Image 2 -->
+        <aside class="sidebar-right-column" aria-label="Reservation Summary and Seat Details">
+          <!-- CARD 1: Your Selection -->
+          <div class="sidebar-card your-selection-card">
+            <!-- Header -->
+            <div class="selection-card-header">
+              <h3 class="selection-title">Your Selection</h3>
+              <div class="selection-event-name">{{ eventTitle }}</div>
+              <div class="selection-attendee-sub">{{ attendeeSubtitle }}</div>
+            </div>
+
+            <!-- Subheader: Count & Clear All -->
+            <div class="selection-subheader">
+              <span class="selected-count-text">
+                Selected Seats ({{ selectedSeats.length }}/{{ totalRequiredSeats }})
+              </span>
+              <button
+                type="button"
+                class="btn-clear-link"
+                *ngIf="selectedSeats.length > 0"
+                (click)="onClearAll()"
+              >
+                Clear All
+              </button>
+            </div>
+
+            <!-- Selected Seat List -->
+            <div class="selected-seats-container">
+              <div class="empty-seats-notice" *ngIf="selectedSeats.length === 0">
+                <p>No seats selected yet.</p>
+                <span class="sub-hint">Click on any available seat in Platinum, Gold, or Silver to choose your seats.</span>
+              </div>
+
+              <ul class="selected-seats-list" *ngIf="selectedSeats.length > 0">
+                <li
+                  class="selected-seat-row"
+                  *ngFor="let seat of selectedSeats"
+                >
+                  <div class="seat-info-left">
+                    <span
+                      class="seat-category-dot"
+                      [style.background-color]="getCategoryColor(seat.categoryCode)"
+                    ></span>
+                    <div class="seat-name-col">
+                      <span class="seat-code-text">
+                        {{ seat.categoryName }} ({{ seat.seatCode }})
+                      </span>
+                      <span class="seat-attendee-type">
+                        {{ seat.attendeeType === 2 ? 'Child (' + (childDiscountPercent || 50) + '%)' : 'Adult' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="seat-info-right">
+                    <span class="seat-price-badge">
+                      LKR {{ seat.price | number:'1.0-0' }}
+                    </span>
+                    <button
+                      type="button"
+                      class="btn-remove-icon"
+                      (click)="onRemoveSeat(seat.seatId)"
+                      [attr.aria-label]="'Remove ' + seat.seatCode"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Discount Subtext matching Image 2 -->
+            <div class="discount-subtext">
+              Children tickets are priced at {{ childDiscountPercent || 50 }}% of adult seat rates.
+            </div>
+
+            <!-- Total Price Row -->
+            <div class="total-row-container">
+              <span class="total-heading">Total</span>
+              <span class="total-amount-display">
+                LKR {{ displaySubtotal | number:'1.0-0' }}
+              </span>
+            </div>
+
+            <!-- CTA Continue Button -->
+            <div class="cta-container">
+              <button
+                type="button"
+                class="btn-continue-parking"
+                [disabled]="!canContinue"
+                (click)="onContinueToParking()"
+              >
+                <span>Continue to Parking</span>
+                <svg class="continue-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+
+              <!-- Dynamic Status Guidance -->
+              <p class="cta-status-hint" *ngIf="totalRequiredSeats === 0">
+                Please specify your ticket requirements above.
+              </p>
+              <p
+                class="cta-status-hint"
+                *ngIf="totalRequiredSeats > 0 && selectedSeats.length < totalRequiredSeats"
+              >
+                Please select {{ totalRequiredSeats - selectedSeats.length }} more seat{{ (totalRequiredSeats - selectedSeats.length) === 1 ? '' : 's' }} to continue.
+              </p>
+              <p class="cta-status-hint ready-success" *ngIf="canContinue">
+                &#10003; All {{ totalRequiredSeats }} required seats selected. Ready to proceed!
+              </p>
+            </div>
           </div>
 
-          <!-- Price Summary -->
-          <div class="sidebar-card">
-            <app-seat-price-summary
-              [selectedSeats]="selectedSeats"
-              [subtotal]="displaySubtotal"
-              [discountNote]="childDiscountPercent ? ('Children tickets receive a ' + childDiscountPercent + '% discount.') : null"
-            ></app-seat-price-summary>
-          </div>
+          <!-- CARD 2: Seat Information matching Image 2 -->
+          <div class="sidebar-card seat-info-card">
+            <div class="info-card-header">
+              <h3 class="info-title">Seat Information</h3>
+              <p class="info-subtitle">Click on any seat to select/deselect</p>
+            </div>
 
-          <!-- Continue to Parking Action Card -->
-          <div class="sidebar-card action-card">
-            <button
-              class="btn btn-primary continue-btn"
-              type="button"
-              [disabled]="!canContinue"
-              (click)="onContinueToParking()"
-              aria-label="Continue to Parking selection"
-            >
-              <span>Continue to Parking</span>
-              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
-            </button>
+            <!-- Status Legend List with Subtitles -->
+            <div class="info-legend-list">
+              <div class="info-legend-item">
+                <span class="legend-box box-selected"></span>
+                <div class="info-legend-texts">
+                  <span class="info-legend-name">Selected</span>
+                  <span class="info-legend-desc">Your selected seat</span>
+                </div>
+              </div>
 
-            <!-- Helper Guidance Under CTA -->
-            <p class="continue-hint" *ngIf="totalRequiredSeats === 0">
-              Please specify your adult or child ticket quantities above.
-            </p>
-            <p class="continue-hint" *ngIf="totalRequiredSeats > 0 && selectedSeats.length < totalRequiredSeats">
-              Please select {{ totalRequiredSeats - selectedSeats.length }} more seat{{ totalRequiredSeats - selectedSeats.length === 1 ? '' : 's' }} to continue.
-            </p>
-            <p class="continue-hint ready-hint" *ngIf="canContinue">
-              &check; All {{ totalRequiredSeats }} required seat{{ totalRequiredSeats === 1 ? '' : 's' }} selected. Ready to proceed!
-            </p>
-          </div>
+              <div class="info-legend-item">
+                <span class="legend-box box-available"></span>
+                <div class="info-legend-texts">
+                  <span class="info-legend-name">Available</span>
+                  <span class="info-legend-desc">Seats available for selection</span>
+                </div>
+              </div>
 
-          <!-- Seating Legend -->
-          <div class="sidebar-card">
-            <app-seat-legend [categories]="categories"></app-seat-legend>
-          </div>
+              <div class="info-legend-item">
+                <span class="legend-box box-booked"></span>
+                <div class="info-legend-texts">
+                  <span class="info-legend-name">Booked</span>
+                  <span class="info-legend-desc">Already booked by others</span>
+                </div>
+              </div>
 
-          <!-- Section Summary -->
-          <div class="sidebar-card">
-            <app-seat-section-summary
-              [sections]="sections"
-              [categories]="categories"
-            ></app-seat-section-summary>
+              <div class="info-legend-item">
+                <span class="legend-box box-held"></span>
+                <div class="info-legend-texts">
+                  <span class="info-legend-name">Held</span>
+                  <span class="info-legend-desc">Temporarily held</span>
+                </div>
+              </div>
+
+              <div class="info-legend-item">
+                <span class="legend-box box-vip">★</span>
+                <div class="info-legend-texts">
+                  <span class="info-legend-name">VIP Pre-Reserved</span>
+                  <span class="info-legend-desc">Reserved for VIP guests</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sections Header & Table Breakdown -->
+            <div class="sections-header-title">Sections</div>
+
+            <div class="sections-table-container">
+              <table class="sections-table" aria-label="Venue Sections Breakdown">
+                <tbody>
+                  <tr *ngFor="let section of sectionBreakdowns">
+                    <td>
+                      <span class="table-tier-dot" [ngClass]="section.categoryClass">
+                        {{ section.isVip ? '★' : '●' }}
+                      </span>
+                      <span class="table-section-name">{{ section.name }}</span>
+                    </td>
+                    <td class="table-rows-label">{{ section.rowsLabel }}</td>
+                    <td class="table-seat-count text-right">{{ section.seatCount }} Seats</td>
+                  </tr>
+                  <tr class="table-total-row">
+                    <td colspan="2" class="font-bold">Total</td>
+                    <td class="font-bold text-right">{{ totalVenueSeats }} Seats</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </aside>
       </div>

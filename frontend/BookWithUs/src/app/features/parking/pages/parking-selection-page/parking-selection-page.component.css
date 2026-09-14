@@ -2,294 +2,574 @@
   display: block;
   background-color: #f8fafc;
   min-height: 100vh;
+  padding-bottom: 90px; /* offset for sticky bottom bar */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #0f172a;
 }
 
-.parking-page-container {
-  max-width: 1400px;
+.parking-page-wrapper {
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   box-sizing: border-box;
 }
 
 /* ==========================================================================
-   Booking Stepper (screen-10.png reference)
+   1. Stepper Navigation Bar
    ========================================================================== */
 
-.booking-stepper {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.875rem 1.5rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+.flow-stepper-container {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
 }
 
-.stepper-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.flow-stepper {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.step-item {
+.step-node {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #94a3b8;
+  position: relative;
+  cursor: default;
 }
 
-.step-badge {
-  width: 24px;
-  height: 24px;
+.step-completed {
+  cursor: pointer;
+}
+
+.step-circle {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  background-color: #f1f5f9;
-  color: #64748b;
+  box-sizing: border-box;
 }
 
-.step-completed {
-  color: #059669;
-}
-
-.step-completed .step-badge {
-  background-color: #d1fae5;
-  color: #059669;
-}
-
-.step-active {
-  color: #3730a3;
-  font-weight: 700;
-}
-
-.step-active .step-badge {
-  background-color: #3730a3;
+/* Completed Step (Green Circle + White Checkmark) */
+.circle-completed {
+  background-color: #10b981;
   color: #ffffff;
 }
 
-.step-divider {
-  width: 32px;
-  height: 2px;
+.step-check {
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+/* Active Step (Purple Circle + White 'P') */
+.circle-active {
+  background-color: #3b1eb8;
+  color: #ffffff;
+}
+
+.step-p {
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+/* Upcoming Step */
+.circle-upcoming {
+  border: 1.5px solid #cbd5e1;
+  color: #64748b;
+  background-color: #ffffff;
+}
+
+.step-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.step-active .step-label {
+  color: #3b1eb8;
+  font-weight: 700;
+}
+
+.step-completed .step-label {
+  color: #1e293b;
+}
+
+/* Underline Indicator directly below Active Parking Step */
+.active-indicator-bar {
+  position: absolute;
+  bottom: -6px;
+  left: 36px;
+  right: 0;
+  height: 2.5px;
+  background-color: #3b1eb8;
+  border-radius: 2px;
+}
+
+.step-connector {
+  width: 48px;
+  height: 1.5px;
+  background-color: #cbd5e1;
+}
+
+/* ==========================================================================
+   2. Legend Card
+   ========================================================================== */
+
+.legend-card-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.legend-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.6rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  box-sizing: border-box;
+}
+
+.box-available {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.box-selected {
+  background-color: #3b1eb8;
+  border: 1px solid #3b1eb8;
+}
+
+.box-held {
+  background-color: #e0f2fe;
+  border: 1px solid #bae6fd;
+  color: #0f172a;
+}
+
+.box-occupied {
   background-color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-weight: 800;
+}
+
+.legend-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.legend-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.legend-desc {
+  font-size: 0.6875rem;
+  color: #64748b;
 }
 
 /* ==========================================================================
-   Shared UI Layout Spacing
+   3. Main Workspace Grid
    ========================================================================== */
 
-app-loading-spinner,
-app-error-message,
-app-empty-state {
-  display: block;
-  margin: 2rem auto;
-  max-width: 600px;
-  width: 100%;
-}
-
-app-alert-banner {
-  display: block;
-  margin-bottom: 0.75rem;
-}
-
-/* ==========================================================================
-   Main Grid Layout
-   ========================================================================== */
-
-.parking-page-grid {
+.parking-main-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 1.5rem;
   align-items: start;
 }
 
-.parking-main-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+.map-column {
   min-width: 0;
 }
 
-.page-header {
-  margin-bottom: 0.25rem;
+/* Sidebar Column */
+.sidebar-column {
+  width: 340px;
 }
 
-.page-title {
-  margin: 0 0 0.375rem 0;
-  font-size: 1.5rem;
+.selection-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.35rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-headline {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 1rem 0;
+}
+
+/* Event Metadata */
+.event-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: capitalize;
+}
+
+.event-title {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0.1rem 0 0.35rem 0;
+  line-height: 1.3;
+}
+
+.event-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.info-icon {
+  font-size: 0.875rem;
+}
+
+.card-divider {
+  border: 0;
+  border-top: 1px solid #f1f5f9;
+  margin: 1rem 0;
+}
+
+/* Parking Type */
+.parking-type-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.85rem;
+}
+
+.meta-value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Selected Slot Card Box */
+.selected-slot-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.slot-icon-col {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-veh-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.slot-code-col {
+  flex: 1;
+  padding-left: 0.75rem;
+}
+
+.slot-code-display {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #3b1eb8;
+}
+
+.badge-selected-pill {
+  background-color: #ede9fe;
+  color: #4f46e5;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Pricing List */
+.pricing-type-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pricing-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.pricing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pricing-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.pricing-item-active {
+  background-color: #ede9fe;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.item-icon {
+  width: 18px;
+  height: 18px;
+  color: #4338ca;
+}
+
+.item-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.item-price {
+  font-size: 0.8125rem;
   font-weight: 800;
   color: #0f172a;
 }
 
-.page-subtitle {
-  margin: 0;
+.item-disabled {
+  opacity: 0.8;
+}
+
+.item-unavailable {
+  font-size: 0.6875rem;
+  color: #64748b;
+  text-align: right;
+  line-height: 1.2;
+}
+
+/* Fee and Total Rows */
+.fee-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.fee-label {
   font-size: 0.875rem;
+  font-weight: 600;
   color: #64748b;
 }
 
-.map-toolbar-row {
-  display: flex;
-  justify-content: flex-end;
+.fee-value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-.map-viewport-wrapper {
-  overflow: auto;
-  border-radius: 12px;
-  background-color: #f1f5f9;
-  padding: 0.75rem;
+.total-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.25rem;
 }
 
-.map-zoom-stage {
-  transition: transform 0.2s ease-out;
-  display: flex;
-  justify-content: center;
-  min-width: 100%;
+.total-label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.total-amount {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #3b1eb8;
 }
 
 /* ==========================================================================
-   Sidebar Column & Action Card
+   4. Sticky Bottom Action Bar
    ========================================================================== */
 
-.parking-sidebar-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.sidebar-actions-card {
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  padding: 0.875rem 2rem;
+  z-index: 50;
 }
 
-/* ==========================================================================
-   Buttons
-   ========================================================================== */
+.bottom-bar-content {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bottom-summary-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.bottom-summary-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bottom-summary-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.selection-text {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.selection-fee {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #4338ca;
+}
+
+.selection-empty {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.bottom-buttons-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.625rem 1.25rem;
+  gap: 0.5rem;
+  font-family: inherit;
   font-size: 0.875rem;
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
-  outline: none;
-  text-decoration: none;
+  padding: 0.65rem 1.5rem;
 }
 
-.btn:focus-visible {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
-  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.35);
-  transform: translateY(-1px);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-primary:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.btn-outline {
+.btn-skip {
   background-color: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  color: #334155;
+  border: 1.5px solid #c7d2fe;
+  color: #4338ca;
 }
 
-.btn-outline:hover {
-  background-color: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
+.btn-skip:hover {
+  background-color: #f5f3ff;
+  border-color: #a5b4fc;
 }
 
-.btn-cta {
-  width: 100%;
+.btn-continue {
+  background-color: #3b1eb8;
+  border: 1.5px solid #3b1eb8;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(59, 30, 184, 0.35);
 }
 
-.btn-link {
-  background: none;
-  border: none;
-  color: #64748b;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0.5rem;
-  text-align: center;
-  transition: color 0.15s ease;
+.btn-continue:hover {
+  background-color: #31179e;
+  border-color: #31179e;
+  box-shadow: 0 4px 10px rgba(59, 30, 184, 0.45);
 }
 
-.btn-link:hover {
-  color: #3730a3;
-  text-decoration: underline;
-}
-
-.btn-link:focus-visible {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-  border-radius: 4px;
+.continue-arrow {
+  font-size: 1.1rem;
+  font-weight: 900;
 }
 
 /* ==========================================================================
-   Responsive Breakpoints
+   Responsive Adaptations
    ========================================================================== */
 
-@media (max-width: 1024px) {
-  .parking-page-grid {
+@media (max-width: 1080px) {
+  .parking-main-grid {
     grid-template-columns: 1fr;
   }
 
-  .parking-sidebar-col {
-    order: 2;
+  .sidebar-column {
+    width: 100%;
   }
 
-  .parking-main-col {
-    order: 1;
-  }
-}
-
-@media (max-width: 640px) {
-  .parking-page-container {
-    padding: 1rem;
-  }
-
-  .stepper-divider {
-    display: none;
-  }
-
-  .stepper-list {
-    gap: 0.75rem;
+  .legend-card {
+    gap: 1.25rem;
+    flex-wrap: wrap;
   }
 }

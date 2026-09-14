@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Enums.Bookings;
+using EventParkingReservationSystem.API.Enums.Bookings;
 using EventParkingReservationSystem.API.Models.DTOs.Seats;
 
 namespace EventParkingReservationSystem.API.Validators.Seats;
@@ -68,6 +68,14 @@ public static class SeatValidator
         {
             throw new ArgumentException(
                 "Every selected seat must have a valid attendee type.");
+        }
+
+        // Children cannot be booked without at least one adult.
+        if (request.Seats.Any(seat => seat.AttendeeType == AttendeeType.Child) &&
+            !request.Seats.Any(seat => seat.AttendeeType == AttendeeType.Adult))
+        {
+            throw new ArgumentException(
+                "Children cannot be booked without at least one accompanying adult.");
         }
     }
 

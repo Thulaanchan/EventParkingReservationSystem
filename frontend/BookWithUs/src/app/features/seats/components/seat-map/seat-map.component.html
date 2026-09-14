@@ -1,72 +1,290 @@
-<div class="seat-map-container" role="region" aria-label="Interactive event seating map">
-  <!-- Optional Legend Bar -->
-  @if (showLegend) {
-    <header class="seat-map-header">
-      <app-seat-legend [categories]="categories"></app-seat-legend>
-    </header>
-  }
+<div class="arena-seat-map-wrapper" role="region" aria-label="Interactive Stadium Seating Map">
+  <!-- Interactive Arena SVG Viewport -->
+  <div class="svg-viewport-container">
+    <svg
+      class="arena-svg"
+      viewBox="0 0 900 900"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="360 degree arena seating layout"
+    >
+      <defs>
+        <!-- Stage Radial Glow & Shadow -->
+        <filter id="stageGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.35" />
+        </filter>
 
-  <!-- Viewport Area -->
-  <div class="seat-map-viewport" tabindex="0" aria-label="Seating area viewport">
-    @if (seats.length === 0) {
-      <!-- Empty State -->
-      <div class="seat-map-empty">
-        <p class="empty-text">No seating data available for this event layout.</p>
-      </div>
-    } @else if (hasCoordinates) {
-      <!-- Coordinate Canvas Mode (Arena Layout matching screen-09.png) -->
-      <div
-        class="arena-canvas"
-        [style.width.px]="canvasWidth"
-        [style.height.px]="canvasHeight"
+        <!-- Selected Seat Shadow -->
+        <filter id="selectedSeatGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#6366f1" flood-opacity="0.5" />
+        </filter>
+
+        <!-- VIP Arc Text Path: Top Arc -->
+        <path
+          id="vipTopArc"
+          d="M 378 450 A 72 72 0 0 1 522 450"
+          fill="none"
+        />
+        <!-- VIP Arc Text Path: Bottom Arc -->
+        <path
+          id="vipBottomArc"
+          d="M 522 450 A 72 72 0 0 1 378 450"
+          fill="none"
+        />
+      </defs>
+
+      <!-- Scaled Transform Group driven by Zoom toolbar -->
+      <g
+        class="arena-transform-group"
+        [style.transform]="'scale(' + zoom + ')'"
+        style="transform-origin: 450px 450px; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);"
       >
-        <!-- Central Non-Interactive Stage -->
-        <div
-          class="stage-indicator"
-          [style.left.px]="stagePosition.x"
-          [style.top.px]="stagePosition.y"
-          aria-hidden="true"
-        >
-          <span class="stage-text">{{ stageLabel }}</span>
-        </div>
+        <!-- 1. Outer Stadium Outer Ring Guideline -->
+        <circle cx="450" cy="450" r="396" fill="none" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 4" />
 
-        <!-- Positioned Seats -->
-        @for (seat of seats; track seat.id) {
-          <div
-            class="seat-positioned-wrapper"
-            [style.left.px]="seat.positionX"
-            [style.top.px]="seat.positionY"
+        <!-- 2. Sector Backdrops (Platinum Lavender, Gold Amber, Silver Gray) -->
+        <g class="sector-backdrops-group">
+          @for (backdrop of sectorBackdrops; track backdrop.sectorCode + backdrop.tierName) {
+            <path
+              [attr.d]="backdrop.pathD"
+              [attr.fill]="backdrop.fillColor"
+              [attr.stroke]="backdrop.strokeColor"
+              stroke-width="0.8"
+              class="sector-backdrop-path"
+            />
+          }
+        </g>
+
+        <!-- 3. Radial Aisle Dividers -->
+        <g class="aisle-dividers-group">
+          <line x1="450" y1="54" x2="450" y2="330" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="3 3" />
+          <line x1="450" y1="570" x2="450" y2="846" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="3 3" />
+          <line x1="54" y1="450" x2="330" y2="450" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="3 3" />
+          <line x1="570" y1="450" x2="846" y2="450" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="3 3" />
+        </g>
+
+        <!-- 4. VIP Pre-Reserved Ring Band -->
+        <circle cx="450" cy="450" r="90" fill="none" stroke="#1e293b" stroke-width="18" opacity="0.1" />
+
+        <!-- VIP Arc Label Text -->
+        <text class="vip-arc-text" font-size="7.5" font-weight="800" letter-spacing="0.18em" fill="#475569">
+          <textPath href="#vipTopArc" startOffset="50%" text-anchor="middle">
+            VIP PRE-RESERVED
+          </textPath>
+        </text>
+        <text class="vip-arc-text" font-size="7.5" font-weight="800" letter-spacing="0.18em" fill="#475569">
+          <textPath href="#vipBottomArc" startOffset="50%" text-anchor="middle">
+            VIP PRE-RESERVED
+          </textPath>
+        </text>
+
+        <!-- 5. Central Stage Disc -->
+        <g class="stage-disc-group" filter="url(#stageGlow)">
+          <circle cx="450" cy="450" r="56" fill="#0f172a" stroke="#334155" stroke-width="2.5" />
+          <circle cx="450" cy="450" r="50" fill="none" stroke="#1e293b" stroke-width="1" stroke-dasharray="3 3" />
+          <text
+            x="450"
+            y="455"
+            text-anchor="middle"
+            font-size="14.5"
+            font-weight="900"
+            letter-spacing="0.2em"
+            fill="#f8fafc"
+            class="stage-disc-text"
           >
-            <app-seat-item
-              [seat]="seat"
-              [selected]="isSeatSelected(seat.id)"
-              [selectedIndex]="getSelectedIndex(seat.id)"
-              (seatSelect)="onSeatSelect($event)"
-            ></app-seat-item>
-          </div>
-        }
-      </div>
-    } @else {
-      <!-- Fallback Section Grid Mode -->
-      <div class="fallback-container">
-        @for (group of groupedSeats; track group.sectionCode) {
-          <section class="fallback-section" [attr.aria-label]="group.sectionName">
-            <h4 class="fallback-section-title">{{ group.sectionName }} ({{ group.sectionCode }})</h4>
-            <div class="fallback-seat-grid" role="list">
-              @for (seat of group.seats; track seat.id) {
-                <div role="listitem">
-                  <app-seat-item
-                    [seat]="seat"
-                    [selected]="isSeatSelected(seat.id)"
-                    [selectedIndex]="getSelectedIndex(seat.id)"
-                    (seatSelect)="onSeatSelect($event)"
-                  ></app-seat-item>
-                </div>
+            {{ stageLabel }}
+          </text>
+        </g>
+
+        <!-- 6. Sector Perimeter Labels (N / N1, NE / NE1, etc.) -->
+        <g class="sector-labels-group" aria-hidden="true">
+          @for (lbl of sectorLabels; track lbl.text) {
+            <g [attr.transform]="'translate(' + lbl.x + ',' + lbl.y + ')'">
+              <text text-anchor="middle" y="-4" class="label-main-text">{{ lbl.text }}</text>
+              <text text-anchor="middle" y="9" class="label-sub-text">{{ lbl.subText }}</text>
+            </g>
+          }
+        </g>
+
+        <!-- 7. Interactive 624 Arena Seats -->
+        <g class="arena-seats-layer">
+          @for (seat of arenaSeats; track seat.seatCode) {
+            <g
+              class="seat-item-node"
+              [class.seat-available]="seat.status === 'Available' && seat.categoryCode !== 'VIP'"
+              [class.seat-selected]="isSeatSelected(seat.id)"
+              [class.seat-booked]="seat.status === 'Booked' && seat.categoryCode !== 'VIP'"
+              [class.seat-held]="seat.status === 'Held'"
+              [class.seat-vip]="seat.categoryCode === 'VIP'"
+              [attr.transform]="'translate(' + seat.x + ',' + seat.y + ') rotate(' + seat.rotation + ')'"
+              [attr.filter]="isSeatSelected(seat.id) ? 'url(#selectedSeatGlow)' : null"
+              (click)="onSeatClick(seat, $event)"
+              (mouseenter)="onSeatMouseEnter(seat, $event)"
+              (mouseleave)="onSeatMouseLeave()"
+              role="button"
+              [attr.aria-label]="seat.categoryName + ' ' + seat.seatCode + ', ' + seat.status"
+            >
+              <!-- Seat Rounded Box -->
+              <rect
+                x="-5.2"
+                y="-5.2"
+                width="10.4"
+                height="10.4"
+                rx="2.2"
+                ry="2.2"
+                class="seat-box-rect"
+              />
+
+              <!-- Selected Seat Sequential Index Badge (1, 2, 3...) -->
+              @if (isSeatSelected(seat.id)) {
+                <text
+                  x="0"
+                  y="3.2"
+                  text-anchor="middle"
+                  class="seat-selected-badge"
+                >
+                  {{ getSelectedIndex(seat.id) }}
+                </text>
               }
-            </div>
-          </section>
-        }
+
+              <!-- VIP Pre-Reserved Star Icon -->
+              @if (seat.categoryCode === 'VIP') {
+                <text
+                  x="0"
+                  y="3"
+                  text-anchor="middle"
+                  class="seat-vip-star"
+                >
+                  ★
+                </text>
+              }
+            </g>
+          }
+        </g>
+      </g>
+    </svg>
+
+    <!-- Floating Interactive Tooltip -->
+    @if (hoveredSeat) {
+      <div
+        class="seat-hover-tooltip"
+        [style.left.px]="tooltipX"
+        [style.top.px]="tooltipY"
+        role="tooltip"
+        aria-live="polite"
+      >
+        <div class="tooltip-header">
+          <span
+            class="tooltip-badge"
+            [ngClass]="'tier-' + (hoveredSeat.categoryCode | lowercase)"
+          >
+            {{ hoveredSeat.categoryName }}
+          </span>
+          <span class="tooltip-code">{{ hoveredSeat.seatCode }}</span>
+        </div>
+        <div class="tooltip-details">
+          <div class="tooltip-row">
+            <span class="tooltip-label">Row / No:</span>
+            <span class="tooltip-val">{{ hoveredSeat.rowLabel }} - {{ hoveredSeat.number }}</span>
+          </div>
+          <div class="tooltip-row">
+            <span class="tooltip-label">Section:</span>
+            <span class="tooltip-val">{{ hoveredSeat.sectionName }}</span>
+          </div>
+          <div class="tooltip-row">
+            <span class="tooltip-label">Price:</span>
+            <span class="tooltip-val price-val">LKR {{ hoveredSeat.adultPrice | number:'1.0-0' }}</span>
+          </div>
+          <div class="tooltip-row">
+            <span class="tooltip-label">Status:</span>
+            <span
+              class="tooltip-status"
+              [class.status-available]="hoveredSeat.status === 'Available' && hoveredSeat.categoryCode !== 'VIP'"
+              [class.status-selected]="isSeatSelected(hoveredSeat.id)"
+              [class.status-booked]="hoveredSeat.status === 'Booked'"
+              [class.status-held]="hoveredSeat.status === 'Held'"
+              [class.status-vip]="hoveredSeat.categoryCode === 'VIP'"
+            >
+              {{ isSeatSelected(hoveredSeat.id) ? 'Selected' : (hoveredSeat.categoryCode === 'VIP' ? 'VIP Pre-Reserved' : hoveredSeat.status) }}
+            </span>
+          </div>
+        </div>
       </div>
     }
   </div>
+
+  <!-- Bottom Bar: Total Seats in Venue | Showing All Sections | View 3D View button -->
+  <div class="arena-bottom-bar">
+    <div class="bottom-left">
+      <span class="total-venue-seats">Total Seats in Venue: <strong>624</strong></span>
+    </div>
+
+    <div class="bottom-center">
+      <span class="showing-sections-pill">
+        Showing All Sections
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </span>
+    </div>
+
+    <div class="bottom-right">
+      <button
+        type="button"
+        class="btn-view-3d"
+        (click)="toggle3DView()"
+        aria-label="Open 3D perspective view of the arena"
+      >
+        <svg class="cube-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>View 3D View</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3D Stadium Perspective Modal -->
+  @if (is3DViewOpen) {
+    <div class="modal-3d-backdrop" (click)="close3DView()" role="dialog" aria-modal="true" aria-label="3D Arena View">
+      <div class="modal-3d-card" (click)="$event.stopPropagation()">
+        <header class="modal-3d-header">
+          <div class="modal-title-group">
+            <svg class="cube-icon-modal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <h3 class="modal-title">3D Arena Perspective</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="close3DView()" aria-label="Close 3D View">
+            &times;
+          </button>
+        </header>
+
+        <div class="modal-3d-stage-viewport">
+          <div class="arena-3d-canvas">
+            <div class="stadium-bowl-3d">
+              <div class="stage-spotlight"></div>
+              <div class="stadium-stage-cylinder">
+                <span class="cylinder-label">STAGE</span>
+              </div>
+              <div class="tier-ring ring-vip">VIP Ring</div>
+              <div class="tier-ring ring-platinum">Platinum Tier (208 Seats)</div>
+              <div class="tier-ring ring-gold">Gold Tier (208 Seats)</div>
+              <div class="tier-ring ring-silver">Silver Tier (188 Seats)</div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal-3d-footer">
+          <p class="modal-tip">Interactive 360° seating view from elevated stadium perspective.</p>
+          <button type="button" class="btn btn-primary" (click)="close3DView()">Return to 2D Map</button>
+        </footer>
+      </div>
+    </div>
+  }
 </div>

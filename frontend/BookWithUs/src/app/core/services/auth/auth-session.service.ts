@@ -5,7 +5,7 @@ import { AuthSession } from '../../models/auth/auth-session.model';
 import { AuthUser } from '../../models/auth/auth-user.model';
 import { LoginResponse } from '../../models/auth/login-response.model';
 
-const SESSION_STORAGE_KEY = 'eventflow_auth_session';
+const SESSION_STORAGE_KEY = 'bookwithus_auth_session';
 
 @Injectable({
   providedIn: 'root'

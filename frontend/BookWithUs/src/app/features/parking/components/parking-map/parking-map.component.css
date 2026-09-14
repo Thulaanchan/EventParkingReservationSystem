@@ -1,232 +1,476 @@
 :host {
   display: block;
-}
-
-.parking-map-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
   width: 100%;
 }
 
-.map-legend-wrapper {
-  width: 100%;
-}
-
-/* ==========================================================================
-   Scrollable Viewport
-   ========================================================================== */
-
-.parking-map-viewport {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.5rem;
+.arena-outer-container {
+  background-color: #dbe1e8;
+  background-image: radial-gradient(circle at 50% 50%, #e2e8f0 0%, #cbd5e1 100%);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 1.25rem 1rem 1rem 1rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
-.parking-arena {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 680px;
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: 1.25rem;
-}
-
-/* ==========================================================================
-   Venue Entrance Banner (screen-10.png reference)
-   ========================================================================== */
-
-.venue-entrance-banner {
-  background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
-  color: #ffffff;
-  padding: 0.625rem 2rem;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  box-shadow: 0 4px 10px rgba(49, 46, 129, 0.25);
+  overflow-x: auto;
   user-select: none;
 }
 
-.entrance-arrow {
-  font-size: 1.125rem;
-  font-weight: 900;
-  animation: bounce 2s infinite ease-in-out;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(3px);
-  }
-}
-
-.entrance-text {
-  line-height: 1;
-}
-
 /* ==========================================================================
-   Arena Road Perimeter Circuit
+   Top Entrance Landmark
    ========================================================================== */
 
-.arena-road-perimeter {
-  display: flex;
-  width: 100%;
-  border-radius: 14px;
-  background-color: #1e293b;
-  padding: 12px;
-  box-sizing: border-box;
-  gap: 12px;
-  box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.18);
-  position: relative;
-}
-
-.road-side {
-  width: 32px;
+.entrance-area {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.entrance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #3b1eb8;
+  color: #ffffff;
+  padding: 0.45rem 1.75rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 6px -1px rgba(59, 30, 184, 0.3);
+}
+
+.entrance-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.entrance-arrow {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.entrance-road-arrows {
+  display: flex;
+  gap: 1.75rem;
+  margin-top: 0.25rem;
+}
+
+.entrance-road-arrows .road-arrow {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   Grounds Grid Layout
+   ========================================================================== */
+
+.arena-grounds-layout {
+  display: flex;
+  align-items: stretch;
   justify-content: center;
-  position: relative;
+  gap: 0.5rem;
+  min-width: 680px;
+}
+
+/* Flanks (Left & Right margins) */
+.perimeter-flank {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 64px;
+  padding: 0.25rem 0;
   flex-shrink: 0;
 }
 
-.road-lane-divider {
-  position: absolute;
-  top: 10%;
-  bottom: 10%;
-  width: 2px;
-  background: repeating-linear-gradient(
-    to bottom,
-    #94a3b8 0,
-    #94a3b8 10px,
-    transparent 10px,
-    transparent 20px
-  );
-  opacity: 0.6;
-}
-
-.road-sign {
-  position: absolute;
-  white-space: nowrap;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 4px 8px;
-  border-radius: 6px;
-  z-index: 2;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-}
-
-.sign-entry {
-  background-color: #059669;
-  color: #ffffff;
-  transform: rotate(-90deg);
-  top: 30%;
-}
-
-.sign-exit {
-  background-color: #d97706;
-  color: #ffffff;
-  transform: rotate(90deg);
-  top: 70%;
-}
-
-/* ==========================================================================
-   Central Arena Interior
-   ========================================================================== */
-
-.arena-interior {
-  flex: 1;
-  background-color: #f8fafc;
-  border-radius: 10px;
-  padding: 1.25rem;
-  min-height: 420px;
-  box-sizing: border-box;
+.traffic-lane {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  width: 24px;
+  flex-shrink: 0;
 }
 
-/* Coordinate positioning canvas */
-.coordinate-canvas {
-  position: relative;
-  margin: 0 auto;
-  min-height: 450px;
+.road-arrow-white {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  opacity: 0.9;
 }
 
-.positioned-slot {
-  position: absolute;
-  transform: translate(-50%, -50%);
-}
-
-/* Responsive fallback zone grid */
-.zones-grid-layout {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
-  width: 100%;
-}
-
-.zone-grid-item {
-  min-width: 0;
-}
-
-/* Empty map state */
-.empty-map-state {
-  text-align: center;
-  padding: 3rem 1.5rem;
+/* Gate Indicators: Entry / Exit */
+.gate-indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.2rem;
+  margin: 0.5rem 0;
 }
 
-.empty-map-icon {
-  font-size: 2.5rem;
-  line-height: 1;
+.gate-icon-wrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.empty-map-title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #334155;
+.gate-vehicle-icon {
+  width: 22px;
+  height: 22px;
 }
 
-.empty-map-desc {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #64748b;
+.gate-badge {
+  background-color: #3b1eb8;
+  color: #ffffff;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.gate-arrow {
+  color: #3b1eb8;
+  font-size: 1.1rem;
+  font-weight: 900;
 }
 
 /* ==========================================================================
-   Responsive Adjustments
+   3D Architectural Trees & Grassy Islands
    ========================================================================== */
 
-@media (max-width: 768px) {
-  .parking-map-viewport {
-    padding: 1rem;
-  }
+.tree-island {
+  background-color: #bbf7d0;
+  border: 1px solid #86efac;
+  border-radius: 9999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
 
-  .parking-arena {
-    min-width: 540px;
-  }
+.tree-island-outer {
+  width: 32px;
+}
 
-  .zones-grid-layout {
-    grid-template-columns: 1fr;
-  }
+.tree-island-outer-lower {
+  width: 32px;
+}
+
+.tree-island-inner {
+  width: 28px;
+  align-self: stretch;
+  justify-content: space-around;
+  margin: 0.25rem 0;
+  flex-shrink: 0;
+}
+
+.tree-cluster {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  position: relative;
+  background: radial-gradient(circle at 35% 35%, #4ade80 0%, #16a34a 55%, #15803d 100%);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25), inset -1px -2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.tree-cluster::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #86efac;
+  opacity: 0.6;
+}
+
+.tree-cluster::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #14532d;
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   Center Field (Zones & Aisles)
+   ========================================================================== */
+
+.arena-center-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Top Row: Motorbike, Three-Wheeler, Van */
+.top-zones-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+
+.zone-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.75rem 0.6rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.zone-header-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.zone-header-title {
+  color: #4338ca;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Motorbike Card */
+.motorbike-card {
+  width: 145px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.mb-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.mb-reserved {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.mb-not-available {
+  font-size: 0.6875rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.mb-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.mb-graphic svg {
+  width: 60px;
+  height: 36px;
+}
+
+/* Three-Wheeler Card */
+.three-wheeler-card {
+  flex: 1.4;
+}
+
+/* Van Card */
+.van-card {
+  flex: 1;
+}
+
+/* Cross Roadway */
+.cross-roadway {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 2rem;
+  height: 14px;
+}
+
+/* Car Zone Layout */
+.car-zone-wrapper {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.car-card {
+  flex: 1;
+  padding: 0.75rem 0.85rem;
+}
+
+.car-header {
+  margin-bottom: 0.75rem;
+}
+
+.car-slots-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Driving Aisles with Arrows */
+.driving-aisle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+}
+
+.aisle-arrow {
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Bottom Roadway */
+.bottom-roadway {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  height: 14px;
+}
+
+/* ==========================================================================
+   Slot Cells (Responsive Button Slots)
+   ========================================================================== */
+
+.slots-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+  flex: 1;
+}
+
+.slots-row {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.tw-grid .slots-row {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.van-grid .slots-row {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.car-row {
+  grid-template-columns: repeat(10, 1fr);
+}
+
+.slot-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 2px 4px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* Hover on available slot */
+.slot-cell.is-available:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  transform: translateY(-1px);
+}
+
+/* 1. Selected Slot State (solid purple #3b1eb8 with checkmark) */
+.slot-cell.is-selected {
+  background-color: #3b1eb8 !important;
+  border-color: #3b1eb8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(59, 30, 184, 0.45);
+  transform: scale(1.03);
+  z-index: 2;
+}
+
+.slot-check-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #3b1eb8;
+  font-size: 0.625rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #3b1eb8;
+}
+
+/* 2. Held Slot State (light blue with lock icon) */
+.slot-cell.is-held {
+  background-color: #e0f2fe;
+  border-color: #bae6fd;
+  color: #0369a1;
+  cursor: not-allowed;
+}
+
+/* 3. Occupied Slot State (light gray with cross icon) */
+.slot-cell.is-occupied {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.slot-status-icon {
+  position: absolute;
+  bottom: 2px;
+  right: 3px;
+  font-size: 0.5625rem;
+  line-height: 1;
+}
+
+.lock-icon {
+  color: #0f172a;
+}
+
+.cross-icon {
+  color: #475569;
+  font-weight: 800;
 }

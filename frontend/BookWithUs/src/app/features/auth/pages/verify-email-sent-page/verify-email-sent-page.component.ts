@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../../core/services/auth/auth.service';
 export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   email = '';
   token = '';
@@ -29,19 +30,39 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
 
   cooldownSeconds = 0;
   private timerSubscription?: Subscription;
+  private queryParamsSubscription?: Subscription;
 
   ngOnInit(): void {
-    this.email = this.route.snapshot.queryParamMap.get('email') || '';
-    this.token = this.route.snapshot.queryParamMap.get('token') || '';
+    this.queryParamsSubscription = this.route.queryParamMap.subscribe((paramMap) => {
+      const emailParam =
+        paramMap.get('email') ||
+        paramMap.get('Email') ||
+        '';
 
-    // If both email and token are provided, automatically trigger verification
-    if (this.email && this.token) {
-      this.verifyEmail();
-    }
+      const tokenParam =
+        paramMap.get('token') ||
+        paramMap.get('Token') ||
+        '';
+
+      if (emailParam) {
+        this.email = emailParam.trim();
+      }
+
+      if (tokenParam) {
+        // Base64 tokens might have '+' turned into space in some URL decoders
+        this.token = tokenParam.trim().replace(/ /g, '+');
+      }
+
+      // If both email and token are provided, automatically trigger verification
+      if (this.email && this.token && !this.isVerified && !this.isVerifying) {
+        this.verifyEmail();
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.timerSubscription?.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe();
   }
 
   get maskedEmail(): string {
@@ -63,6 +84,7 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
     this.isVerifying = true;
     this.errorMessage = null;
     this.successMessage = null;
+    this.cdr.markForCheck();
 
     this.authService
       .verifyEmail({ email: this.email, token: this.token })
@@ -72,6 +94,7 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
           this.isVerified = true;
           this.successMessage =
             res.message || 'Email verified successfully. You can now sign in.';
+          this.cdr.markForCheck();
         },
         error: (error: unknown) => {
           this.isVerifying = false;
@@ -80,16 +103,19 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
               this.errorMessage =
                 error.error?.message ||
                 'The email verification link is invalid or has expired.';
+              this.cdr.markForCheck();
               return;
             }
             if (error.status === 0) {
               this.errorMessage =
                 'Unable to reach the server. Please check your connection and try again.';
+              this.cdr.markForCheck();
               return;
             }
           }
           this.errorMessage =
             'Verification failed. The link may have expired or is invalid.';
+          this.cdr.markForCheck();
         }
       });
   }
@@ -98,6 +124,7 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
 
   toggleEditEmail(): void {
     this.isEditingEmail = !this.isEditingEmail;
+    this.cdr.markForCheck();
   }
 
   onResend(): void {
@@ -108,6 +135,7 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
     this.isResending = true;
     this.errorMessage = null;
     this.successMessage = null;
+    this.cdr.markForCheck();
 
     this.authService.resendVerification({ email: this.email }).subscribe({
       next: (res) => {
@@ -116,6 +144,7 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
           res.message ||
           'A new verification email has been sent. Please check your inbox.';
         this.startCooldown(60);
+        this.cdr.markForCheck();
       },
       error: (error: unknown) => {
         this.isResending = false;
@@ -124,16 +153,19 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
             this.errorMessage =
               error.error?.message ||
               'Unable to resend verification email. Please check your email address.';
+            this.cdr.markForCheck();
             return;
           }
           if (error.status === 0) {
             this.errorMessage =
               'Unable to reach the server. Please check your connection.';
+            this.cdr.markForCheck();
             return;
           }
         }
         this.errorMessage =
           'Unable to resend verification email at this time. Please try again later.';
+        this.cdr.markForCheck();
       }
     });
   }
@@ -141,11 +173,13 @@ export class VerifyEmailSentPageComponent implements OnInit, OnDestroy {
   private startCooldown(seconds: number): void {
     this.cooldownSeconds = seconds;
     this.timerSubscription?.unsubscribe();
+    this.cdr.markForCheck();
     this.timerSubscription = interval(1000).subscribe(() => {
       this.cooldownSeconds--;
       if (this.cooldownSeconds <= 0) {
         this.timerSubscription?.unsubscribe();
       }
+      this.cdr.markForCheck();
     });
   }
 }

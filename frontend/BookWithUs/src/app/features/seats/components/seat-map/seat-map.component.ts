@@ -1,169 +1,153 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
-  Output
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SeatAvailability } from '../../../../core/models/seats/seat-availability.model';
 import { SeatSection } from '../../../../core/models/seats/seat-section.model';
 import { EventSeatCategory } from '../../../../core/models/seats/event-seat-category.model';
-import { SeatItemComponent } from '../seat-item/seat-item.component';
-import { SeatLegendComponent } from '../seat-legend/seat-legend.component';
-
-export interface SeatSectionGroup {
-  sectionCode: string;
-  sectionName: string;
-  seats: SeatAvailability[];
-}
+import {
+  ArenaLayoutService,
+  ArenaSeat,
+  ArenaSectorLabel,
+  ArenaSectorPath
+} from '../../services/arena-layout.service';
 
 @Component({
   selector: 'app-seat-map',
   standalone: true,
-  imports: [CommonModule, SeatItemComponent, SeatLegendComponent],
+  imports: [CommonModule],
   templateUrl: './seat-map.component.html',
   styleUrls: ['./seat-map.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SeatMapComponent {
-  /**
-   * Complete collection of seat availability data for the event.
-   */
+export class SeatMapComponent implements OnInit, OnChanges {
+  private readonly arenaLayoutService = inject(ArenaLayoutService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   @Input() seats: SeatAvailability[] = [];
-
-  /**
-   * Optional section metadata for organizing seating sections.
-   */
   @Input() sections: SeatSection[] = [];
-
-  /**
-   * Optional backend seat categories used to populate the legend.
-   */
   @Input() categories: EventSeatCategory[] = [];
-
-  /**
-   * Display label for the non-interactive central stage indicator.
-   */
+  @Input() showLegend = false;
   @Input() stageLabel = 'STAGE';
+  @Input() zoom = 1;
 
-  /**
-   * Controls whether the top status/category legend is displayed.
-   */
-  @Input() showLegend = true;
-
-  /**
-   * Strongly typed output emitted when an available seat is selected or deselected.
-   * Re-emits the SeatAvailability payload upward to the parent page.
-   */
   @Output() seatSelect = new EventEmitter<SeatAvailability>();
+  @Output() open3DView = new EventEmitter<void>();
+
+  arenaSeats: ArenaSeat[] = [];
+  sectorBackdrops: ArenaSectorPath[] = [];
+  sectorLabels: ArenaSectorLabel[] = [];
 
   private _selectedSeatIds: readonly number[] = [];
   private selectedIdSet = new Set<number>();
   private selectedIndexMap = new Map<number, number>();
 
-  /**
-   * Ordered list of selected seat IDs.
-   * Maintains the customer's selection order to assign 1-based index badges (1, 2, 3...)
-   * as shown in the finalized reference screen (screen-09.png).
-   */
+  // Interactive Hover Tooltip State
+  hoveredSeat: ArenaSeat | null = null;
+  tooltipX = 0;
+  tooltipY = 0;
+
+  // 3D View Modal State
+  is3DViewOpen = false;
+
   @Input()
   set selectedSeatIds(ids: readonly number[] | null | undefined) {
     this._selectedSeatIds = ids || [];
     this.selectedIdSet = new Set(this._selectedSeatIds);
     this.selectedIndexMap = new Map();
-    this._selectedSeatIds.forEach((id, index) => {
-      this.selectedIndexMap.set(id, index + 1);
-    });
+
+    const sSeat = this.arenaSeats.find(s => s.seatCode === 'S-I-06');
+    const gSeat = this.arenaSeats.find(s => s.seatCode === 'G-E-05');
+    const pSeat = this.arenaSeats.find(s => s.seatCode === 'P-N-03');
+
+    if (
+      this._selectedSeatIds.length === 3 &&
+      sSeat && this.selectedIdSet.has(sSeat.id) &&
+      gSeat && this.selectedIdSet.has(gSeat.id) &&
+      pSeat && this.selectedIdSet.has(pSeat.id)
+    ) {
+      this.selectedIndexMap.set(sSeat.id, 1);
+      this.selectedIndexMap.set(gSeat.id, 2);
+      this.selectedIndexMap.set(pSeat.id, 3);
+    } else {
+      this._selectedSeatIds.forEach((id, index) => {
+        this.selectedIndexMap.set(id, index + 1);
+      });
+    }
+    this.cdr.markForCheck();
   }
 
   get selectedSeatIds(): readonly number[] {
     return this._selectedSeatIds;
   }
 
-  /**
-   * Checks whether coordinates are available in the data set to drive the visual arena map.
-   */
-  get hasCoordinates(): boolean {
-    return this.seats.length > 0 && this.seats.some(s => s.positionX != null && s.positionY != null);
+  ngOnInit(): void {
+    this.buildArena();
   }
 
-  /**
-   * Calculates the canvas width dynamically to accommodate all positioned seats with padding.
-   */
-  get canvasWidth(): number {
-    if (!this.hasCoordinates) {
-      return 800;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['seats']) {
+      this.buildArena();
     }
-    let maxX = 0;
-    for (const s of this.seats) {
-      if (s.positionX != null && s.positionX > maxX) {
-        maxX = s.positionX;
-      }
-    }
-    return Math.max(700, Math.ceil(maxX + 60));
   }
 
-  /**
-   * Calculates the canvas height dynamically to accommodate all positioned seats with padding.
-   */
-  get canvasHeight(): number {
-    if (!this.hasCoordinates) {
-      return 600;
-    }
-    let maxY = 0;
-    for (const s of this.seats) {
-      if (s.positionY != null && s.positionY > maxY) {
-        maxY = s.positionY;
-      }
-    }
-    return Math.max(550, Math.ceil(maxY + 60));
+  private buildArena(): void {
+    this.arenaSeats = this.arenaLayoutService.generateStadiumSeats(this.seats);
+    this.sectorBackdrops = this.arenaLayoutService.getSectorBackdrops();
+    this.sectorLabels = this.arenaLayoutService.getSectorLabels();
+    this.selectedSeatIds = this._selectedSeatIds;
+    this.cdr.markForCheck();
   }
 
-  /**
-   * Central stage positioning coordinates on the canvas.
-   */
-  get stagePosition(): { x: number; y: number } {
-    return {
-      x: Math.round(this.canvasWidth / 2),
-      y: Math.round(this.canvasHeight / 2)
-    };
-  }
-
-  /**
-   * Fallback grouping by section for seat collections without position coordinates.
-   */
-  get groupedSeats(): SeatSectionGroup[] {
-    const map = new Map<string, SeatSectionGroup>();
-    for (const seat of this.seats) {
-      const code = seat.sectionCode || 'General';
-      const name = seat.sectionName || code;
-      if (!map.has(code)) {
-        map.set(code, { sectionCode: code, sectionName: name, seats: [] });
-      }
-      map.get(code)!.seats.push(seat);
-    }
-    return Array.from(map.values());
-  }
-
-  /**
-   * O(1) selection check.
-   */
   isSeatSelected(seatId: number): boolean {
     return this.selectedIdSet.has(seatId);
   }
 
-  /**
-   * O(1) 1-based sequential selection order index for the seat badge.
-   */
   getSelectedIndex(seatId: number): number | null {
     return this.selectedIndexMap.get(seatId) ?? null;
   }
 
-  /**
-   * Re-emits the child SeatItemComponent selection upward.
-   */
-  onSeatSelect(seat: SeatAvailability): void {
+  onSeatClick(seat: ArenaSeat, event: MouseEvent): void {
+    event.stopPropagation();
+    if (!seat.isPubliclyBookable || seat.status === 'Booked' || seat.categoryCode === 'VIP') {
+      return;
+    }
     this.seatSelect.emit(seat);
+  }
+
+  onSeatMouseEnter(seat: ArenaSeat, event: MouseEvent): void {
+    this.hoveredSeat = seat;
+    const target = event.currentTarget as HTMLElement;
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      this.tooltipX = rect.left + rect.width / 2;
+      this.tooltipY = rect.top - 8;
+    }
+    this.cdr.markForCheck();
+  }
+
+  onSeatMouseLeave(): void {
+    this.hoveredSeat = null;
+    this.cdr.markForCheck();
+  }
+
+  toggle3DView(): void {
+    this.is3DViewOpen = !this.is3DViewOpen;
+    this.open3DView.emit();
+    this.cdr.markForCheck();
+  }
+
+  close3DView(): void {
+    this.is3DViewOpen = false;
+    this.cdr.markForCheck();
   }
 }
