@@ -177,7 +177,8 @@
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
+  justify-content: center;
+  padding: 3px 10px;
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 600;
@@ -185,17 +186,21 @@
   white-space: nowrap;
 }
 
-.status-success {
-  background-color: #ecfdf5;
-  color: #059669;
+.status-success,
+.status-confirmed {
+  background-color: #dcfce7;
+  color: #15803d;
 }
 
-.status-warning {
-  background-color: #fffbeb;
-  color: #d97706;
+.status-warning,
+.status-pending {
+  background-color: #fef3c7;
+  color: #b45309;
 }
 
-.status-danger {
+.status-danger,
+.status-cancelled,
+.status-expired {
   background-color: #fef2f2;
   color: #dc2626;
 }
@@ -208,32 +213,6 @@
 .status-neutral {
   background-color: #f3f4f6;
   color: #4b5563;
-}
-
-.btn-view-booking {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #7c3aed;
-  background: none;
-  border: 1px solid #e9d5ff;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-view-booking:hover {
-  background-color: #f5f3ff;
-  color: #6d28d9;
-  border-color: #c084fc;
-}
-
-.btn-view-booking:focus-visible {
-  outline: 2px solid #7c3aed;
-  outline-offset: 2px;
 }
 
 /* Empty State */

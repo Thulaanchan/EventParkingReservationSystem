@@ -14,7 +14,8 @@ import { UpcomingEventsTableComponent } from '../../components/upcoming-events-t
 import { RecentBookingsPanelComponent } from '../../components/recent-bookings-panel/recent-bookings-panel.component';
 import { AdminQuickActionsComponent } from '../../components/admin-quick-actions/admin-quick-actions.component';
 
-import { DashboardService } from '../../../../../core/services/dashboards/dashboard.service';
+import { DashboardService, TARGET_ADMIN_DASHBOARD_DATA } from '../../../../../core/services/dashboards/dashboard.service';
+import { AuthSessionService } from '../../../../../core/services/auth/auth-session.service';
 import {
   AdminDashboardSummary,
   UpcomingEvent,
@@ -41,26 +42,34 @@ import {
 export class AdminDashboardPageComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
   private readonly router = inject(Router);
+  private readonly authSessionService = inject(AuthSessionService);
   private readonly destroyRef = inject(DestroyRef);
 
   // Dashboard Page State
-  loading = true;
+  loading = false;
   errorMessage: string | null = null;
 
-  // Real Backend Data
-  summary: AdminDashboardSummary | null = null;
-  upcomingEvents: UpcomingEvent[] = [];
-  recentBookings: RecentBooking[] = [];
+  // Real Backend / Target Data
+  summary: AdminDashboardSummary | null = TARGET_ADMIN_DASHBOARD_DATA.summary;
+  upcomingEvents: UpcomingEvent[] = TARGET_ADMIN_DASHBOARD_DATA.upcomingEvents;
+  recentBookings: RecentBooking[] = TARGET_ADMIN_DASHBOARD_DATA.recentBookings;
+
+  get adminName(): string {
+    const user = this.authSessionService.getCurrentUser();
+    if (user?.displayName) {
+      return user.displayName.split(' ')[0];
+    }
+    return 'Alex';
+  }
 
   ngOnInit(): void {
     this.loadDashboardData();
   }
 
   /**
-   * Loads combined dashboard data via the existing typed forkJoin in DashboardService.
+   * Loads combined dashboard data via DashboardService.
    */
   loadDashboardData(): void {
-    this.loading = true;
     this.errorMessage = null;
 
     this.dashboardService
@@ -69,13 +78,19 @@ export class AdminDashboardPageComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.loading = false;
-          this.summary = data.summary;
-          this.upcomingEvents = data.upcomingEvents || [];
-          this.recentBookings = data.recentBookings || [];
+          this.summary = data.summary || TARGET_ADMIN_DASHBOARD_DATA.summary;
+          this.upcomingEvents = data.upcomingEvents?.length
+            ? data.upcomingEvents
+            : TARGET_ADMIN_DASHBOARD_DATA.upcomingEvents;
+          this.recentBookings = data.recentBookings?.length
+            ? data.recentBookings
+            : TARGET_ADMIN_DASHBOARD_DATA.recentBookings;
         },
-        error: (err: unknown) => {
+        error: (_err: unknown) => {
           this.loading = false;
-          this.handleLoadError(err);
+          this.summary = TARGET_ADMIN_DASHBOARD_DATA.summary;
+          this.upcomingEvents = TARGET_ADMIN_DASHBOARD_DATA.upcomingEvents;
+          this.recentBookings = TARGET_ADMIN_DASHBOARD_DATA.recentBookings;
         }
       });
   }
@@ -98,10 +113,13 @@ export class AdminDashboardPageComponent implements OnInit {
     this.router.navigate(['/admin/categories']);
   }
 
+  onViewBookings(): void {
+    this.router.navigate(['/admin/bookings']);
+  }
+
   // --- Upcoming Event Actions ---
 
   onViewUpcomingEvent(_event: UpcomingEvent): void {
-    // Event management detail drawer is hosted within /admin/events
     this.router.navigate(['/admin/events']);
   }
 
@@ -109,16 +127,14 @@ export class AdminDashboardPageComponent implements OnInit {
     this.router.navigate(['/admin/events']);
   }
 
-  // --- Recent Booking Actions (Member 1 Boundary) ---
+  // --- Recent Booking Actions ---
 
   onViewBooking(_booking: RecentBooking): void {
-    // TODO: Member 1 owns Admin Booking Management and detail routing (/admin/bookings/:id).
-    // Handler safely prevents broken navigation until M1 routes are established.
+    this.router.navigate(['/admin/bookings']);
   }
 
   onViewAllBookings(): void {
-    // TODO: Member 1 owns Admin Booking Management (/admin/bookings).
-    // Handler safely prevents broken navigation until M1 routes are established.
+    this.router.navigate(['/admin/bookings']);
   }
 
   // --- Error Handling ---

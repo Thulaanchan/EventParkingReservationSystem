@@ -5,6 +5,12 @@ export interface AdminDashboardSummary {
   occupiedParking: number;
   totalRevenue: number;
   totalCustomers: number;
+  eventsSubtext?: string;
+  bookingsSubtext?: string;
+  seatsSubtext?: string;
+  parkingSubtext?: string;
+  revenueSubtext?: string;
+  customersSubtext?: string;
 }
 
 export type AdminDashboard = AdminDashboardSummary;

@@ -7,15 +7,12 @@
       class="btn-view-all"
       (click)="onViewAll()"
       aria-label="View all bookings">
-      <span>View All</span>
-      <svg class="arrow-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-      </svg>
+      <span>View All →</span>
     </button>
   </div>
 
   <!-- Content States -->
-  @if (loading) {
+  @if (loading && bookings.length === 0) {
     <!-- Loading Skeleton State -->
     <div class="bookings-list" aria-busy="true" aria-label="Loading recent bookings">
       @for (row of skeletonRows; track row) {
@@ -48,7 +45,7 @@
     <!-- Data Feed State -->
     <div class="bookings-list" role="list">
       @for (booking of bookings; track booking.bookingId) {
-        <div class="booking-item" role="listitem">
+        <div class="booking-item" role="listitem" (click)="onViewBooking(booking)">
           <!-- Ticket Icon Box -->
           <div class="booking-icon-box" aria-hidden="true">
             <svg class="ticket-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -59,29 +56,17 @@
 
           <!-- Main Booking Details -->
           <div class="booking-main-content">
-            <div class="booking-top-line">
-              <span class="booking-number">{{ booking.bookingNumber.startsWith('#') ? booking.bookingNumber : ('#' + booking.bookingNumber) }}</span>
-              <span class="booking-date">{{ booking.createdAt | date:'MMM d, y • h:mm a' }}</span>
-            </div>
+            <span class="booking-number">{{ booking.bookingNumber.startsWith('#') ? booking.bookingNumber : ('#' + booking.bookingNumber) }}</span>
             <span class="customer-name">{{ booking.customerName }}</span>
             <span class="event-name">{{ booking.eventName }}</span>
           </div>
 
-          <!-- Right Meta: Amount, Status, and Action -->
+          <!-- Right Meta: Amount and Status -->
           <div class="booking-meta-right">
-            <div class="amount-status-group">
-              <span class="booking-amount">LKR {{ booking.amount | number:'1.2-2' }}</span>
-              <span class="status-badge" [ngClass]="getStatusClass(booking.status)">
-                {{ booking.status }}
-              </span>
-            </div>
-            <button
-              type="button"
-              class="btn-view-booking"
-              (click)="onViewBooking(booking)"
-              [attr.aria-label]="'View details for booking ' + booking.bookingNumber">
-              View
-            </button>
+            <span class="booking-amount">LKR {{ booking.amount | number:'1.0-0' }}</span>
+            <span class="status-badge" [ngClass]="getStatusClass(booking.status)">
+              {{ booking.status }}
+            </span>
           </div>
         </div>
       }

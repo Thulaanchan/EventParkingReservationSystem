@@ -3,22 +3,17 @@ import { CommonModule } from '@angular/common';
 
 export type QuickActionId =
   | 'createEvent'
-  | 'manageEvents'
   | 'manageVenues'
-  | 'manageCategories';
+  | 'manageCategories'
+  | 'viewBookings';
 
 export interface QuickActionItem {
   id: QuickActionId;
   title: string;
   description: string;
-  icon: 'create-event' | 'manage-events' | 'manage-venues' | 'manage-categories';
+  icon: 'create-event' | 'manage-venues' | 'manage-categories' | 'view-bookings';
 }
 
-/**
- * Presentational component for Admin Dashboard Quick Actions.
- * Emits typed events to the parent container for M2 administrative navigation.
- * Matches as-01.png visual styling.
- */
 @Component({
   selector: 'app-admin-quick-actions',
   standalone: true,
@@ -28,9 +23,9 @@ export interface QuickActionItem {
 })
 export class AdminQuickActionsComponent {
   @Output() createEvent = new EventEmitter<void>();
-  @Output() manageEvents = new EventEmitter<void>();
   @Output() manageVenues = new EventEmitter<void>();
   @Output() manageCategories = new EventEmitter<void>();
+  @Output() viewBookings = new EventEmitter<void>();
 
   readonly actions: QuickActionItem[] = [
     {
@@ -40,22 +35,22 @@ export class AdminQuickActionsComponent {
       icon: 'create-event'
     },
     {
-      id: 'manageEvents',
-      title: 'Manage Events',
-      description: 'View and manage events',
-      icon: 'manage-events'
-    },
-    {
       id: 'manageVenues',
-      title: 'Manage Venues',
-      description: 'View and manage venues',
+      title: 'Add Venue',
+      description: 'Create a new venue',
       icon: 'manage-venues'
     },
     {
       id: 'manageCategories',
-      title: 'Manage Categories',
-      description: 'View and manage event categories',
+      title: 'Add Category',
+      description: 'Create event category',
       icon: 'manage-categories'
+    },
+    {
+      id: 'viewBookings',
+      title: 'View Bookings',
+      description: 'Manage customer bookings',
+      icon: 'view-bookings'
     }
   ];
 
@@ -64,14 +59,14 @@ export class AdminQuickActionsComponent {
       case 'createEvent':
         this.createEvent.emit();
         break;
-      case 'manageEvents':
-        this.manageEvents.emit();
-        break;
       case 'manageVenues':
         this.manageVenues.emit();
         break;
       case 'manageCategories':
         this.manageCategories.emit();
+        break;
+      case 'viewBookings':
+        this.viewBookings.emit();
         break;
     }
   }

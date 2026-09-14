@@ -2,8 +2,8 @@
   <!-- Page Header -->
   <header class="dashboard-header">
     <div class="header-titles">
-      <h1 class="page-title">Welcome back!</h1>
-      <p class="page-subtitle">Here's what's happening across BookWithUs today.</p>
+      <h1 class="page-title">Welcome back, {{ adminName }}!</h1>
+      <p class="page-subtitle">Here's what's happening across EventFlow today.</p>
     </div>
 
     <div class="header-actions">
@@ -67,9 +67,9 @@
   <section class="dashboard-section" aria-label="Administrative Quick Actions">
     <app-admin-quick-actions
       (createEvent)="onCreateEvent()"
-      (manageEvents)="onManageEvents()"
       (manageVenues)="onManageVenues()"
-      (manageCategories)="onManageCategories()">
+      (manageCategories)="onManageCategories()"
+      (viewBookings)="onViewBookings()">
     </app-admin-quick-actions>
   </section>
 </main>

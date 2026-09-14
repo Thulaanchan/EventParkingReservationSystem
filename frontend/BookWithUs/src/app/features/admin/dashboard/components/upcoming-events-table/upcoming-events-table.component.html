@@ -15,42 +15,31 @@
   </div>
 
   <!-- Content States -->
-  @if (loading) {
+  @if (loading && events.length === 0) {
     <!-- Loading Skeleton State -->
     <div class="table-responsive" aria-busy="true" aria-label="Loading upcoming events">
       <table class="events-table">
         <thead>
           <tr>
-            <th scope="col">Event</th>
-            <th scope="col">Date & Time</th>
-            <th scope="col">Bookings</th>
-            <th scope="col">Seat Availability</th>
-            <th scope="col">Occupancy</th>
-            <th scope="col" class="th-action">Action</th>
+            <th scope="col">EVENT</th>
+            <th scope="col">VENUE</th>
+            <th scope="col">DATE & TIME</th>
+            <th scope="col">BOOKINGS</th>
+            <th scope="col">SEATS AVAILABLE</th>
+            <th scope="col">STATUS</th>
+            <th scope="col" class="th-action">ACTION</th>
           </tr>
         </thead>
         <tbody>
           @for (row of skeletonRows; track row) {
             <tr class="skeleton-row">
-              <td>
-                <div class="skeleton-cell skeleton-name"></div>
-                <div class="skeleton-cell skeleton-subtext"></div>
-              </td>
-              <td>
-                <div class="skeleton-cell skeleton-date"></div>
-              </td>
-              <td>
-                <div class="skeleton-cell skeleton-bookings"></div>
-              </td>
-              <td>
-                <div class="skeleton-cell skeleton-seats"></div>
-              </td>
-              <td>
-                <div class="skeleton-cell skeleton-occupancy"></div>
-              </td>
-              <td class="td-action">
-                <div class="skeleton-cell skeleton-action"></div>
-              </td>
+              <td><div class="skeleton-cell skeleton-name"></div></td>
+              <td><div class="skeleton-cell skeleton-venue"></div></td>
+              <td><div class="skeleton-cell skeleton-date"></div></td>
+              <td><div class="skeleton-cell skeleton-bookings"></div></td>
+              <td><div class="skeleton-cell skeleton-seats"></div></td>
+              <td><div class="skeleton-cell skeleton-status"></div></td>
+              <td class="td-action"><div class="skeleton-cell skeleton-action"></div></td>
             </tr>
           }
         </tbody>
@@ -75,33 +64,31 @@
       <table class="events-table">
         <thead>
           <tr>
-            <th scope="col">Event</th>
-            <th scope="col">Date & Time</th>
-            <th scope="col">Bookings</th>
-            <th scope="col">Seat Availability</th>
-            <th scope="col">Occupancy</th>
-            <th scope="col" class="th-action">Action</th>
+            <th scope="col">EVENT</th>
+            <th scope="col">VENUE</th>
+            <th scope="col">DATE & TIME</th>
+            <th scope="col">BOOKINGS</th>
+            <th scope="col">SEATS AVAILABLE</th>
+            <th scope="col">STATUS</th>
+            <th scope="col" class="th-action">ACTION</th>
           </tr>
         </thead>
         <tbody>
           @for (event of events; track event.eventId) {
             <tr class="event-data-row">
-              <!-- Event & Venue -->
+              <!-- Event -->
               <td class="td-event">
-                <div class="event-info-group">
-                  <span class="event-name">{{ event.eventName }}</span>
-                  <span class="venue-name">{{ event.venueName }}</span>
-                </div>
+                <span class="event-name">{{ event.eventName }}</span>
+              </td>
+
+              <!-- Venue -->
+              <td class="td-venue">
+                <span class="venue-name">{{ event.venueName }}</span>
               </td>
 
               <!-- Date & Time -->
               <td class="td-datetime">
-                <div class="datetime-group">
-                  <span class="date-text">{{ event.eventDate | date:'mediumDate' }}</span>
-                  @if (event.startTime) {
-                    <span class="time-text">• {{ formatTime(event.startTime) }}</span>
-                  }
-                </div>
+                <span class="datetime-text">{{ formatDate(event.eventDate) }} • {{ formatTime(event.startTime) }}</span>
               </td>
 
               <!-- Bookings -->
@@ -109,25 +96,14 @@
                 <span class="bookings-badge">{{ event.bookingCount | number }} Bookings</span>
               </td>
 
-              <!-- Seat Availability -->
+              <!-- Seats Available -->
               <td class="td-seats">
-                <div class="seats-info-group">
-                  <span class="available-seats-text">{{ event.availableSeats | number }} Available</span>
-                  <span class="booked-seats-subtext">{{ event.bookedSeats | number }} / {{ event.totalSeats | number }} booked</span>
-                </div>
+                <span class="available-seats-text">{{ event.availableSeats | number }} Available</span>
               </td>
 
-              <!-- Occupancy -->
-              <td class="td-occupancy">
-                <div class="occupancy-group">
-                  <div class="occupancy-track" aria-hidden="true">
-                    <div
-                      class="occupancy-fill"
-                      [style.width.%]="getClampedOccupancy(event.occupancyPercentage)">
-                    </div>
-                  </div>
-                  <span class="occupancy-percentage-text">{{ event.occupancyPercentage }}%</span>
-                </div>
+              <!-- Status -->
+              <td class="td-status">
+                <span class="status-pill upcoming">Upcoming</span>
               </td>
 
               <!-- Action -->

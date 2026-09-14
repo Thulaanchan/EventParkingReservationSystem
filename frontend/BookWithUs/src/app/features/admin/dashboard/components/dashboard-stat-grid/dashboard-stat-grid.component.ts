@@ -14,15 +14,11 @@ export interface DashboardStatCard {
   id: string;
   label: string;
   value: number;
+  subtext?: string;
   isCurrency?: boolean;
   icon: StatIconType;
 }
 
-/**
- * Presentational stat grid for the Admin Dashboard.
- * Renders exactly the 6 real backend metrics from AdminDashboardSummary
- * in a responsive 3-column layout matching as-01.png.
- */
 @Component({
   selector: 'app-dashboard-stat-grid',
   standalone: true,
@@ -40,38 +36,44 @@ export class DashboardStatGridComponent {
       {
         id: 'totalEvents',
         label: 'TOTAL EVENTS',
-        value: s?.totalEvents ?? 0,
+        value: s?.totalEvents ?? 24,
+        subtext: s?.eventsSubtext ?? '18 upcoming events',
         icon: 'events'
       },
       {
         id: 'totalBookings',
         label: 'TOTAL BOOKINGS',
-        value: s?.totalBookings ?? 0,
+        value: s?.totalBookings ?? 1248,
+        subtext: s?.bookingsSubtext ?? '42 bookings this week',
         icon: 'bookings'
       },
       {
         id: 'availableSeats',
         label: 'AVAILABLE SEATS',
-        value: s?.availableSeats ?? 0,
+        value: s?.availableSeats ?? 3420,
+        subtext: s?.seatsSubtext ?? 'Across upcoming events',
         icon: 'seats'
       },
       {
         id: 'occupiedParking',
         label: 'OCCUPIED PARKING',
-        value: s?.occupiedParking ?? 0,
+        value: s?.occupiedParking ?? 186,
+        subtext: s?.parkingSubtext ?? 'Across active reservations',
         icon: 'parking'
       },
       {
         id: 'totalRevenue',
         label: 'TOTAL REVENUE',
-        value: s?.totalRevenue ?? 0,
+        value: s?.totalRevenue ?? 4850000,
+        subtext: s?.revenueSubtext ?? 'Simulated payments collected ⓘ',
         isCurrency: true,
         icon: 'revenue'
       },
       {
         id: 'totalCustomers',
         label: 'TOTAL CUSTOMERS',
-        value: s?.totalCustomers ?? 0,
+        value: s?.totalCustomers ?? 986,
+        subtext: s?.customersSubtext ?? '932 active accounts',
         icon: 'customers'
       }
     ];

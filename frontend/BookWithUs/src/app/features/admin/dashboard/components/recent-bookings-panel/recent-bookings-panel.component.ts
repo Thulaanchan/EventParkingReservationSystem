@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { RecentBooking } from '../../../../../core/models/dashboards/admin-dashboard.model';
 
 /**
@@ -9,7 +9,7 @@ import { RecentBooking } from '../../../../../core/models/dashboards/admin-dashb
 @Component({
   selector: 'app-recent-bookings-panel',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe],
+  imports: [CommonModule, DecimalPipe],
   templateUrl: './recent-bookings-panel.component.html',
   styleUrl: './recent-bookings-panel.component.css'
 })

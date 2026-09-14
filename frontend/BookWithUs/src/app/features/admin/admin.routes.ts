@@ -5,6 +5,8 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./shell/admin-shell.component').then((m) => m.AdminShellComponent),
     children: [
       {
         path: '',

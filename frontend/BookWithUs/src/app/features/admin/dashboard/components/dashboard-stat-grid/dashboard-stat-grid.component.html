@@ -57,11 +57,14 @@
           <div class="stat-value-row">
             @if (card.isCurrency) {
               <span class="stat-currency">LKR</span>
-              <span class="stat-value">{{ card.value | number:'1.0-2' }}</span>
+              <span class="stat-value">{{ card.value | number:'1.0-0' }}</span>
             } @else {
               <span class="stat-value">{{ card.value | number }}</span>
             }
           </div>
+          @if (card.subtext) {
+            <span class="stat-subtext">{{ card.subtext }}</span>
+          }
         } @else {
           <div class="stat-skeleton" aria-label="Loading metric value"></div>
         }
