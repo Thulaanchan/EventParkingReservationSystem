@@ -392,6 +392,30 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        // If not launched by Visual Studio (which already handles launchBrowser from launchSettings.json)
+        var launchedByVs = Environment.GetEnvironmentVariable("VISUALSTUDIO_VERSION") != null
+            || Environment.GetEnvironmentVariable("VSAPPIDDIR") != null;
+
+        if (!launchedByVs)
+        {
+            try
+            {
+                var frontendUrl = app.Configuration["Frontend:BaseUrl"] ?? "http://localhost:4200";
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = frontendUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch
+            {
+                // Silently ignore if running in a headless or non-desktop environment
+            }
+        }
+    });
 }
 
 app.UseHttpsRedirection();
