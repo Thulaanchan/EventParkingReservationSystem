@@ -10,11 +10,11 @@
           </svg>
         </div>
         <h1 class="auth-card-title">Create an Account</h1>
-        <p class="auth-card-subtitle">Join EventFlow to manage your bookings.</p>
+        <p class="auth-card-subtitle">Join BookWithUs to manage your bookings.</p>
       </div>
 
       <!-- Error Alert Message -->
-      @if (errorMessage) {
+     @if (errorMessage()) {
         <div class="alert alert-error" role="alert" aria-live="polite">
           <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
@@ -23,7 +23,7 @@
           </svg>
           <div class="alert-content">
             <span class="alert-title">Registration failed</span>
-            <span class="alert-message">{{ errorMessage }}</span>
+            <span class="alert-message">{{ errorMessage() }}</span>
           </div>
         </div>
       }
@@ -169,7 +169,7 @@
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
             <input
-              [type]="showPassword ? 'text' : 'password'"
+              [type]="showPassword() ? 'text' : 'password'"
               id="password"
               formControlName="password"
               placeholder="Enter at least 8 characters"
@@ -182,10 +182,10 @@
               type="button"
               class="password-toggle-btn"
               (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
               tabindex="0"
             >
-              @if (showPassword) {
+           @if (showPassword()) {
                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                   <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -228,7 +228,8 @@
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
             <input
-              [type]="showConfirmPassword ? 'text' : 'password'"
+              [type]="showConfirmPassword() ? 'text' : 'password'"
+              
               id="confirmPassword"
               formControlName="confirmPassword"
               placeholder="Re-enter your password"
@@ -241,10 +242,10 @@
               type="button"
               class="password-toggle-btn"
               (click)="toggleConfirmPasswordVisibility()"
-              [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+              [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
               tabindex="0"
             >
-              @if (showConfirmPassword) {
+              @if (showConfirmPassword()) {
                 <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                   <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -296,9 +297,9 @@
         <button
           type="submit"
           class="submit-btn"
-          [disabled]="registerForm.invalid || isSubmitting"
+          [disabled]="registerForm.invalid || isSubmitting()"
         >
-          @if (isSubmitting) {
+          @if (isSubmitting()) {
             <span class="spinner" aria-hidden="true"></span>
             <span>Creating account...</span>
           } @else {

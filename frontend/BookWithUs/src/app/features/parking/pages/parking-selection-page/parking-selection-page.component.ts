@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, forkJoin } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { ParkingService } from '../../../../core/services/parking/parking.service';
+import { BookingStateService } from '../../../../core/services/bookings/booking-state.service';
 import { ParkingAvailability } from '../../../../core/models/parking/parking-availability.model';
 import { ParkingZone } from '../../../../core/models/parking/parking-zone.model';
 import { SelectedParking } from '../../../../core/models/parking/selected-parking.model';
@@ -53,6 +54,7 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly parkingService = inject(ParkingService);
+  private readonly bookingStateService = inject(BookingStateService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroy$ = new Subject<void>();
 
@@ -155,6 +157,7 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
           this.errorMessage = null;
           this.slots = res.slots || [];
           this.zones = res.zones || [];
+          this.restoreStateFromBookingService();
           this.cdr.markForCheck();
         },
         error: (err: unknown) => {
@@ -251,24 +254,18 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
 
   /**
    * Handles Skip Parking action.
-   * Parking is optional. Sets selectedParking = null.
-   * Safely prevents navigation when M1 shared BookingStateService is unavailable,
-   * preserving prior seat selection and booking progression without data loss.
+   * Clears parking selection in BookingStateService and navigates to checkout review.
    */
   onSkipParking(): void {
     this.selectedParking = null;
     this.conflictMessage = null;
-
-    // Safety guard: Navigation toward Review requires M1 BookingStateService and Review route.
-    // Because M1 BookingStateService is currently a 0-byte stub, preserve the flow locally.
-    this.notificationMessage =
-      'Parking skipped. Proceeding to checkout review is waiting for Member 1 BookingStateService and checkout route integration.';
-    this.cdr.markForCheck();
+    this.bookingStateService.clearParking();
+    this.router.navigate(['/checkout/review']);
   }
 
   /**
    * Handles Continue to Review action.
-   * Confirms the customer's selected parking slot and prepares for Review handoff.
+   * Saves selected parking slot in BookingStateService and navigates to checkout review.
    */
   onContinueToReview(): void {
     if (!this.selectedParking) {
@@ -278,9 +275,32 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Safety guard: Navigation toward Review requires M1 BookingStateService.
-    this.notificationMessage = `Parking slot ${this.selectedParking.slotCode} selected. Proceeding to checkout review is waiting for Member 1 BookingStateService integration.`;
-    this.cdr.markForCheck();
+    this.bookingStateService.setParking({
+      parkingSlotId: this.selectedParking.parkingSlotId,
+      slotCode: this.selectedParking.slotCode,
+      zoneName: this.selectedParking.zoneName,
+      fee: this.selectedParking.fee,
+      vehicleType: this.selectedParking.vehicleType
+    });
+
+    this.router.navigate(['/checkout/review']);
+  }
+
+  private restoreStateFromBookingService(): void {
+    const savedParking = this.bookingStateService.selectedParking();
+    if (savedParking && savedParking.parkingSlotId > 0) {
+      const match = this.slots.find(s => s.id === savedParking.parkingSlotId);
+      if (match) {
+        this.selectedParking = {
+          parkingSlotId: match.id,
+          slotCode: match.slotCode,
+          zoneId: match.zoneId,
+          zoneName: match.zoneName,
+          vehicleType: match.vehicleType,
+          fee: match.fee
+        };
+      }
+    }
   }
 
   /**

@@ -11,6 +11,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { SeatService } from '../../../../core/services/seats/seat.service';
+import { EventService } from '../../../../core/services/events/event.service';
+import { BookingStateService, BookingSelectedSeatInput } from '../../../../core/services/bookings/booking-state.service';
 import { SeatAvailability } from '../../../../core/models/seats/seat-availability.model';
 import { SeatSection } from '../../../../core/models/seats/seat-section.model';
 import { EventSeatCategory } from '../../../../core/models/seats/event-seat-category.model';
@@ -52,6 +54,8 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly seatService = inject(SeatService);
+  private readonly eventService = inject(EventService);
+  private readonly bookingStateService = inject(BookingStateService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroy$ = new Subject<void>();
 
@@ -181,6 +185,7 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
           this.errorMessage = null;
           this.seats = seats || [];
           this.processLayoutData();
+          this.restoreStateFromBookingService();
           this.cdr.markForCheck();
         },
         error: (err: unknown) => {
@@ -498,20 +503,89 @@ export class SeatSelectionPageComponent implements OnInit, OnDestroy {
 
   /**
    * Handles Continue to Parking navigation.
-   * Safely preserves selectedSeats in component memory without destroying selection
-   * when M1 BookingStateService handoff and parking routes are pending integration.
+   * Stores selected seats and event info into BookingStateService and navigates to parking.
    */
   onContinueToParking(): void {
     if (!this.canContinue) {
       return;
     }
 
-    // Safety guard: Navigation to parking requires M1 BookingStateService to persist selected seats
-    // across route destruction. Because BookingStateService and Parking routes are currently
-    // empty stubs, prevent component destruction and preserve the prepared selection locally.
-    this.notificationMessage =
-      'Selected seats are confirmed and ready. Navigation to parking is waiting for Member 1 BookingStateService integration.';
-    this.cdr.markForCheck();
+    const seatInputs: BookingSelectedSeatInput[] = this.selectedSeats.map((seat, index) => ({
+      seatId: seat.seatId,
+      seatCode: seat.seatCode,
+      rowLabel: seat.rowLabel,
+      seatNumber: seat.number,
+      sectionName: seat.sectionName || seat.sectionCode || '',
+      price: seat.price,
+      attendeeName: (seat as any).attendeeName?.trim() || `Attendee ${index + 1}`,
+      attendeeType: seat.attendeeType
+    }));
+
+    this.bookingStateService.setSeats(seatInputs);
+
+    const currentEv = this.bookingStateService.selectedEvent();
+    if (!currentEv || currentEv.eventId !== this.eventId) {
+      this.eventService.getEvent(this.eventId).subscribe({
+        next: (ev) => {
+          this.bookingStateService.setEvent({
+            eventId: ev.id,
+            eventName: ev.name,
+            eventDate: ev.eventDate,
+            startTime: ev.startTime,
+            endTime: ev.endTime,
+            venueName: ev.venueName,
+            categoryName: ev.categoryName,
+            posterUrl: ev.posterUrl,
+            description: ev.description
+          });
+          this.router.navigate(['/events', this.eventId, 'parking']);
+        },
+        error: () => {
+          this.bookingStateService.setEvent({
+            eventId: this.eventId,
+            eventName: `Event #${this.eventId}`
+          });
+          this.router.navigate(['/events', this.eventId, 'parking']);
+        }
+      });
+      return;
+    }
+
+    this.router.navigate(['/events', this.eventId, 'parking']);
+  }
+
+  private restoreStateFromBookingService(): void {
+    const savedEvent = this.bookingStateService.selectedEvent();
+    if (savedEvent && savedEvent.eventId === this.eventId && this.bookingStateService.hasSeatsSelected()) {
+      const savedSeats = this.bookingStateService.selectedSeats();
+      if (savedSeats.length > 0) {
+        this.adultCount = savedSeats.filter(s => s.attendeeType === AttendeeType.Adult || (s.attendeeType as number) === 1).length;
+        this.childCount = savedSeats.filter(s => s.attendeeType === AttendeeType.Child || (s.attendeeType as number) === 2).length;
+        const restored: SelectedSeat[] = [];
+        for (const s of savedSeats) {
+          const match = this.seats.find(avail => avail.id === s.seatId);
+          if (match) {
+            restored.push({
+              seatId: match.id,
+              seatCode: match.seatCode || `${match.rowLabel}-${match.number}`,
+              rowLabel: match.rowLabel,
+              number: match.number,
+              sectionId: match.sectionId,
+              sectionCode: match.sectionCode,
+              sectionName: match.sectionName,
+              categoryCode: match.categoryCode,
+              categoryName: match.categoryName,
+              attendeeType: s.attendeeType ?? AttendeeType.Adult,
+              attendeeName: s.attendeeName,
+              price: s.price
+            });
+          }
+        }
+        if (restored.length > 0) {
+          this.selectedSeats = restored;
+        }
+      }
+    }
   }
 
   /**

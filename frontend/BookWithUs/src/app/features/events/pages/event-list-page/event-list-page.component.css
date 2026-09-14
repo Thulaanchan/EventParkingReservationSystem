@@ -240,3 +240,63 @@
     font-size: 0.9375rem;
   }
 }
+
+/* Public Header */
+
+.public-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 0;
+  margin-bottom: 1.5rem;
+}
+
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+
+.auth-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+
+.login-button,
+.register-button {
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+
+.login-button {
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+  background: white;
+}
+
+
+.login-button:hover {
+  background: #eef2ff;
+}
+
+
+.register-button {
+  color: white;
+  background: #4f46e5;
+}
+
+
+.register-button:hover {
+  background: #4338ca;
+}

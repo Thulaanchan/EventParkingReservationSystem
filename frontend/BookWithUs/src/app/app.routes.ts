@@ -1,17 +1,43 @@
 import { Routes } from '@angular/router';
+
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { checkoutGuard } from './core/guards/checkout.guard';
 
 export const routes: Routes = [
-  // Default route: redirect to events catalog
+
+  // Default route
+{
+  path: '',
+  pathMatch: 'full',
+  redirectTo: 'auth/login'
+},
+
+
+  // Direct Login Route
   {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'events'
+    path: 'login',
+    loadComponent: () =>
+      import('./features/auth/pages/login-page/login-page.component')
+        .then((m) => m.LoginPageComponent),
+    title: 'Sign In - BookWithUs'
   },
 
-  // 1. Auth: Login, Register, Forgot Password, Reset Password, Verify Email
+
+  // Direct Register Route
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./features/auth/pages/register-page/register-page.component')
+        .then((m) => m.RegisterPageComponent),
+    title: 'Register - BookWithUs'
+  },
+
+
+  // Auth Module
+  // Existing:
+  // /auth/login
+  // /auth/register
   {
     path: 'auth',
     loadChildren: () =>
@@ -20,7 +46,8 @@ export const routes: Routes = [
       )
   },
 
-  // 2. Events: Public catalog, filters, event details, and nested seat/parking selection
+
+  // Events
   {
     path: 'events',
     loadChildren: () =>
@@ -29,7 +56,8 @@ export const routes: Routes = [
       )
   },
 
-  // 3. Seats: Direct seat selection
+
+  // Seats
   {
     path: 'seats',
     loadChildren: () =>
@@ -38,7 +66,8 @@ export const routes: Routes = [
       )
   },
 
-  // 4. Parking: Direct parking selection
+
+  // Parking
   {
     path: 'parking',
     loadChildren: () =>
@@ -47,7 +76,8 @@ export const routes: Routes = [
       )
   },
 
-  // 5. Checkout: Review booking, attendee forms, payment handoff
+
+  // Checkout
   {
     path: 'checkout',
     canActivate: [checkoutGuard],
@@ -57,7 +87,8 @@ export const routes: Routes = [
       )
   },
 
-  // 6. Bookings: Customer bookings, ticket pass, details, cancellation
+
+  // Customer Bookings
   {
     path: 'bookings',
     canActivate: [authGuard],
@@ -67,7 +98,8 @@ export const routes: Routes = [
       )
   },
 
-  // 7. Customer Dashboard: Customer home metrics & quick actions
+
+  // Customer Dashboard
   {
     path: 'customer-dashboard',
     canActivate: [authGuard],
@@ -76,15 +108,20 @@ export const routes: Routes = [
         (m) => m.CUSTOMER_DASHBOARD_ROUTES ?? m.default
       )
   },
+
+
+  // Customer Alias Route
   {
     path: 'customer',
     canActivate: [authGuard],
     children: [
+
       {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard'
       },
+
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -92,10 +129,12 @@ export const routes: Routes = [
             (m) => m.CUSTOMER_DASHBOARD_ROUTES ?? m.default
           )
       }
+
     ]
   },
 
-  // 8. Profile: Customer profile & account security
+
+  // Profile
   {
     path: 'profile',
     canActivate: [authGuard],
@@ -105,16 +144,22 @@ export const routes: Routes = [
       )
   },
 
-  // 9. Payments: Checkout payment, confirmation, history, receipt
+
+  // Payments
   {
     path: 'payments',
     loadChildren: () =>
       import('./features/payments/payments.routes').then(
-        (m) => m.PAYMENTS_ROUTES ?? m.paymentRoutes ?? m.paymentsRoutes ?? m.default
+        (m) =>
+          m.PAYMENTS_ROUTES ??
+          m.paymentRoutes ??
+          m.paymentsRoutes ??
+          m.default
       )
   },
 
-  // 10. Notifications: Customer notifications and bell panel
+
+  // Notifications
   {
     path: 'notifications',
     canActivate: [authGuard],
@@ -124,7 +169,8 @@ export const routes: Routes = [
       )
   },
 
-  // 11. Admin: Dashboard, Events, Venues, Categories, Bookings, Customers, Payments
+
+  // Admin
   {
     path: 'admin',
     canActivate: [adminGuard],
@@ -134,23 +180,26 @@ export const routes: Routes = [
       )
   },
 
-  // Unauthorized page
+
+  // Unauthorized
   {
     path: 'unauthorized',
     loadComponent: () =>
-      import('./shared/pages/unauthorized/unauthorized-page.component').then(
-        (m) => m.UnauthorizedPageComponent
-      ),
+      import('./shared/pages/unauthorized/unauthorized-page.component')
+        .then((m) => m.UnauthorizedPageComponent),
+
     title: 'Unauthorized - BookWithUs'
   },
 
-  // Wildcard 404 page
+
+  // 404
   {
     path: '**',
     loadComponent: () =>
-      import('./features/errors/not-found-page/not-found-page.component').then(
-        (m) => m.NotFoundPageComponent
-      ),
+      import('./features/errors/not-found-page/not-found-page.component')
+        .then((m) => m.NotFoundPageComponent),
+
     title: 'Page Not Found - BookWithUs'
   }
+
 ];
