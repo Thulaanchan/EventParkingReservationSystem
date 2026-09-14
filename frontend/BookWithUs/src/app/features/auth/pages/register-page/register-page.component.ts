@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../../../core/services/auth/auth.service';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -12,54 +11,47 @@ import {
   Validators
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+
+import { AuthService } from '../../../../core/services/auth/auth.service';
 import { RegisterRequest } from '../../../../core/models/auth/register-request.model';
 
-export interface CustomerDto {
-  customerId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string | null;
-  isActive: boolean;
-  isEmailVerified: boolean;
-  bookingCount: number;
-  createdAt: string;
-  updatedAt?: string | null;
-}
 
 export const passwordComplexityValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
-  const value: string = control.value || '';
+
+  const value = control.value ?? '';
+
   if (!value) {
     return null;
   }
 
-  const hasUpperCase = /[A-Z]/.test(value);
-  const hasLowerCase = /[a-z]/.test(value);
-  const hasNumber = /\d/.test(value);
-  const hasSpecialChar = /[^A-Za-z0-9]/.test(value);
-
   const errors: ValidationErrors = {};
-  if (!hasUpperCase) {
+
+  if (!/[A-Z]/.test(value)) {
     errors['missingUpperCase'] = true;
   }
-  if (!hasLowerCase) {
+
+  if (!/[a-z]/.test(value)) {
     errors['missingLowerCase'] = true;
   }
-  if (!hasNumber) {
+
+  if (!/\d/.test(value)) {
     errors['missingNumber'] = true;
   }
-  if (!hasSpecialChar) {
+
+  if (!/[^A-Za-z0-9]/.test(value)) {
     errors['missingSpecialChar'] = true;
   }
 
-  return Object.keys(errors).length > 0 ? errors : null;
+  return Object.keys(errors).length ? errors : null;
 };
+
 
 export const passwordMatchValidator: ValidatorFn = (
   control: AbstractControl
 ): ValidationErrors | null => {
+
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
 
@@ -67,198 +59,314 @@ export const passwordMatchValidator: ValidatorFn = (
     return null;
   }
 
-  return password === confirmPassword ? null : { passwordMismatch: true };
+  return password === confirmPassword
+    ? null
+    : { passwordMismatch: true };
 };
+
+
 
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.css'
 })
 export class RegisterPageComponent {
+
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  isSubmitting = false;
-  showPassword = false;
-  showConfirmPassword = false;
-  errorMessage: string | null = null;
 
-  readonly registerForm: FormGroup = this.fb.group(
-    {
-      firstName: [
-        '',
-        [Validators.required, Validators.maxLength(50)]
-      ],
-      lastName: [
-        '',
-        [Validators.required, Validators.maxLength(50)]
-      ],
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-          Validators.maxLength(150)
+  readonly isSubmitting = signal(false);
+
+  readonly showPassword = signal(false);
+
+  readonly showConfirmPassword = signal(false);
+
+  readonly errorMessage = signal<string | null>(null);
+
+
+
+  readonly registerForm: FormGroup =
+    this.fb.group(
+      {
+        firstName: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(50)
+          ]
+        ],
+
+        lastName: [
+          '',
+          [
+            Validators.required,
+            Validators.maxLength(50)
+          ]
+        ],
+
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+            Validators.maxLength(150)
+          ]
+        ],
+
+        phone: [
+          '',
+          [
+            Validators.maxLength(25)
+          ]
+        ],
+
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            passwordComplexityValidator
+          ]
+        ],
+
+        confirmPassword: [
+          '',
+          [
+            Validators.required
+          ]
+        ],
+
+        termsAccepted:[
+          false,
+          [
+            Validators.requiredTrue
+          ]
         ]
-      ],
-      phone: [
-        '',
-        [Validators.maxLength(25)]
-      ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          passwordComplexityValidator
+
+      },
+      {
+        validators:[
+          passwordMatchValidator
         ]
-      ],
-      confirmPassword: [
-        '',
-        [Validators.required]
-      ],
-      termsAccepted: [
-        false,
-        [Validators.requiredTrue]
-      ]
-    },
-    { validators: [passwordMatchValidator] }
+      }
+    );
+
+
+
+  readonly canSubmit = computed(() =>
+    !this.isSubmitting() &&
+    this.registerForm.valid
   );
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+
+
+  togglePasswordVisibility():void{
+    this.showPassword.update(v=>!v);
   }
 
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
+
+  toggleConfirmPasswordVisibility():void{
+    this.showConfirmPassword.update(v=>!v);
   }
 
-  get firstNameControl(): AbstractControl | null {
+
+
+  get firstNameControl(){
     return this.registerForm.get('firstName');
   }
 
-  get lastNameControl(): AbstractControl | null {
+
+  get lastNameControl(){
     return this.registerForm.get('lastName');
   }
 
-  get emailControl(): AbstractControl | null {
+
+  get emailControl(){
     return this.registerForm.get('email');
   }
 
-  get phoneControl(): AbstractControl | null {
+
+  get phoneControl(){
     return this.registerForm.get('phone');
   }
 
-  get passwordControl(): AbstractControl | null {
+
+  get passwordControl(){
     return this.registerForm.get('password');
   }
 
-  get confirmPasswordControl(): AbstractControl | null {
+
+  get confirmPasswordControl(){
     return this.registerForm.get('confirmPassword');
   }
 
-  get termsAcceptedControl(): AbstractControl | null {
+
+  get termsAcceptedControl(){
     return this.registerForm.get('termsAccepted');
   }
 
-  isFieldInvalid(controlName: string): boolean {
-    const control = this.registerForm.get(controlName);
-    if (!control) {
-      return false;
-    }
-    return control.invalid && (control.touched || control.dirty);
+
+
+  isFieldInvalid(controlName:string):boolean{
+
+    const control=this.registerForm.get(controlName);
+
+    return !!control &&
+      control.invalid &&
+      (control.touched || control.dirty);
   }
 
-  hasPasswordMismatch(): boolean {
-    const confirm = this.confirmPasswordControl;
-    return (
-      !!this.registerForm.errors?.['passwordMismatch'] &&
-      !!confirm &&
-      (confirm.touched || confirm.dirty)
-    );
+
+
+  hasPasswordMismatch():boolean{
+
+    const confirm=this.confirmPasswordControl;
+
+    return !!this.registerForm.errors?.['passwordMismatch']
+      &&
+      !!confirm
+      &&
+      (confirm.touched || confirm.dirty);
   }
 
-  onSubmit(): void {
-    if (this.isSubmitting) {
+
+
+
+  onSubmit():void{
+
+
+    if(this.isSubmitting()){
       return;
     }
 
-    if (this.registerForm.invalid) {
+
+    if(this.registerForm.invalid){
+
       this.registerForm.markAllAsTouched();
+
       return;
     }
 
-    this.isSubmitting = true;
-    this.errorMessage = null;
 
-    const formValue = this.registerForm.value;
-    const requestPayload: RegisterRequest = {
-      firstName: formValue.firstName?.trim() || '',
-      lastName: formValue.lastName?.trim() || '',
-      email: formValue.email?.trim() || '',
-      phone: formValue.phone?.trim() ? formValue.phone.trim() : null,
-      password: formValue.password || '',
-      confirmPassword: formValue.confirmPassword || ''
+
+    this.isSubmitting.set(true);
+
+    this.errorMessage.set(null);
+
+
+
+    const value=this.registerForm.value;
+
+
+
+    const payload:RegisterRequest={
+
+      firstName:value.firstName.trim(),
+
+      lastName:value.lastName.trim(),
+
+      email:value.email.trim(),
+
+      phone:value.phone?.trim() || null,
+
+      password:value.password,
+
+      confirmPassword:value.confirmPassword
+
     };
 
-    this.authService
-      .register(requestPayload)
-      .subscribe({
-        next: () => {
-          this.isSubmitting = false;
-          // Do NOT authenticate automatically or create fake JWT session.
-          // Redirect to verification next step screen.
-          this.router.navigate(['/auth/verify-email-sent'], {
-            queryParams: { email: requestPayload.email }
-          });
-        },
-        error: (error: unknown) => {
-          this.isSubmitting = false;
-          this.handleRegisterError(error);
-        }
-      });
+
+
+    this.authService.register(payload)
+    .subscribe({
+
+      next:()=>{
+
+        this.isSubmitting.set(false);
+
+
+        this.router.navigate(
+          [
+            '/auth/verify-email-sent'
+          ],
+          {
+            queryParams:{
+              email:payload.email
+            }
+          }
+        );
+
+      },
+
+
+      error:(error:unknown)=>{
+
+        this.isSubmitting.set(false);
+
+        this.handleRegisterError(error);
+
+      }
+
+    });
+
+
   }
 
-  private handleRegisterError(error: unknown): void {
-    if (error instanceof HttpErrorResponse) {
-      if (error.status === 409) {
-        const backendMessage = error.error?.message;
-        if (typeof backendMessage === 'string' && backendMessage.trim()) {
-          this.errorMessage = backendMessage;
-        } else {
-          this.errorMessage =
-            'An account with this email address already exists. Please sign in or use a different email.';
-        }
+
+
+  private handleRegisterError(error:unknown):void{
+
+
+    if(error instanceof HttpErrorResponse){
+
+
+      if(error.status===409){
+
+        this.errorMessage.set(
+          error.error?.message ??
+          'Email already exists.'
+        );
+
         return;
       }
 
-      if (error.status === 400) {
-        const backendMessage = error.error?.message;
-        if (typeof backendMessage === 'string' && backendMessage.trim()) {
-          this.errorMessage = backendMessage;
-        } else {
-          this.errorMessage =
-            'Please check your registration details and ensure all requirements are met.';
-        }
+
+      if(error.status===400){
+
+        this.errorMessage.set(
+          error.error?.message ??
+          'Invalid registration details.'
+        );
+
         return;
       }
 
-      if (error.status === 0) {
-        this.errorMessage =
-          'Unable to reach the server. Please check your connection and try again.';
+
+      if(error.status===0){
+
+        this.errorMessage.set(
+          'Unable to connect to server.'
+        );
+
         return;
       }
 
-      this.errorMessage =
-        'An unexpected error occurred during registration. Please try again later.';
-      return;
     }
 
-    this.errorMessage =
-      'An unexpected error occurred. Please try again.';
+
+    this.errorMessage.set(
+      'Registration failed. Try again.'
+    );
+
   }
+
 }

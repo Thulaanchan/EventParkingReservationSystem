@@ -5,7 +5,7 @@ import {
   inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -30,11 +30,12 @@ import { EventCardListComponent } from '../../components/event-card-list/event-c
 @Component({
   selector: 'app-event-list-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    EventFilterComponent,
-    EventCardListComponent
-  ],
+imports: [
+  CommonModule,
+  RouterLink,
+  EventFilterComponent,
+  EventCardListComponent
+],
   templateUrl: './event-list-page.component.html',
   styleUrl: './event-list-page.component.css'
 })
