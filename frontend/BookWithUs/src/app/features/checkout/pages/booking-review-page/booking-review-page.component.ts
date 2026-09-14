@@ -125,7 +125,7 @@ export class BookingReviewPageComponent implements OnDestroy {
   onChangeParking(): void {
     const event = this.selectedEvent();
     if (event?.eventId) {
-      this.router.navigate(['/parking', event.eventId]);
+      this.router.navigate(['/events', event.eventId, 'parking']);
     }
   }
 
@@ -142,7 +142,7 @@ export class BookingReviewPageComponent implements OnDestroy {
   onBackToSelection(): void {
     const event = this.selectedEvent();
     if (event && event.eventId) {
-      this.router.navigate(['/events', event.eventId]);
+      this.router.navigate(['/events', event.eventId, 'seats']);
     } else {
       this.router.navigate(['/events']);
     }

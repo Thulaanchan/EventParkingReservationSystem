@@ -8,6 +8,7 @@ import { EventDetailsHeroComponent } from '../../components/event-details-hero/e
 import { EventInformationComponent } from '../../components/event-information/event-information.component';
 import { EventPricingComponent } from '../../components/event-pricing/event-pricing.component';
 import { EventAvailabilitySummaryComponent } from '../../components/event-availability-summary/event-availability-summary.component';
+import { BookingStateService } from '../../../../core/services/bookings/booking-state.service';
 
 @Component({
   selector: 'app-event-details-page',
@@ -25,6 +26,7 @@ import { EventAvailabilitySummaryComponent } from '../../components/event-availa
 })
 export class EventDetailsPageComponent implements OnInit {
   private readonly eventService = inject(EventService);
+  private readonly bookingStateService = inject(BookingStateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -70,6 +72,17 @@ export class EventDetailsPageComponent implements OnInit {
   }
 
   onStartBooking(event: EventDetails): void {
+    this.bookingStateService.setEvent({
+      eventId: event.id,
+      eventName: event.name,
+      eventDate: event.eventDate,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      venueName: event.venueName,
+      categoryName: event.categoryName,
+      posterUrl: event.posterUrl,
+      description: event.description
+    });
     this.router.navigate(['/events', event.id, 'seats']);
   }
 
