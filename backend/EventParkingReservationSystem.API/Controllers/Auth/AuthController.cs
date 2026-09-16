@@ -47,6 +47,51 @@ public class AuthController : ControllerBase
     }
 
     [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh(
+        [FromBody] RefreshTokenRequestDto request)
+    {
+        try
+        {
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var result =
+                await _authService.RefreshTokenAsync(request, ipAddress);
+
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                new
+                {
+                    message = ex.Message
+                });
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(
+        [FromBody] LogoutRequestDto request)
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        await _authService.RevokeRefreshTokenAsync(request, ipAddress);
+
+        return Ok(new
+        {
+            message = "Logged out successfully."
+        });
+    }
+
+    [AllowAnonymous]
     [HttpPost("verify-email")]
     public async Task<IActionResult> VerifyEmail(
         [FromBody] VerifyEmailRequestDto request)

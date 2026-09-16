@@ -76,6 +76,7 @@ export class EventFormComponent implements OnInit, OnChanges {
   @Output() cancel = new EventEmitter<void>();
 
   selectedPosterFile: File | null = null;
+  selectedPosterUrl: string | null = null;
 
   readonly form: FormGroup<EventFormControls> = new FormGroup<EventFormControls>(
     {
@@ -183,6 +184,16 @@ export class EventFormComponent implements OnInit, OnChanges {
 
   onPosterChange(file: File | null): void {
     this.selectedPosterFile = file;
+    if (file) {
+      this.selectedPosterUrl = null;
+    }
+  }
+
+  onPosterUrlChange(url: string | null): void {
+    this.selectedPosterUrl = url;
+    if (url) {
+      this.selectedPosterFile = null;
+    }
   }
 
   onStageLayoutChange(layout: string | null): void {
@@ -214,7 +225,8 @@ export class EventFormComponent implements OnInit, OnChanges {
       ticketPrice: Number(raw.ticketPrice ?? 0),
       capacity: Number(raw.capacity),
       stageLayout: raw.stageLayout?.trim() ? raw.stageLayout.trim() : null,
-      poster: this.selectedPosterFile ?? null
+      poster: this.selectedPosterFile ?? null,
+      posterUrl: this.selectedPosterUrl ?? null
     };
 
     this.save.emit(request);
@@ -233,6 +245,9 @@ export class EventFormComponent implements OnInit, OnChanges {
       capacity: event.capacity,
       stageLayout: event.stageLayout ?? null
     });
+
+    this.selectedPosterFile = null;
+    this.selectedPosterUrl = null;
 
     // Edit-mode booking locks strictly bound to backend contract flags
     if (!event.canEditTicketPrice) {

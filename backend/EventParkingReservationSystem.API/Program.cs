@@ -386,6 +386,43 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 //
+// Database schema initialization
+//
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        db.Database.ExecuteSqlRaw(@"
+            IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RefreshTokens')
+            BEGIN
+                CREATE TABLE [RefreshTokens] (
+                    [RefreshTokenId] int NOT NULL IDENTITY(1,1),
+                    [CustomerId] int NOT NULL,
+                    [TokenHash] nvarchar(128) NOT NULL,
+                    [ExpiresAtUtc] datetime2 NOT NULL,
+                    [CreatedAtUtc] datetime2 NOT NULL,
+                    [CreatedByIp] nvarchar(50) NULL,
+                    [RevokedAtUtc] datetime2 NULL,
+                    [RevokedByIp] nvarchar(50) NULL,
+                    [ReplacedByTokenHash] nvarchar(128) NULL,
+                    [ReasonRevoked] nvarchar(250) NULL,
+                    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([RefreshTokenId]),
+                    CONSTRAINT [FK_RefreshTokens_Customers_CustomerId] FOREIGN KEY ([CustomerId]) REFERENCES [Customers] ([CustomerId]) ON DELETE CASCADE
+                );
+                CREATE UNIQUE INDEX [IX_RefreshTokens_TokenHash] ON [RefreshTokens] ([TokenHash]);
+                CREATE INDEX [IX_RefreshTokens_CustomerId] ON [RefreshTokens] ([CustomerId]);
+            END
+        ");
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Could not verify or create RefreshTokens table. Continuing with startup.");
+    }
+}
+
+//
 // HTTP request pipeline
 //
 if (app.Environment.IsDevelopment())

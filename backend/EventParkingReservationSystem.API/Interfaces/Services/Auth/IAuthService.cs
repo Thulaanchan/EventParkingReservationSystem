@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Models.DTOs.Auth;
+using EventParkingReservationSystem.API.Models.DTOs.Auth;
 using EventParkingReservationSystem.API.Models.DTOs.Customers;
 
 namespace EventParkingReservationSystem.API.Interfaces.Services.Auth;
@@ -22,4 +22,12 @@ public interface IAuthService
 
     Task<bool> ResetPasswordAsync(
         ResetPasswordRequestDto request);
+
+    Task<AuthResponseDto> RefreshTokenAsync(
+        RefreshTokenRequestDto request,
+        string? ipAddress = null);
+
+    Task<bool> RevokeRefreshTokenAsync(
+        LogoutRequestDto request,
+        string? ipAddress = null);
 }

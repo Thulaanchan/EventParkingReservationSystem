@@ -149,6 +149,7 @@
           [currentPosterUrl]="event?.posterUrl ?? null"
           [disabled]="submitting"
           (posterChange)="onPosterChange($event)"
+          (posterUrlChange)="onPosterUrlChange($event)"
         ></app-event-poster-upload>
       </section>
 
@@ -461,7 +462,7 @@
           <div class="summary-row">
             <span class="summary-label">Event Poster:</span>
             <span class="summary-value">
-              {{ selectedPosterFile ? 'New Selected' : (event?.posterUrl ? 'Existing' : 'None') }}
+              {{ selectedPosterFile ? 'New File' : (selectedPosterUrl ? 'New URL' : (event?.posterUrl ? 'Existing' : 'None')) }}
             </span>
           </div>
 

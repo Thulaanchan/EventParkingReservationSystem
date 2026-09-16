@@ -1,441 +1,340 @@
-<div class="login-layout">
+<div class="eventflow-login-page" [class.dark-theme]="isDarkMode">
 
-  <!-- Left Branding Section -->
-  <div class="branding-section">
+  <div class="login-container">
 
-    <div class="branding-header">
-      <div class="brand-logo">
+    <!-- LEFT COLUMN: Branding, Value Propositions, and Atmospheric Crowd Background -->
+    <div class="left-brand-column">
+      
+      <!-- Top Brand Logo -->
+      <a routerLink="/events" class="eventflow-brand-link" aria-label="EventFlow Home">
+        <div class="brand-icon-box" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <polygon points="12 13 13.2 15.5 16 15.8 14 17.7 14.5 20.5 12 19.2 9.5 20.5 10 17.7 8 15.8 10.8 15.5 12 13" fill="currentColor" stroke="none"></polygon>
+          </svg>
+        </div>
+        <span class="brand-name-text">EventFlow</span>
+      </a>
 
-        <svg class="logo-icon"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="2"
-             aria-hidden="true">
-
-          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-
-        </svg>
-
-        <span class="brand-name">
-          BookWithUs
-        </span>
-
-      </div>
-    </div>
-
-
-    <div class="branding-content">
-
-      <h1 class="branding-title">
-        Welcome Back to
-        <span class="highlight">
-          BookWithUs
-        </span>
-      </h1>
-
-
-      <p class="branding-subtitle">
-        Sign in to continue booking amazing events and managing your reservations.
-      </p>
-
-
-      <ul class="value-props">
-
-        <li class="value-prop-item">
-          <div class="prop-text">
-            <span class="prop-heading">
-              Discover Events
-            </span>
-
-            <span class="prop-desc">
-              Find concerts, workshops, conferences and more.
-            </span>
-          </div>
-        </li>
-
-
-        <li class="value-prop-item">
-
-          <div class="prop-text">
-
-            <span class="prop-heading">
-              Easy Bookings
-            </span>
-
-            <span class="prop-desc">
-              Select seats and parking in a few clicks.
-            </span>
-
-          </div>
-
-        </li>
-
-
-        <li class="value-prop-item">
-
-          <div class="prop-text">
-
-            <span class="prop-heading">
-              Secure & Reliable
-            </span>
-
-            <span class="prop-desc">
-              Your reservations and payments are protected.
-            </span>
-
-          </div>
-
-        </li>
-
-
-      </ul>
-
-
-    </div>
-
-  </div>
-
-
-
-
-  <!-- Login Form Section -->
-  <div class="form-section">
-
-
-    <div class="auth-card">
-
-
-      <div class="auth-card-header">
-
-        <h2 class="auth-card-title">
-          Sign in to BookWithUs
-        </h2>
-
-
-        <p class="auth-card-subtitle">
-          Welcome back! Please enter your details.
+      <!-- Headline & Subtitle -->
+      <div class="brand-intro-block">
+        <h1 class="welcome-heading">
+          Welcome Back<br>to <span class="purple-brand-word">EventFlow</span>
+        </h1>
+        <p class="welcome-subtext">
+          Sign in to continue booking amazing events and manage your experiences effortlessly.
         </p>
+      </div>
 
+      <!-- 3 Value Proposition Items -->
+      <div class="value-props-list" role="list">
+        
+        <!-- 1. Discover Events -->
+        <div class="value-prop-item" role="listitem">
+          <div class="prop-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path>
+              <path d="M13 5v2"></path>
+              <path d="M13 17v2"></path>
+              <path d="M13 11v2"></path>
+            </svg>
+          </div>
+          <div class="prop-text-content">
+            <h2 class="prop-title">Discover Events</h2>
+            <p class="prop-desc">Find concerts, workshops, and more.</p>
+          </div>
+        </div>
+
+        <!-- 2. Easy Bookings -->
+        <div class="value-prop-item" role="listitem">
+          <div class="prop-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <line x1="8" y1="14" x2="8" y2="14.01"></line>
+              <line x1="12" y1="14" x2="12" y2="14.01"></line>
+              <line x1="16" y1="14" x2="16" y2="14.01"></line>
+              <line x1="8" y1="18" x2="8" y2="18.01"></line>
+              <line x1="12" y1="18" x2="12" y2="18.01"></line>
+              <line x1="16" y1="18" x2="16" y2="18.01"></line>
+            </svg>
+          </div>
+          <div class="prop-text-content">
+            <h2 class="prop-title">Easy Bookings</h2>
+            <p class="prop-desc">Book your seats in just a few clicks.</p>
+          </div>
+        </div>
+
+        <!-- 3. Secure & Reliable -->
+        <div class="value-prop-item" role="listitem">
+          <div class="prop-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          </div>
+          <div class="prop-text-content">
+            <h2 class="prop-title">Secure & Reliable</h2>
+            <p class="prop-desc">Your data is protected with industry-standard security.</p>
+          </div>
+        </div>
 
       </div>
 
-
-
-      <!-- Error -->
-      @if(errorMessage()) {
-
-        <div class="alert alert-error"
-             role="alert">
-
-          <span class="alert-title">
-            Sign in failed
-          </span>
-
-
-          <span class="alert-message">
-            {{ errorMessage() }}
-          </span>
-
-
-        </div>
-
-      }
-
-
-
-
-      <form
-        #loginForm="ngForm"
-        (ngSubmit)="onSubmit(loginForm)"
-        class="login-form"
-        novalidate>
-
-
-
-        <!-- Email -->
-
-        <div class="form-group">
-
-
-          <label class="form-label"
-                 for="email">
-
-            Email
-
-          </label>
-
-
-
-          <input
-
-            type="email"
-
-            id="email"
-
-            name="email"
-
-            [(ngModel)]="credentials.email"
-
-            #emailModel="ngModel"
-
-            required
-
-            email
-
-            class="form-input"
-
-            placeholder="name@example.com"
-
-            autocomplete="email"
-
-            [disabled]="isSubmitting()"
-
-          />
-
-
-
-          @if(emailModel.invalid &&
-          (emailModel.touched || loginForm.submitted)) {
-
-
-            <p class="field-error">
-
-              @if(emailModel.errors?.['required']) {
-
-                Email address is required.
-
-              }
-
-              @else if(emailModel.errors?.['email']) {
-
-                Please enter a valid email address.
-
-              }
-
-            </p>
-
-
-          }
-
-
-
-        </div>
-
-
-
-
-
-        <!-- Password -->
-
-
-        <div class="form-group">
-
-
-          <label class="form-label"
-                 for="password">
-
-            Password
-
-          </label>
-
-
-
-
-          <div class="password-wrapper">
-
-
-            <input
-
-              [type]="showPassword()
-                ? 'text'
-                : 'password'"
-
-              id="password"
-
-              name="password"
-
-              [(ngModel)]="credentials.password"
-
-              #passwordModel="ngModel"
-
-              required
-
-              class="form-input"
-
-              placeholder="Enter your password"
-
-              autocomplete="current-password"
-
-              [disabled]="isSubmitting()"
-
-            />
-
-
-
-            <button
-
-              type="button"
-
-              class="password-toggle-btn"
-
-              (click)="togglePasswordVisibility()"
-
-              [attr.aria-label]="showPassword()
-                ? 'Hide password'
-                : 'Show password'"
-
-            >
-
-              @if(showPassword()) {
-
-                Hide
-
-              }
-
-              @else {
-
-                Show
-
-              }
-
-
-            </button>
-
-
+    </div>
+
+    <!-- RIGHT COLUMN: Centered Elevated Sign-in Card -->
+    <div class="right-card-column">
+      
+      <div class="signin-card" role="region" aria-label="Sign in Form">
+        
+        <!-- Top Centered Purple Icon Badge -->
+        <div class="card-header-icon-wrap" aria-hidden="true">
+          <div class="card-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <polygon points="12 13 13.2 15.5 16 15.8 14 17.7 14.5 20.5 12 19.2 9.5 20.5 10 17.7 8 15.8 10.8 15.5 12 13" fill="currentColor" stroke="none"></polygon>
+            </svg>
           </div>
-
-
-
-
-          @if(passwordModel.invalid &&
-          (passwordModel.touched || loginForm.submitted)) {
-
-
-            <p class="field-error">
-
-              Password is required.
-
-            </p>
-
-
-          }
-
-
         </div>
 
-
-
-
-
-        <!-- Remember + Forgot -->
-
-
-        <div class="form-options">
-
-
-          <label>
-
-            <input
-
-              type="checkbox"
-
-              name="rememberMe"
-
-              [(ngModel)]="credentials.rememberMe"
-
-              [disabled]="isSubmitting()"
-
-            />
-
-
-            Remember me
-
-
-          </label>
-
-
-
-          <a routerLink="/auth/forgot-password">
-
-            Forgot password?
-
-          </a>
-
-
+        <!-- Title & Subtitle -->
+        <div class="card-header-text">
+          <h2 class="card-headline">Sign in to EventFlow</h2>
+          <p class="card-subhead">Welcome back! Please enter your details.</p>
         </div>
 
+        <!-- Session / Inactivity Notice Banner -->
+        @if (infoMessage()) {
+          <div class="alert-info-notice" role="status">
+            <div class="alert-info-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div class="alert-text-body">
+              <span class="alert-info-heading">{{ infoTitle() || 'Notice' }}</span>
+              <span class="alert-info-description">{{ infoMessage() }}</span>
+            </div>
+          </div>
+        }
 
+        <!-- Error Alert Banner (e.g. Invalid Credentials) -->
+        @if (errorMessage()) {
+          <div class="alert-invalid-credentials" role="alert">
+            <div class="alert-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div class="alert-text-body">
+              <span class="alert-heading">{{ errorTitle() || 'Invalid Credentials' }}</span>
+              <span class="alert-description">{{ errorMessage() }}</span>
+            </div>
+          </div>
+        }
 
+        <!-- Social login notice feedback -->
+        @if (socialNotice()) {
+          <div class="alert-social-notice" role="status">
+            <span>{{ socialNotice() }}</span>
+          </div>
+        }
 
-
-        <!-- Submit -->
-
-
-        <button
-
-          type="submit"
-
-          class="submit-btn"
-
-          [disabled]="isSubmitting()"
-
+        <!-- Sign-in Form -->
+        <form
+          #loginForm="ngForm"
+          (ngSubmit)="onSubmit(loginForm)"
+          class="signin-form"
+          novalidate
         >
 
+          <!-- Email Field -->
+          <div class="form-field-group">
+            <label for="loginEmail" class="field-label">Email</label>
+            <div
+              class="field-input-box"
+              [class.field-has-error]="emailModel.invalid && (emailModel.touched || loginForm.submitted)"
+            >
+              <svg class="field-prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <input
+                type="email"
+                id="loginEmail"
+                name="email"
+                class="field-input"
+                placeholder="demo@eventflow.com"
+                [(ngModel)]="credentials.email"
+                #emailModel="ngModel"
+                required
+                email
+                autocomplete="email"
+                [disabled]="isSubmitting()"
+                aria-label="Email address"
+              />
+            </div>
+            @if (emailModel.invalid && (emailModel.touched || loginForm.submitted)) {
+              <p class="field-validation-message" role="alert">
+                @if (emailModel.errors?.['required']) { Email address is required. }
+                @else if (emailModel.errors?.['email']) { Please enter a valid email address. }
+              </p>
+            }
+          </div>
 
-          @if(isSubmitting()) {
+          <!-- Password Field -->
+          <div class="form-field-group">
+            <label for="loginPassword" class="field-label">Password</label>
+            <div
+              class="field-input-box"
+              [class.field-has-error]="passwordModel.invalid && (passwordModel.touched || loginForm.submitted)"
+            >
+              <svg class="field-prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                id="loginPassword"
+                name="password"
+                class="field-input"
+                placeholder="••••••••••"
+                [(ngModel)]="credentials.password"
+                #passwordModel="ngModel"
+                required
+                autocomplete="current-password"
+                [disabled]="isSubmitting()"
+                aria-label="Password"
+              />
+              <button
+                type="button"
+                class="btn-toggle-eye"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              >
+                @if (showPassword()) {
+                  <!-- Eye Off Icon -->
+                  <svg class="eye-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                    <line x1="2" x2="22" y1="2" y2="22"></line>
+                  </svg>
+                } @else {
+                  <!-- Eye Open Icon -->
+                  <svg class="eye-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (passwordModel.invalid && (passwordModel.touched || loginForm.submitted)) {
+              <p class="field-validation-message" role="alert">Password is required.</p>
+            }
+          </div>
 
+          <!-- Remember Me & Forgot Password Row -->
+          <div class="form-aux-row">
+            <label class="remember-checkbox-label">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                class="remember-checkbox"
+                [(ngModel)]="credentials.rememberMe"
+                [disabled]="isSubmitting()"
+              />
+              <span class="remember-label-text">Remember me</span>
+            </label>
 
-            Signing in...
+            <a routerLink="/auth/forgot-password" class="forgot-password-link">
+              Forgot password?
+            </a>
+          </div>
 
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn-primary-login"
+            [disabled]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>Signing in...</span>
+            } @else {
+              <span>Login</span>
+            }
+          </button>
 
-          }
+          <!-- Divider: or continue with -->
+          <div class="divider-or-row" role="separator" aria-label="Or continue with">
+            <span class="divider-line" aria-hidden="true"></span>
+            <span class="divider-text">or continue with</span>
+            <span class="divider-line" aria-hidden="true"></span>
+          </div>
 
-          @else {
+          <!-- Social Login Buttons -->
+          <div class="social-login-actions">
+            <!-- Google -->
+            <button
+              type="button"
+              class="btn-social-outline"
+              (click)="onSocialLogin('Google')"
+              [disabled]="isSubmitting()"
+              aria-label="Continue with Google"
+            >
+              <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.37 7.31 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27a7.22 7.22 0 0 1 0-4.54V6.58H1.26a11.996 11.996 0 0 0 0 10.84l4.02-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.63 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
 
+            <!-- Phone -->
+            <button
+              type="button"
+              class="btn-social-outline"
+              (click)="onSocialLogin('Phone')"
+              [disabled]="isSubmitting()"
+              aria-label="Continue with Phone"
+            >
+              <svg class="phone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Continue with Phone</span>
+            </button>
+          </div>
 
-            Sign In
+        </form>
 
-
-          }
-
-
-        </button>
-
-
-
-
-      </form>
-
-      <div class="auth-card-footer">
-
-
-        <p>
-
-          Don't have an account?
-
-
-          <a routerLink="/auth/register">
-
-            Register
-
-          </a>
-
-
-        </p>
-
+        <!-- Card Footer: Don't have an account? Register -->
+        <div class="card-footer-register">
+          <p class="register-text">
+            Don't have an account?
+            <a routerLink="/auth/register" class="register-link">Register</a>
+          </p>
+        </div>
 
       </div>
 
-
-
     </div>
 
-
   </div>
-
 
 </div>

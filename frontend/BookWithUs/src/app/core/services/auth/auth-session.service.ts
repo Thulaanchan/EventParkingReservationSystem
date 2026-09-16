@@ -18,6 +18,7 @@ export class AuthSessionService {
   readonly session = this.sessionSignal.asReadonly();
   readonly currentUser = computed<AuthUser | null>(() => this.sessionSignal()?.user ?? null);
   readonly token = computed<string | null>(() => this.sessionSignal()?.token ?? null);
+  readonly refreshToken = computed<string | null>(() => this.sessionSignal()?.refreshToken ?? null);
   readonly isAuthenticated = computed<boolean>(() => {
     const session = this.sessionSignal();
     return this.isSessionActive(session);
@@ -74,6 +75,9 @@ export class AuthSessionService {
     const session: AuthSession = {
       token: response.token,
       expiresAt: response.expiresAt,
+      refreshToken: response.refreshToken,
+      refreshTokenExpiresAt: response.refreshTokenExpiresAt,
+      rememberMe: response.rememberMe ?? false,
       user
     };
 
@@ -82,13 +86,39 @@ export class AuthSessionService {
   }
 
   /**
-   * Cleans up stored session and resets authenticated state.
+   * Updates JWT access token and rotated refresh token seamlessly.
+   */
+  updateTokens(
+    token: string,
+    expiresAt: string,
+    refreshToken?: string,
+    refreshTokenExpiresAt?: string
+  ): void {
+    const current = this.sessionSignal();
+    if (!current) {
+      return;
+    }
+
+    const updated: AuthSession = {
+      ...current,
+      token,
+      expiresAt,
+      refreshToken: refreshToken ?? current.refreshToken,
+      refreshTokenExpiresAt: refreshTokenExpiresAt ?? current.refreshTokenExpiresAt
+    };
+
+    this.persistSession(updated);
+    this.applySession(updated);
+  }
+
+  /**
+   * Cleans up stored session from both sessionStorage and localStorage and resets authenticated state.
    */
   clearSession(): void {
-    const storage = this.getStorage();
-    if (storage) {
+    if (typeof window !== 'undefined') {
       try {
-        storage.removeItem(SESSION_STORAGE_KEY);
+        window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        window.localStorage.removeItem(SESSION_STORAGE_KEY);
       } catch {
         // Safe fallback if storage access is restricted
       }
@@ -97,17 +127,20 @@ export class AuthSessionService {
   }
 
   /**
-   * Restores session from sessionStorage if active and unexpired.
+   * Restores session from sessionStorage (Remember Me OFF) or localStorage (Remember Me ON).
    */
   restoreSession(): void {
-    const storage = this.getStorage();
-    if (!storage) {
+    if (typeof window === 'undefined') {
       this.applySession(null);
       return;
     }
 
     try {
-      const rawSession = storage.getItem(SESSION_STORAGE_KEY);
+      let rawSession = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (!rawSession) {
+        rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+      }
+
       if (!rawSession) {
         this.applySession(null);
         return;
@@ -130,6 +163,13 @@ export class AuthSessionService {
    */
   getToken(): string | null {
     return this.token();
+  }
+
+  /**
+   * Returns current refresh token string or null.
+   */
+  getRefreshToken(): string | null {
+    return this.refreshToken();
   }
 
   /**
@@ -180,13 +220,21 @@ export class AuthSessionService {
   }
 
   private persistSession(session: AuthSession): void {
-    const storage = this.getStorage();
-    if (storage) {
-      try {
-        storage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-      } catch {
-        // Safe fallback if storage quota exceeded or disabled
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      const serialized = JSON.stringify(session);
+      if (session.rememberMe) {
+        window.localStorage.setItem(SESSION_STORAGE_KEY, serialized);
+        window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      } else {
+        window.sessionStorage.setItem(SESSION_STORAGE_KEY, serialized);
+        window.localStorage.removeItem(SESSION_STORAGE_KEY);
       }
+    } catch {
+      // Safe fallback if storage quota exceeded or disabled
     }
   }
 
@@ -198,17 +246,18 @@ export class AuthSessionService {
     if (session.expiresAt) {
       const expiryTimestamp = new Date(session.expiresAt).getTime();
       if (Number.isFinite(expiryTimestamp) && expiryTimestamp <= Date.now()) {
+        // If access token expired, verify whether refresh token exists and is not expired
+        if (session.refreshToken) {
+          if (session.refreshTokenExpiresAt) {
+            const refreshExpiry = new Date(session.refreshTokenExpiresAt).getTime();
+            return Number.isFinite(refreshExpiry) ? refreshExpiry > Date.now() : true;
+          }
+          return true;
+        }
         return false;
       }
     }
 
     return true;
-  }
-
-  private getStorage(): Storage | null {
-    if (typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined') {
-      return window.sessionStorage;
-    }
-    return null;
   }
 }

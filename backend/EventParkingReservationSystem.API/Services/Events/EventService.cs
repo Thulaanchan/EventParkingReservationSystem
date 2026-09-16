@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Common.Pagination;
+using EventParkingReservationSystem.API.Common.Pagination;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Categories;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Events;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Venues;
@@ -166,6 +166,10 @@ public sealed class EventService(
                 await _posterStorage.SaveAsync(
                     request.Poster,
                     cancellationToken);
+        }
+        else if (!string.IsNullOrWhiteSpace(request.PosterUrl))
+        {
+            posterUrl = request.PosterUrl.Trim();
         }
 
         var entity =
@@ -349,18 +353,26 @@ public sealed class EventService(
         entity.UpdatedAt =
             DateTime.UtcNow;
 
+        bool posterReplaced = false;
+
         if (request.Poster is not null)
         {
             entity.PosterUrl =
                 await _posterStorage.SaveAsync(
                     request.Poster,
                     cancellationToken);
+            posterReplaced = true;
+        }
+        else if (!string.IsNullOrWhiteSpace(request.PosterUrl))
+        {
+            entity.PosterUrl = request.PosterUrl.Trim();
+            posterReplaced = !string.Equals(oldPoster, entity.PosterUrl, StringComparison.Ordinal);
         }
 
         await _eventRepository.SaveChangesAsync(
             cancellationToken);
 
-        if (request.Poster is not null)
+        if (posterReplaced && oldPoster is not null)
         {
             await _posterStorage.DeleteIfLocalAsync(
                 oldPoster,

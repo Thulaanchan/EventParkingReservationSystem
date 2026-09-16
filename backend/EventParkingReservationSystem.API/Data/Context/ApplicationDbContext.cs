@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 using EventParkingReservationSystem.API.Models.Entities.Bookings;
 using EventParkingReservationSystem.API.Models.Entities.Categories;
@@ -28,6 +28,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Customer> Customers =>
         Set<Customer>();
+
+    public DbSet<RefreshToken> RefreshTokens =>
+        Set<RefreshToken>();
 
     public DbSet<Booking> Bookings =>
         Set<Booking>();
@@ -108,6 +111,20 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Customer>()
             .HasIndex(c => c.Email)
             .IsUnique();
+
+        // =====================================================
+        // REFRESH TOKEN
+        // =====================================================
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(r => r.TokenHash)
+            .IsUnique();
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(r => r.Customer)
+            .WithMany()
+            .HasForeignKey(r => r.CustomerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
         // =====================================================

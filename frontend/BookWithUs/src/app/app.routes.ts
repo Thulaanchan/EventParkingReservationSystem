@@ -6,12 +6,12 @@ import { checkoutGuard } from './core/guards/checkout.guard';
 
 export const routes: Routes = [
 
-  // Default route
-{
-  path: '',
-  pathMatch: 'full',
-  redirectTo: 'auth/login'
-},
+  // Default route (Event Explore Landing Page)
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'events'
+  },
 
 
   // Direct Login Route

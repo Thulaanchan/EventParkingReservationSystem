@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
 namespace EventParkingReservationSystem.API.Models.DTOs.Events;
@@ -34,4 +34,7 @@ public sealed class CreateEventDto
     public string? StageLayout { get; set; }
 
     public IFormFile? Poster { get; set; }
+
+    [StringLength(1000)]
+    public string? PosterUrl { get; set; }
 }

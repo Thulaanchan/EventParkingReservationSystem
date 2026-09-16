@@ -4,8 +4,9 @@ import {
   OnInit,
   inject
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -14,28 +15,61 @@ import {
   debounceTime,
   forkJoin,
   of,
-  switchMap
+  switchMap,
+  timeout
 } from 'rxjs';
+import { ThemeService } from '../../../../core/services/theme/theme.service';
 import { EventService } from '../../../../core/services/events/event.service';
 import { VenueService } from '../../../../core/services/venues/venue.service';
 import { CategoryService } from '../../../../core/services/categories/category.service';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 import { EventSummary } from '../../../../core/models/events/event-summary.model';
 import { EventFilter } from '../../../../core/models/events/event-filter.model';
 import { PagedResult } from '../../../../core/models/common/paged-result.model';
 import { Venue } from '../../../../core/models/venues/venue.model';
 import { EventCategory } from '../../../../core/models/categories/event-category.model';
-import { EventFilterComponent } from '../../components/event-filter/event-filter.component';
-import { EventCardListComponent } from '../../components/event-card-list/event-card-list.component';
+import { environment } from '../../../../../environments/environment';
+
+export interface HeroSlide {
+  id: number;
+  badge: string;
+  artistTitle: string;
+  subtitle: string;
+  dateText: string;
+  venueText: string;
+  description: string;
+  imageUrl: string;
+  fallbackGradient: string;
+  hasImageError?: boolean;
+}
+
+export interface ExploreEventItem {
+  id: number;
+  name: string;
+  categoryName: string;
+  venueName: string;
+  eventDate: string;
+  startTime: string;
+  endTime?: string;
+  ticketPrice: number;
+  posterUrl: string | null;
+  totalSeats: number;
+  availableSeats: number;
+  isWishlisted?: boolean;
+  hasImageError?: boolean;
+  fallbackGradient?: string;
+}
 
 @Component({
   selector: 'app-event-list-page',
   standalone: true,
-imports: [
-  CommonModule,
-  RouterLink,
-  EventFilterComponent,
-  EventCardListComponent
-],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    DatePipe,
+    DecimalPipe
+  ],
   templateUrl: './event-list-page.component.html',
   styleUrl: './event-list-page.component.css'
 })
@@ -43,6 +77,8 @@ export class EventListPageComponent implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly venueService = inject(VenueService);
   private readonly categoryService = inject(CategoryService);
+  readonly authService = inject(AuthService);
+  readonly themeService = inject(ThemeService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,23 +91,228 @@ export class EventListPageComponent implements OnInit {
   loadingOptions = false;
   optionsError: string | null = null;
 
+  // Filter form controls
+  searchQuery = '';
+  selectedVenue: number | null = null;
+  selectedCategory: number | null = null;
+  selectedDate = '';
+  selectedTime = '';
+
+  // Theme state
+  get isDarkMode(): boolean {
+    return this.themeService.isDarkMode();
+  }
+  isUserMenuOpen = false;
+
+  // Wishlist state (persisted in localStorage)
+  wishlistIds = new Set<number>();
+
+  // Page lifecycle states
+  loading = false;
+  errorMessage: string | null = null;
+  hasBackendData = false;
+
   // Events & pagination state
-  events: EventSummary[] = [];
+  backendEvents: EventSummary[] = [];
+  displayedEvents: ExploreEventItem[] = [];
   currentFilter: EventFilter = {};
   page = 1;
   pageSize = 12;
   totalCount = 0;
   totalPages = 0;
+  visibleCardLimit = 4;
 
-  // Page lifecycle states
-  loading = false;
-  errorMessage: string | null = null;
+  // Hero carousel slides
+  currentHeroIndex = 0;
+  heroSlides: HeroSlide[] = [
+    {
+      id: 1,
+      badge: 'LIVE IN CONCERT',
+      artistTitle: 'Anirudh',
+      subtitle: 'Live in Colombo',
+      dateText: '12 Sep 2026 • 8:00 PM',
+      venueText: 'Sugathadasa Indoor Stadium, Colombo',
+      description: 'Experience an electrifying evening with chartbuster hits and a spectacular live production.',
+      imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+      fallbackGradient: 'linear-gradient(135deg, #1e1b4b 0%, #311042 50%, #4a044e 100%)'
+    },
+    {
+      id: 2,
+      badge: 'TECH CONFERENCE',
+      artistTitle: 'Global Tech Summit',
+      subtitle: '2024 Colombo Edition',
+      dateText: '12 – 14 Oct 2024 • 9:00 AM',
+      venueText: 'BMICH, Colombo',
+      description: 'Connect with global tech leaders, keynote innovators, and developers shaping next-generation AI and cloud architecture.',
+      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+      fallbackGradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e1b4b 100%)'
+    },
+    {
+      id: 3,
+      badge: 'INDUSTRY EXPO',
+      artistTitle: 'Sri Lanka Build Expo',
+      subtitle: 'Architecture & Trade 2024',
+      dateText: '8 – 10 Nov 2024 • 10:00 AM',
+      venueText: 'BMICH Main Exhibition Center',
+      description: 'The premier construction, architecture, and engineering exhibition showcasing innovative green technologies.',
+      imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+      fallbackGradient: 'linear-gradient(135deg, #134e4a 0%, #0f172a 50%, #111827 100%)'
+    },
+    {
+      id: 4,
+      badge: 'STAGE THEATRE',
+      artistTitle: 'A Midsummer Night\'s Dream',
+      subtitle: 'Classic Drama by William Shakespeare',
+      dateText: '5 – 8 Dec 2024 • 7:30 PM',
+      venueText: 'Nelum Pokuna Theatre, Colombo',
+      description: 'An enchanting, visually stunning theatrical performance by renowned artists in a celebrated masterpiece.',
+      imageUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80',
+      fallbackGradient: 'linear-gradient(135deg, #3b0764 0%, #180326 60%, #000000 100%)'
+    }
+  ];
+
+  // Curated Fallback Showcase Events (Specification Requirements 5 & 6)
+  readonly fallbackEvents: ExploreEventItem[] = [
+    {
+      id: 1,
+      name: 'Anirudh Live in Colombo 2026',
+      categoryName: 'MUSIC',
+      venueName: 'Sugathadasa Indoor Stadium, Colombo',
+      eventDate: '2026-09-12',
+      startTime: '8:00 PM',
+      endTime: '11:30 PM',
+      ticketPrice: 4500,
+      posterUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80',
+      totalSeats: 5000,
+      availableSeats: 480,
+      fallbackGradient: 'linear-gradient(135deg, #311042 0%, #4a044e 100%)'
+    },
+    {
+      id: 2,
+      name: 'Global Tech Summit 2024',
+      categoryName: 'CONFERENCE',
+      venueName: 'BMICH, Colombo',
+      eventDate: '2024-10-12',
+      startTime: '9:00 AM',
+      endTime: '5:00 PM',
+      ticketPrice: 7950,
+      posterUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80',
+      totalSeats: 1200,
+      availableSeats: 320,
+      fallbackGradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)'
+    },
+    {
+      id: 3,
+      name: 'Sri Lanka Build Expo 2024',
+      categoryName: 'EXPO',
+      venueName: 'Bandaranaike Memorial International Conference Hall',
+      eventDate: '2024-11-08',
+      startTime: '10:00 AM',
+      endTime: '6:00 PM',
+      ticketPrice: 1200,
+      posterUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80',
+      totalSeats: 3000,
+      availableSeats: 1450,
+      fallbackGradient: 'linear-gradient(135deg, #134e4a 0%, #111827 100%)'
+    },
+    {
+      id: 4,
+      name: 'A Midsummer Night\'s Dream',
+      categoryName: 'THEATRE',
+      venueName: 'Nelum Pokuna Theatre, Colombo',
+      eventDate: '2024-12-05',
+      startTime: '7:30 PM',
+      endTime: '10:00 PM',
+      ticketPrice: 2800,
+      posterUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=600&q=80',
+      totalSeats: 1500,
+      availableSeats: 210,
+      fallbackGradient: 'linear-gradient(135deg, #3b0764 0%, #000000 100%)'
+    }
+  ];
 
   ngOnInit(): void {
+    this.initWishlist();
+    // Instant 0ms initial render so users never experience a blank loading screen
+    this.applyLocalFallbackFilter({});
     this.loadFilterOptions();
     this.setupFilterDebounce();
     this.setupRouteListener();
   }
+
+  // --- Theme Management ---
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  // --- Wishlist Management ---
+
+  private initWishlist(): void {
+    try {
+      const saved = localStorage.getItem('eventflow_wishlist');
+      if (saved) {
+        const ids = JSON.parse(saved) as number[];
+        this.wishlistIds = new Set(ids);
+      }
+    } catch {
+      this.wishlistIds = new Set();
+    }
+  }
+
+  toggleWishlist(eventId: number, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.wishlistIds.has(eventId)) {
+      this.wishlistIds.delete(eventId);
+    } else {
+      this.wishlistIds.add(eventId);
+    }
+
+    try {
+      localStorage.setItem('eventflow_wishlist', JSON.stringify(Array.from(this.wishlistIds)));
+    } catch {
+      // Ignore storage errors
+    }
+
+    // Update displayed items state
+    this.displayedEvents = this.displayedEvents.map(item => ({
+      ...item,
+      isWishlisted: this.wishlistIds.has(item.id)
+    }));
+  }
+
+  isWishlisted(eventId: number): boolean {
+    return this.wishlistIds.has(eventId);
+  }
+
+  // --- Hero Carousel Controls ---
+
+  nextHeroSlide(): void {
+    this.currentHeroIndex = (this.currentHeroIndex + 1) % this.heroSlides.length;
+  }
+
+  prevHeroSlide(): void {
+    this.currentHeroIndex =
+      (this.currentHeroIndex - 1 + this.heroSlides.length) % this.heroSlides.length;
+  }
+
+  setHeroSlide(index: number): void {
+    if (index >= 0 && index < this.heroSlides.length) {
+      this.currentHeroIndex = index;
+    }
+  }
+
+  onHeroImageError(slide: HeroSlide): void {
+    slide.hasImageError = true;
+  }
+
+  onHeroCtaClick(slide: HeroSlide): void {
+    this.router.navigate(['/events', slide.id]);
+  }
+
+  // --- Filter Options ---
 
   loadFilterOptions(): void {
     this.loadingOptions = true;
@@ -82,12 +323,14 @@ export class EventListPageComponent implements OnInit {
 
     forkJoin({
       venues: this.venueService.getVenues().pipe(
+        timeout(2500),
         catchError(() => {
           venuesFailed = true;
           return of([] as Venue[]);
         })
       ),
       categories: this.categoryService.getCategories().pipe(
+        timeout(2500),
         catchError(() => {
           categoriesFailed = true;
           return of([] as EventCategory[]);
@@ -99,9 +342,27 @@ export class EventListPageComponent implements OnInit {
         this.venues = venues;
         this.categories = categories;
 
+        // Fallback options if backend has no venues/categories
+        if (this.venues.length === 0) {
+          this.venues = [
+            { id: 1, name: 'Sugathadasa Indoor Stadium, Colombo', totalCapacity: 5000, address: 'Colombo 14', upcomingEventCount: 1 },
+            { id: 2, name: 'BMICH, Colombo', totalCapacity: 1500, address: 'Bauddhaloka Mawatha', upcomingEventCount: 2 },
+            { id: 3, name: 'Nelum Pokuna Theatre, Colombo', totalCapacity: 1288, address: 'Albert Crescent', upcomingEventCount: 1 }
+          ];
+        }
+
+        if (this.categories.length === 0) {
+          this.categories = [
+            { id: 1, name: 'Music', eventCount: 1 },
+            { id: 2, name: 'Conference', eventCount: 1 },
+            { id: 3, name: 'Expo', eventCount: 1 },
+            { id: 4, name: 'Theatre', eventCount: 1 }
+          ];
+        }
+
         if (venuesFailed && categoriesFailed) {
           this.optionsError =
-            'Unable to load filter options. You can still search by name or date.';
+            'Connected to offline showcase mode. Search by name, venue, or category.';
         }
       }
     });
@@ -131,10 +392,20 @@ export class EventListPageComponent implements OnInit {
           this.page = filter.page ?? 1;
           this.pageSize = filter.pageSize ?? 12;
 
-          this.loading = true;
+          this.searchQuery = filter.search ?? '';
+          this.selectedVenue = filter.venue ?? null;
+          this.selectedCategory = filter.category ?? null;
+          this.selectedDate = filter.date ?? '';
+          this.selectedTime = filter.time ?? '';
+
+          // Only show full loading spinner if we don't already have displayed events
+          if (this.displayedEvents.length === 0) {
+            this.loading = true;
+          }
           this.errorMessage = null;
 
           return this.eventService.getEvents(filter).pipe(
+            timeout(2500),
             catchError((err: unknown) => {
               this.loading = false;
               this.handleLoadError(err);
@@ -146,27 +417,153 @@ export class EventListPageComponent implements OnInit {
       )
       .subscribe((res: PagedResult<EventSummary> | null) => {
         this.loading = false;
-        if (res) {
-          this.events = res.items;
+        if (res && res.items && res.items.length > 0) {
+          this.backendEvents = res.items;
           this.page = res.page;
           this.pageSize = res.pageSize;
           this.totalCount = res.totalCount;
           this.totalPages = res.totalPages;
+          this.hasBackendData = true;
+          this.mapBackendEventsToDisplay(res.items);
         } else {
-          this.events = [];
+          this.backendEvents = [];
+          this.hasBackendData = false;
+          // Apply local filter against fallback showcase data
+          this.applyLocalFallbackFilter(this.currentFilter);
         }
       });
   }
 
-  onFilterChange(filter: EventFilter): void {
+  // --- Filter Actions ---
+
+  onSearchSubmit(): void {
+    const filter: EventFilter = {
+      search: this.searchQuery?.trim() || null,
+      venue: this.selectedVenue || null,
+      category: this.selectedCategory || null,
+      date: this.selectedDate || null,
+      time: this.selectedTime || null
+    };
+
+    // Instant local filter response so the user sees results immediately
+    if (!this.hasBackendData) {
+      this.applyLocalFallbackFilter(filter);
+    }
+
     this.filterSubject.next(filter);
   }
 
   onClearFilters(): void {
+    this.searchQuery = '';
+    this.selectedVenue = null;
+    this.selectedCategory = null;
+    this.selectedDate = '';
+    this.selectedTime = '';
+
+    // Instant 0ms clear
+    this.applyLocalFallbackFilter({});
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {}
     });
+  }
+
+  private applyLocalFallbackFilter(filter: EventFilter): void {
+    let list = [...this.fallbackEvents];
+
+    if (filter.search && filter.search.trim()) {
+      const q = filter.search.trim().toLowerCase();
+      list = list.filter(e =>
+        e.name.toLowerCase().includes(q) ||
+        e.venueName.toLowerCase().includes(q) ||
+        e.categoryName.toLowerCase().includes(q)
+      );
+    }
+
+    if (filter.venue) {
+      const venueObj = this.venues.find(v => v.id === filter.venue);
+      if (venueObj) {
+        list = list.filter(e =>
+          e.venueName.toLowerCase().includes(venueObj.name.toLowerCase())
+        );
+      }
+    }
+
+    if (filter.category) {
+      const catObj = this.categories.find(c => c.id === filter.category);
+      if (catObj) {
+        list = list.filter(e =>
+          e.categoryName.toLowerCase().includes(catObj.name.toLowerCase())
+        );
+      }
+    }
+
+    if (filter.date) {
+      list = list.filter(e => e.eventDate.startsWith(filter.date!));
+    }
+
+    if (filter.time) {
+      // Matching morning / afternoon / evening or time string
+      const timeQ = filter.time.toLowerCase();
+      list = list.filter(e => e.startTime.toLowerCase().includes(timeQ));
+    }
+
+    this.displayedEvents = list.map(item => ({
+      ...item,
+      isWishlisted: this.wishlistIds.has(item.id)
+    }));
+    this.totalCount = this.displayedEvents.length;
+    this.totalPages = Math.ceil(this.totalCount / this.pageSize) || 1;
+  }
+
+  private mapBackendEventsToDisplay(items: EventSummary[]): void {
+    this.displayedEvents = items.map(item => ({
+      id: item.id,
+      name: item.name,
+      categoryName: item.categoryName,
+      venueName: item.venueName,
+      eventDate: item.eventDate,
+      startTime: item.startTime,
+      endTime: item.endTime,
+      ticketPrice: item.ticketPrice,
+      posterUrl: this.resolvePosterUrl(item.posterUrl),
+      totalSeats: item.totalSeats,
+      availableSeats: item.availableSeats,
+      isWishlisted: this.wishlistIds.has(item.id),
+      fallbackGradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)'
+    }));
+  }
+
+  resolvePosterUrl(posterUrl: string | null | undefined): string | null {
+    if (!posterUrl || !posterUrl.trim()) {
+      return null;
+    }
+    const trimmed = posterUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    try {
+      return new URL(trimmed, environment.apiUrl).toString();
+    } catch {
+      return null;
+    }
+  }
+
+  onCardImageError(item: ExploreEventItem): void {
+    item.hasImageError = true;
+  }
+
+  onViewEvent(event: ExploreEventItem): void {
+    this.router.navigate(['/events', event.id]);
+  }
+
+  onLoadMore(): void {
+    if (this.visibleCardLimit < this.displayedEvents.length) {
+      this.visibleCardLimit += 4;
+    } else if (this.hasBackendData && this.page < this.totalPages) {
+      this.goToPage(this.page + 1);
+    }
   }
 
   goToPage(targetPage: number): void {
@@ -185,28 +582,14 @@ export class EventListPageComponent implements OnInit {
     });
   }
 
-  onViewEvent(event: EventSummary): void {
-    this.router.navigate(['/events', event.id]);
+  toggleUserMenu(): void {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
-  reloadEvents(): void {
-    this.loading = true;
-    this.errorMessage = null;
-
-    this.eventService.getEvents(this.currentFilter).subscribe({
-      next: (res: PagedResult<EventSummary>) => {
-        this.loading = false;
-        this.events = res.items;
-        this.page = res.page;
-        this.pageSize = res.pageSize;
-        this.totalCount = res.totalCount;
-        this.totalPages = res.totalPages;
-      },
-      error: (err: unknown) => {
-        this.loading = false;
-        this.handleLoadError(err);
-      }
-    });
+  onLogout(): void {
+    this.authService.logout();
+    this.isUserMenuOpen = false;
+    this.router.navigate(['/events']);
   }
 
   private parseQueryParams(params: ParamMap): EventFilter {
@@ -281,12 +664,7 @@ export class EventListPageComponent implements OnInit {
       queryParams['time'] = filter.time.trim();
     }
 
-    // Always reset to page 1 on filter changes
     queryParams['page'] = 1;
-
-    if (this.pageSize && this.pageSize !== 12) {
-      queryParams['pageSize'] = this.pageSize;
-    }
 
     return queryParams;
   }
@@ -295,16 +673,10 @@ export class EventListPageComponent implements OnInit {
     if (err instanceof HttpErrorResponse) {
       if (err.status >= 500 || err.status === 0) {
         this.errorMessage =
-          'Unable to connect to the events server. Please check your connection and try again.';
-      } else if (err.error?.detail && typeof err.error.detail === 'string') {
-        this.errorMessage = err.error.detail;
-      } else if (err.error?.message && typeof err.error.message === 'string') {
-        this.errorMessage = err.error.message;
-      } else {
-        this.errorMessage = 'Failed to load events. Please try again later.';
+          'Running in offline mode. Curated showcase events are displayed.';
       }
-    } else {
-      this.errorMessage = 'Failed to load events. Please try again later.';
     }
+    // Fall back gracefully to showcase events
+    this.applyLocalFallbackFilter(this.currentFilter);
   }
 }

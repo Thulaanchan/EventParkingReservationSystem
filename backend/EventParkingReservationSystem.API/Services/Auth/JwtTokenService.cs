@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using EventParkingReservationSystem.API.Interfaces.Services.Auth;
@@ -34,27 +34,19 @@ public class JwtTokenService : IJwtTokenService
             ?? throw new InvalidOperationException(
                 "JWT audience is not configured.");
 
-        var expiryMinutes =
-            _configuration.GetValue<int>("Jwt:ExpiryMinutes");
+        var isAdmin = string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase) ||
+                      string.Equals(role, "Administrator", StringComparison.OrdinalIgnoreCase);
 
-        var rememberMeExpiryDays =
-            _configuration.GetValue<int>("Jwt:RememberMeExpiryDays");
+        var adminMinutes = _configuration.GetValue<int>("Jwt:AdminAccessTokenExpirationMinutes");
+        if (adminMinutes <= 0) adminMinutes = 15;
 
-        if (expiryMinutes <= 0)
-        {
-            expiryMinutes = 60;
-        }
+        var customerMinutes = _configuration.GetValue<int>("Jwt:CustomerAccessTokenExpirationMinutes");
+        if (customerMinutes <= 0) customerMinutes = 30;
 
-        if (rememberMeExpiryDays <= 0)
-        {
-            rememberMeExpiryDays = 7;
-        }
+        var accessMinutes = isAdmin ? adminMinutes : customerMinutes;
 
         var nowUtc = DateTime.UtcNow;
-
-        var expiresAtUtc = rememberMe
-            ? nowUtc.AddDays(rememberMeExpiryDays)
-            : nowUtc.AddMinutes(expiryMinutes);
+        var expiresAtUtc = nowUtc.AddMinutes(accessMinutes);
 
         var claims = new List<Claim>
         {

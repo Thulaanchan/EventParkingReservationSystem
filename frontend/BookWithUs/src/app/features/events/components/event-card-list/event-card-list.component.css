@@ -7,11 +7,11 @@
   width: 100%;
 }
 
-/* Events Responsive Grid */
+/* Events Responsive Grid (4 cards across on desktop) */
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -101,9 +101,9 @@
    - Tablet: 2 columns (max-width: 1024px, auto-fill minmax(280px, 1fr))
    - Mobile: 1 column (max-width: 640px, 1fr)
 */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .events-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
 }

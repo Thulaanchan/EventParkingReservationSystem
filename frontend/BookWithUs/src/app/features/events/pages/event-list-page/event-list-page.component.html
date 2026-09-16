@@ -1,140 +1,638 @@
-<div class="event-list-page">
+<div class="eventflow-page" [class.dark-theme]="isDarkMode">
 
-  <!-- Public Navigation Header -->
-  <header class="public-header">
-
-    <div class="brand-section">
-      <span class="brand-name">
-        BookWithUs
-      </span>
-    </div>
-
-
-    <nav class="auth-navigation">
-
-      <a 
-        routerLink="/auth/login"
-        class="login-button">
-        Login
+  <!-- 1. NAVIGATION BAR (Approx 64px) -->
+  <header class="eventflow-navbar" role="banner">
+    <div class="navbar-container">
+      <!-- Left: EventFlow Brand Logo -->
+      <a routerLink="/events" class="brand-logo" aria-label="EventFlow Home">
+        <div class="brand-icon-wrapper" aria-hidden="true">
+          <svg class="brand-sparkle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <polygon points="12 13 13.2 15.5 16 15.8 14 17.7 14.5 20.5 12 19.2 9.5 20.5 10 17.7 8 15.8 10.8 15.5 12 13" fill="currentColor" stroke="none"></polygon>
+          </svg>
+        </div>
+        <span class="brand-title">EventFlow</span>
       </a>
 
-
-      <a 
-        routerLink="/auth/register"
-        class="register-button">
-        Register
-      </a>
-
-    </nav>
-
-  </header>
-
-
-  <!-- Page Header -->
-  <header class="page-header">
-    <h1 class="page-title">Explore Events</h1>
-    <p class="page-subtitle">
-      Discover and book parking & tickets for upcoming concerts, sports, conferences, and shows across BookWithUs venues.
-    </p>
-  </header>
-
-  <!-- Optional Filter Options Loading Notice -->
-  @if (optionsError) {
-    <div class="options-warning-banner" role="alert">
-      <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-        <line x1="12" y1="9" x2="12" y2="13"></line>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      <div class="warning-content">
-        <span>{{ optionsError }}</span>
-        <button type="button" class="btn-retry-options" (click)="loadFilterOptions()">
-          Retry Loading Filters
-        </button>
-      </div>
-    </div>
-  }
-
-  <!-- Event Filters -->
-  <section class="filters-section" aria-label="Event filtering">
-    <app-event-filter
-      [filter]="currentFilter"
-      [venues]="venues"
-      [categories]="categories"
-      [loadingOptions]="loadingOptions"
-      (filterChange)="onFilterChange($event)"
-      (clearFilters)="onClearFilters()"
-    ></app-event-filter>
-  </section>
-
-  <!-- Results Summary Counter -->
-  @if (!loading && !errorMessage) {
-    <div class="results-header" aria-live="polite">
-      <span class="results-count">
-        Showing <strong>{{ totalCount }}</strong> {{ totalCount === 1 ? 'event' : 'events' }}
-      </span>
-    </div>
-  }
-
-  <!-- Mutually Exclusive Error State -->
-  @if (errorMessage) {
-    <section class="error-container" role="alert">
-      <div class="error-icon-box">
-        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-      </div>
-      <h2 class="error-title">Unable to Load Events</h2>
-      <p class="error-message">{{ errorMessage }}</p>
-      <button type="button" class="btn-retry-events" (click)="reloadEvents()">
-        Try Again
-      </button>
-    </section>
-  } @else {
-    <!-- Events Card List (Handles loading, empty, and data states internally) -->
-    <section class="cards-section" aria-label="Events catalog">
-      <app-event-card-list
-        [events]="events"
-        [loading]="loading"
-        (viewEvent)="onViewEvent($event)"
-      ></app-event-card-list>
-    </section>
-
-    <!-- Pagination Controls -->
-    @if (!loading && totalPages > 1) {
-      <nav class="pagination-nav" aria-label="Events pagination">
-        <button
-          type="button"
-          class="btn-pagination"
-          [disabled]="page <= 1"
-          (click)="goToPage(page - 1)"
-          aria-label="Previous page"
-        >
-          <svg class="pagination-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span>Previous</span>
-        </button>
-
-        <span class="pagination-info">
-          Page <strong class="page-current">{{ page }}</strong> of <strong>{{ totalPages }}</strong>
-        </span>
-
-        <button
-          type="button"
-          class="btn-pagination"
-          [disabled]="page >= totalPages"
-          (click)="goToPage(page + 1)"
-          aria-label="Next page"
-        >
-          <span>Next</span>
-          <svg class="pagination-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
+      <!-- Center: Navigation Links -->
+      <nav class="center-nav" aria-label="Main Navigation">
+        <ul class="nav-links-list">
+          <li class="nav-link-item">
+            <a routerLink="/events" class="nav-link is-active" aria-current="page">
+              <span>Home</span>
+              <span class="active-indicator" aria-hidden="true"></span>
+            </a>
+          </li>
+          <li class="nav-link-item">
+            <a routerLink="/events" class="nav-link">
+              <span>Events</span>
+            </a>
+          </li>
+          <li class="nav-link-item">
+            <a routerLink="/bookings" class="nav-link">
+              <span>Bookings</span>
+            </a>
+          </li>
+        </ul>
       </nav>
-    }
-  }
+
+      <!-- Right: Theme Toggle & Sign In / Account -->
+      <div class="navbar-right-group">
+        <!-- Theme Toggle Button -->
+        <button
+          type="button"
+          class="btn-theme-toggle"
+          (click)="toggleTheme()"
+          [attr.aria-label]="isDarkMode ? 'Switch to light theme' : 'Switch to dark theme'"
+          title="Toggle light/dark theme"
+        >
+          @if (!isDarkMode) {
+            <!-- Moon Icon for Light Mode (Click to switch to dark) -->
+            <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          } @else {
+            <!-- Sun Icon for Dark Mode (Click to switch to light) -->
+            <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          }
+        </button>
+
+        <!-- Auth Actions -->
+        @if (!authService.isAuthenticated()) {
+          <a
+            routerLink="/auth/login"
+            class="btn-signin-pill"
+            aria-label="Sign In"
+          >
+            <svg class="btn-signin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Sign In</span>
+          </a>
+        } @else {
+          <!-- Authenticated User Menu -->
+          <div class="user-menu-wrapper">
+            <button
+              type="button"
+              class="btn-user-avatar"
+              (click)="toggleUserMenu()"
+              [attr.aria-expanded]="isUserMenuOpen"
+              aria-label="User profile menu"
+            >
+              <span class="user-avatar-text">
+                {{ (authService.currentUser()?.displayName?.charAt(0) || 'U') | uppercase }}
+              </span>
+              <span class="user-name-label">
+                {{ authService.currentUser()?.displayName || 'Account' }}
+              </span>
+              <svg class="avatar-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            @if (isUserMenuOpen) {
+              <div class="user-dropdown-menu" role="menu">
+                @if (authService.isAdmin()) {
+                  <a routerLink="/admin/dashboard" class="menu-item" (click)="isUserMenuOpen = false" role="menuitem">
+                    <span>Admin Dashboard</span>
+                  </a>
+                } @else {
+                  <a routerLink="/customer-dashboard" class="menu-item" (click)="isUserMenuOpen = false" role="menuitem">
+                    <span>My Dashboard</span>
+                  </a>
+                }
+                <a routerLink="/bookings" class="menu-item" (click)="isUserMenuOpen = false" role="menuitem">
+                  <span>My Bookings</span>
+                </a>
+                <a routerLink="/profile" class="menu-item" (click)="isUserMenuOpen = false" role="menuitem">
+                  <span>Profile Settings</span>
+                </a>
+                <div class="menu-divider"></div>
+                <button type="button" class="menu-item btn-logout" (click)="onLogout()" role="menuitem">
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-content-wrapper">
+
+    <!-- 2. TWO-COLUMN HERO SECTION (~40% Left / ~60% Right) -->
+    <section class="hero-section" aria-label="Featured Discover Section">
+      <div class="hero-container">
+
+        <!-- HERO LEFT COLUMN: Headlines & Search/Filter Card (~40%) -->
+        <div class="hero-left-column">
+          <!-- Pill Badge -->
+          <div class="hero-pill-badge" aria-label="Tagline">
+            <span>Find. Book. Experience.</span>
+          </div>
+
+          <!-- Main Heading -->
+          <h1 class="hero-headline">
+            Discover Events<br>
+            <span class="vivid-purple-text">That Inspire</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="hero-subtitle">
+            Find and book premium events, concerts and experiences that create lasting memories.
+          </p>
+
+          <!-- Search and Filter Card -->
+          <div class="search-filter-card" role="search" aria-label="Search and filter events">
+            <form (ngSubmit)="onSearchSubmit(); $event.preventDefault()">
+              <!-- Row 1: Search by Event Name -->
+              <div class="filter-row full-width-row">
+                <div class="input-with-icon-box">
+                  <svg class="field-icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input
+                    type="text"
+                    id="heroSearchInput"
+                    name="search"
+                    class="filter-text-input"
+                    placeholder="Search by event name..."
+                    [(ngModel)]="searchQuery"
+                    (keyup.enter)="onSearchSubmit()"
+                    autocomplete="off"
+                    aria-label="Search by event name"
+                  />
+                </div>
+              </div>
+
+              <!-- Row 2: Venue Dropdown & Category Dropdown -->
+              <div class="filter-row two-col-row">
+                <!-- Venue Select -->
+                <div class="input-with-icon-box">
+                  <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <select
+                    id="heroVenueSelect"
+                    name="venue"
+                    class="filter-select-input"
+                    [(ngModel)]="selectedVenue"
+                    (ngModelChange)="onSearchSubmit()"
+                    aria-label="Select venue"
+                  >
+                    <option [ngValue]="null">All Venues</option>
+                    @for (v of venues; track v.id) {
+                      <option [ngValue]="v.id">{{ v.name }}</option>
+                    }
+                  </select>
+                  <svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+
+                <!-- Category Select -->
+                <div class="input-with-icon-box">
+                  <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                  <select
+                    id="heroCategorySelect"
+                    name="category"
+                    class="filter-select-input"
+                    [(ngModel)]="selectedCategory"
+                    (ngModelChange)="onSearchSubmit()"
+                    aria-label="Select category"
+                  >
+                    <option [ngValue]="null">All Categories</option>
+                    @for (c of categories; track c.id) {
+                      <option [ngValue]="c.id">{{ c.name }}</option>
+                    }
+                  </select>
+                  <svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Row 3: Date & Time -->
+              <div class="filter-row two-col-row">
+                <!-- Date Input -->
+                <div class="input-with-icon-box">
+                  <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <input
+                    type="date"
+                    id="heroDateInput"
+                    name="date"
+                    class="filter-text-input date-input"
+                    [(ngModel)]="selectedDate"
+                    (ngModelChange)="onSearchSubmit()"
+                    aria-label="Select event date"
+                  />
+                </div>
+
+                <!-- Time Select -->
+                <div class="input-with-icon-box">
+                  <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <select
+                    id="heroTimeSelect"
+                    name="time"
+                    class="filter-select-input"
+                    [(ngModel)]="selectedTime"
+                    (ngModelChange)="onSearchSubmit()"
+                    aria-label="Select time of day"
+                  >
+                    <option value="">Any Time</option>
+                    <option value="morning">Morning (Before 12 PM)</option>
+                    <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                    <option value="evening">Evening (5 PM - 9 PM)</option>
+                    <option value="night">Night (After 9 PM)</option>
+                  </select>
+                  <svg class="dropdown-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Row 4: Buttons (Find Events & Clear Filters) -->
+              <div class="filter-actions-row">
+                <button
+                  type="button"
+                  class="btn-find-events"
+                  (click)="onSearchSubmit()"
+                  aria-label="Find events"
+                >
+                  <svg class="btn-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <span>Find Events</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-clear-filters"
+                  (click)="onClearFilters()"
+                  aria-label="Clear all filters"
+                >
+                  <svg class="btn-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>Clear Filters</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- HERO RIGHT COLUMN: Featured Carousel Card (~60%) -->
+        <div class="hero-right-column">
+          <div class="hero-card-viewport">
+            @for (slide of heroSlides; track slide.id; let i = $index) {
+              @if (i === currentHeroIndex) {
+                <article
+                  class="hero-featured-card"
+                  [style.background-image]="slide.hasImageError ? slide.fallbackGradient : 'url(' + slide.imageUrl + ')'"
+                  [attr.aria-label]="slide.artistTitle + ' ' + slide.subtitle"
+                >
+                  <!-- Background Image Fallback Handler -->
+                  @if (!slide.hasImageError) {
+                    <img
+                      [src]="slide.imageUrl"
+                      [alt]="slide.artistTitle"
+                      class="visually-hidden-image"
+                      (error)="onHeroImageError(slide)"
+                    />
+                  }
+
+                  <!-- Dark Cinematic Vignette Gradient Overlay -->
+                  <div class="hero-card-dark-overlay" aria-hidden="true"></div>
+
+                  <!-- Performer / Stage Spotlight Overlay -->
+                  <div class="hero-card-lighting-effect" aria-hidden="true"></div>
+
+                  <!-- Carousel Edge Arrows -->
+                  <button
+                    type="button"
+                    class="carousel-nav-arrow arrow-left"
+                    (click)="prevHeroSlide()"
+                    aria-label="Previous featured event"
+                  >
+                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="carousel-nav-arrow arrow-right"
+                    (click)="nextHeroSlide()"
+                    aria-label="Next featured event"
+                  >
+                    <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+
+                  <!-- Card Content (Left-aligned within the card) -->
+                  <div class="hero-card-content">
+                    <!-- Badge -->
+                    <span class="hero-category-badge">{{ slide.badge }}</span>
+
+                    <!-- Event Title with Coral Accent and Stylized Subtitle -->
+                    <div class="hero-event-titles">
+                      <h2 class="hero-artist-name">{{ slide.artistTitle }}</h2>
+                      <span class="hero-event-subtitle">{{ slide.subtitle }}</span>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div class="hero-meta-row">
+                      <svg class="hero-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span>{{ slide.dateText }}</span>
+                    </div>
+
+                    <!-- Venue -->
+                    <div class="hero-meta-row">
+                      <svg class="hero-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      <span>{{ slide.venueText }}</span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="hero-card-description">
+                      {{ slide.description }}
+                    </p>
+
+                    <!-- CTA Button -->
+                    <div class="hero-cta-wrap">
+                      <button
+                        type="button"
+                        class="btn-view-hero-details"
+                        (click)="onHeroCtaClick(slide)"
+                        [attr.aria-label]="'View Event Details for ' + slide.artistTitle"
+                      >
+                        View Event Details
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Pagination Dots at Bottom Center -->
+                  <div class="carousel-pagination-dots" role="tablist" aria-label="Featured slides">
+                    @for (dot of heroSlides; track dot.id; let dotIndex = $index) {
+                      <button
+                        type="button"
+                        class="pagination-dot"
+                        [class.is-active]="dotIndex === currentHeroIndex"
+                        (click)="setHeroSlide(dotIndex)"
+                        [attr.aria-label]="'Go to slide ' + (dotIndex + 1)"
+                      ></button>
+                    }
+                  </div>
+                </article>
+              }
+            }
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. FEATURED EVENTS SECTION -->
+    <section class="featured-events-section" aria-label="Featured Events Catalog">
+      <div class="section-container">
+
+        <!-- Section Header with Heading and Nav Arrows -->
+        <div class="featured-section-header">
+          <div class="header-text-group">
+            <div class="header-title-row">
+              <h2 class="section-title">Featured Events</h2>
+              @if (loading && displayedEvents.length > 0) {
+                <span class="syncing-indicator" title="Synchronizing with server...">
+                  <span class="syncing-spinner"></span>
+                  <span>Syncing...</span>
+                </span>
+              }
+            </div>
+            <p class="section-subtitle">Handpicked events you won't want to miss.</p>
+          </div>
+
+          <div class="section-header-arrows" aria-label="Featured events navigation">
+            <button
+              type="button"
+              class="btn-nav-circle"
+              (click)="prevHeroSlide()"
+              aria-label="Previous events"
+            >
+              <svg class="nav-circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              class="btn-nav-circle"
+              (click)="nextHeroSlide()"
+              aria-label="Next events"
+            >
+              <svg class="nav-circle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 COMPACT HORIZONTAL EVENT CARDS (Desktop: 4 across, Left Image ~45%, Right Content ~55%) -->
+        @if (loading && displayedEvents.length === 0) {
+          <div class="loading-state-box" role="status">
+            <div class="spinner-ring"></div>
+            <span>Loading upcoming events...</span>
+          </div>
+        } @else if (displayedEvents.length === 0) {
+          <div class="empty-state-box" role="status">
+            <div class="empty-icon-circle">
+              <svg class="empty-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <h3 class="empty-headline">No events found matching your criteria</h3>
+            <p class="empty-desc">Try clearing your filters or searching for different dates or keywords.</p>
+            <button type="button" class="btn-clear-filters-inline" (click)="onClearFilters()">
+              Clear All Filters
+            </button>
+          </div>
+        } @else {
+          <div class="horizontal-cards-grid" role="region" aria-label="Event Cards Catalog">
+            @for (event of displayedEvents.slice(0, visibleCardLimit); track event.id) {
+              <article
+                class="compact-horizontal-card"
+                (click)="onViewEvent(event)"
+                (keydown.enter)="onViewEvent(event)"
+                (keydown.space)="onViewEvent(event); $event.preventDefault()"
+                tabindex="0"
+                [attr.aria-label]="event.name"
+              >
+                <!-- LEFT SIDE: Event Image (~45% width) -->
+                <div class="card-image-left">
+                  @if (event.posterUrl && !event.hasImageError) {
+                    <img
+                      [src]="event.posterUrl"
+                      [alt]="event.name + ' poster'"
+                      class="card-img"
+                      loading="lazy"
+                      (error)="onCardImageError(event)"
+                    />
+                  } @else {
+                    <div class="card-img-placeholder" [style.background]="event.fallbackGradient || 'linear-gradient(135deg, #312e81 0%, #1e1b4b 100%)'">
+                      <svg class="placeholder-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span class="placeholder-tag">{{ event.categoryName }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- RIGHT SIDE: Information (~55% width) -->
+                <div class="card-content-right">
+                  <!-- Top Row: Category Badge (Left) & Heart Wishlist (Right) -->
+                  <div class="card-top-meta-row">
+                    <span class="card-category-badge">{{ event.categoryName }}</span>
+
+                    <button
+                      type="button"
+                      class="btn-wishlist-heart"
+                      [class.is-active]="event.isWishlisted"
+                      (click)="toggleWishlist(event.id, $event)"
+                      [attr.aria-label]="event.isWishlisted ? 'Remove ' + event.name + ' from wishlist' : 'Add ' + event.name + ' to wishlist'"
+                      [attr.aria-pressed]="event.isWishlisted"
+                    >
+                      <svg
+                        class="heart-svg"
+                        viewBox="0 0 24 24"
+                        [attr.fill]="event.isWishlisted ? '#ef4444' : 'none'"
+                        [attr.stroke]="event.isWishlisted ? '#ef4444' : 'currentColor'"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Event Title -->
+                  <h3 class="card-event-title" [title]="event.name">
+                    {{ event.name }}
+                  </h3>
+
+                  <!-- Date & Time -->
+                  <div class="card-meta-line date-line">
+                    <svg class="card-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <time [attr.datetime]="event.eventDate">
+                      {{ event.eventDate | date:'mediumDate' }}
+                      @if (event.startTime) {
+                        &bull; {{ event.startTime }}
+                      }
+                    </time>
+                  </div>
+
+                  <!-- Venue Location -->
+                  <div class="card-meta-line venue-line" [title]="event.venueName">
+                    <svg class="card-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span class="venue-text">{{ event.venueName }}</span>
+                  </div>
+
+                  <!-- Price & View Details Action -->
+                  <div class="card-bottom-row">
+                    <div class="card-price-block">
+                      <span class="price-amount">
+                        {{ event.ticketPrice === 0 ? 'Free' : ('LKR ' + (event.ticketPrice | number:'1.0-0')) }}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn-card-details-outline"
+                      (click)="onViewEvent(event); $event.stopPropagation()"
+                      [attr.aria-label]="'View details for ' + event.name"
+                    >
+                      <span>View Details</span>
+                      <span class="arrow-glyph" aria-hidden="true">&rarr;</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+
+          <!-- Centered Load More Events Button -->
+          @if (visibleCardLimit < displayedEvents.length || (hasBackendData && page < totalPages)) {
+            <div class="load-more-container">
+              <button
+                type="button"
+                class="btn-load-more"
+                (click)="onLoadMore()"
+                aria-label="Load more events"
+              >
+                <span>Load More Events</span>
+                <svg class="load-more-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          }
+        }
+
+      </div>
+    </section>
+
+  </main>
 </div>
