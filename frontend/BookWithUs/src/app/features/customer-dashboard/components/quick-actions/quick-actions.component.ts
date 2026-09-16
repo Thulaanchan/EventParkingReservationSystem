@@ -45,7 +45,7 @@ export class QuickActionsComponent {
       title: 'Payment History',
       description: 'View all your payments',
       iconType: 'payment',
-      link: '/payments'
+      link: '/payments/history'
     },
     {
       id: 'profile',

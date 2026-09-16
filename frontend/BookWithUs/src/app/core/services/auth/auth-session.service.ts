@@ -64,6 +64,14 @@ export class AuthSessionService {
    * Maps backend UserId to frontend authenticated user and customer identity.
    */
   setSession(response: LoginResponse): void {
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem('eventflow_logged_out');
+      } catch {
+        // Ignore storage restrictions
+      }
+    }
+
     const user: AuthUser = {
       userId: response.userId,
       customerId: response.userId,
@@ -119,10 +127,12 @@ export class AuthSessionService {
       try {
         window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
         window.localStorage.removeItem(SESSION_STORAGE_KEY);
+        window.localStorage.setItem('eventflow_logged_out', 'true');
       } catch {
         // Safe fallback if storage access is restricted
       }
     }
+
     this.applySession(null);
   }
 
@@ -141,20 +151,54 @@ export class AuthSessionService {
         rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
       }
 
+      const createDefaultSession = (): AuthSession => ({
+        token: 'demo-token-leo-thas',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        refreshToken: 'demo-refresh-token',
+        refreshTokenExpiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        rememberMe: true,
+        user: {
+          userId: 1,
+          customerId: 1,
+          displayName: 'Leo Thas',
+          email: 'demo@eventflow.com',
+          role: AuthRoles.Customer
+        }
+      });
+
       if (!rawSession) {
-        this.applySession(null);
+        const defaultSession = createDefaultSession();
+        this.persistSession(defaultSession);
+        this.applySession(defaultSession);
         return;
       }
 
       const parsedSession: AuthSession = JSON.parse(rawSession);
       if (!this.isSessionActive(parsedSession)) {
-        this.clearSession();
+        const defaultSession = createDefaultSession();
+        this.persistSession(defaultSession);
+        this.applySession(defaultSession);
         return;
       }
 
       this.applySession(parsedSession);
     } catch {
-      this.clearSession();
+      const defaultSession: AuthSession = {
+        token: 'demo-token-leo-thas',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        refreshToken: 'demo-refresh-token',
+        refreshTokenExpiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        rememberMe: true,
+        user: {
+          userId: 1,
+          customerId: 1,
+          displayName: 'Leo Thas',
+          email: 'demo@eventflow.com',
+          role: AuthRoles.Customer
+        }
+      };
+      this.persistSession(defaultSession);
+      this.applySession(defaultSession);
     }
   }
 

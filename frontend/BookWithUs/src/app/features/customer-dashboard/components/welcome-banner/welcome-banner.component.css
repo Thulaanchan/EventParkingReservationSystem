@@ -83,3 +83,11 @@
   width: 1.125rem;
   height: 1.125rem;
 }
+
+:host-context(.dark-theme) .welcome-title {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .welcome-subtitle {
+  color: #94a3b8;
+}

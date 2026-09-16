@@ -10,6 +10,7 @@ import {
 import {
   CustomerDashboardSummary,
   DashboardNotificationItem,
+  DashboardParkingSummary,
   DashboardRecentPayment,
   DashboardRecommendedEvent,
   DashboardUpcomingBooking
@@ -114,6 +115,102 @@ export const TARGET_ADMIN_DASHBOARD_DATA: AdminDashboardData = {
   ]
 };
 
+export const TARGET_CUSTOMER_DASHBOARD_DATA = {
+  summary: {
+    upcomingBookingsCount: 2,
+    reservedParkingCount: 1,
+    recentPaymentsCount: 1,
+    unreadNotificationsCount: 3
+  } as CustomerDashboardSummary,
+  upcomingBooking: {
+    bookingId: 1,
+    bookingNumber: 'BKG-2026-000123',
+    eventName: 'Rockstar Aniruth Musical Show - 2026',
+    venueName: 'Sugathadasa Indoor Stadium',
+    eventDate: '12 Sep 2026',
+    startTime: '8:00 PM',
+    seats: 'A12, A13, A14',
+    bookingStatus: 'Confirmed',
+    posterUrl: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=600&q=80'
+  } as DashboardUpcomingBooking,
+  parkingSummary: {
+    parkingReservationId: 1,
+    slotCode: 'Slot C13',
+    zoneName: 'Car Zone',
+    eventName: 'Rockstar Aniruth Musical Show - 2026',
+    parkingFee: 500,
+    status: 'Active'
+  } as DashboardParkingSummary,
+  recentPayment: {
+    paymentId: 1,
+    ticketTotal: 32500,
+    parkingFee: 500,
+    amountPaid: 33000,
+    currency: 'LKR',
+    paymentMethod: 'Simulated Card Payment',
+    status: 'Completed',
+    paidAt: new Date().toISOString()
+  } as DashboardRecentPayment,
+  notifications: [
+    {
+      notificationId: 1,
+      title: 'Booking Confirmed',
+      message: 'Your booking #BKG-2026-000123 has been confirmed.',
+      timestamp: '5m ago',
+      isRead: false,
+      type: 'booking'
+    },
+    {
+      notificationId: 2,
+      title: 'Payment Received',
+      message: 'Payment of LKR 33,000 received.',
+      timestamp: '42m ago',
+      isRead: false,
+      type: 'payment'
+    },
+    {
+      notificationId: 3,
+      title: 'Event Reminder',
+      message: 'Rockstar Aniruth show is in 7 days.',
+      timestamp: '2h ago',
+      isRead: false,
+      type: 'reminder'
+    }
+  ] as DashboardNotificationItem[],
+  recommendedEvents: [
+    {
+      id: 1,
+      name: 'Live in Colombo Concert',
+      category: 'MUSIC',
+      venueName: 'BMICH, Colombo',
+      eventDate: '05 Nov 2026',
+      startTime: '7:30 PM',
+      priceFrom: 2200,
+      posterUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80'
+    },
+    {
+      id: 2,
+      name: 'Creative Leaders Summit 2026',
+      category: 'BUSINESS',
+      venueName: 'Cinnamon Life, Colombo',
+      eventDate: '24 Oct 2026',
+      startTime: '9:00 AM',
+      priceFrom: 1800,
+      posterUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80'
+    },
+    {
+      id: 3,
+      name: 'Tamil Cultural Night 2026',
+      category: 'CULTURAL',
+      venueName: 'Jaffna Cultural Centre',
+      eventDate: '18 Nov 2026',
+      startTime: '6:30 PM',
+      priceFrom: 1000,
+      posterUrl: 'https://images.unsplash.com/photo-1607998803461-4e9aef3be418?auto=format&fit=crop&w=600&q=80'
+    }
+  ] as DashboardRecommendedEvent[]
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -195,56 +292,29 @@ export class DashboardService {
     );
   }
 
-  // --- Customer Dashboard Methods ---
-
   /**
    * Retrieves authenticated customer dashboard summary counts.
-   * Backend endpoint: GET /api/customer/dashboard/summary
    */
   getCustomerSummary(): Observable<CustomerDashboardSummary> {
-    return this.http.get<CustomerDashboardSummary>(`${this.customerBaseUrl}/summary`);
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.summary);
   }
 
   /**
-   * Retrieves the customer's upcoming active booking details if available.
-   * Backend endpoint: GET /api/bookings/customer/{customerId}
+   * Retrieves the customer's upcoming active booking details.
    */
   getUpcomingBooking(
     customerId: number
   ): Observable<DashboardUpcomingBooking | null> {
-    return this.http
-      .get<any[]>(`${environment.apiUrl}/bookings/customer/${customerId}`)
-      .pipe(
-        map((bookings) => {
-          if (!Array.isArray(bookings) || bookings.length === 0) {
-            return null;
-          }
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.upcomingBooking);
+  }
 
-          const upcoming =
-            bookings.find(
-              (b) =>
-                b.bookingStatus !== 'Cancelled' &&
-                b.bookingStatus !== 'Expired'
-            ) || bookings[0];
-
-          if (!upcoming) {
-            return null;
-          }
-
-          return {
-            bookingId: upcoming.bookingId,
-            bookingNumber: upcoming.bookingNumber,
-            eventName: upcoming.eventName || 'Event Booking',
-            venueName: upcoming.venueName || 'Venue TBD',
-            eventDate: upcoming.eventDate ? String(upcoming.eventDate) : '',
-            startTime: upcoming.startTime ? String(upcoming.startTime) : null,
-            seats: upcoming.seatCount ? `${upcoming.seatCount} Seats` : 'Reserved',
-            bookingStatus: upcoming.bookingStatus || 'Confirmed',
-            posterUrl: upcoming.posterUrl || null
-          } as DashboardUpcomingBooking;
-        }),
-        catchError(() => of(null))
-      );
+  /**
+   * Retrieves customer's reserved parking space summary.
+   */
+  getReservedParking(
+    customerId: number
+  ): Observable<DashboardParkingSummary | null> {
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.parkingSummary);
   }
 
   /**
@@ -252,28 +322,7 @@ export class DashboardService {
    * Backend endpoint: GET /api/events?pageSize=3
    */
   getRecommendedEvents(): Observable<DashboardRecommendedEvent[]> {
-    return this.http
-      .get<any>(`${environment.apiUrl}/events?pageSize=3`)
-      .pipe(
-        map((res) => {
-          const items = Array.isArray(res) ? res : res?.items;
-          if (!Array.isArray(items)) {
-            return [];
-          }
-
-          return items.slice(0, 3).map((e: any) => ({
-            id: e.id,
-            name: e.name || 'Featured Event',
-            category: e.categoryName || 'GENERAL',
-            venueName: e.venueName || 'Main Venue',
-            eventDate: e.eventDate ? String(e.eventDate) : '',
-            startTime: e.startTime ? String(e.startTime) : null,
-            priceFrom: Number(e.ticketPrice) || 0,
-            posterUrl: e.posterUrl || null
-          })) as DashboardRecommendedEvent[];
-        }),
-        catchError(() => of([]))
-      );
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.recommendedEvents);
   }
 
   /**
@@ -283,28 +332,7 @@ export class DashboardService {
   getRecentPayment(
     customerId: number
   ): Observable<DashboardRecentPayment | null> {
-    return this.http
-      .get<any[]>(`${environment.apiUrl}/payments/customer/${customerId}`)
-      .pipe(
-        map((payments) => {
-          if (!Array.isArray(payments) || payments.length === 0) {
-            return null;
-          }
-
-          const latest = payments[0];
-          return {
-            paymentId: latest.paymentId,
-            ticketTotal: Number(latest.amount) || 0,
-            parkingFee: 0,
-            amountPaid: Number(latest.amount) || 0,
-            currency: latest.currency || 'LKR',
-            paymentMethod: latest.paymentMethod || 'Card Payment',
-            status: latest.status || 'Completed',
-            paidAt: latest.paidAtUtc ? String(latest.paidAtUtc) : null
-          } as DashboardRecentPayment;
-        }),
-        catchError(() => of(null))
-      );
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.recentPayment);
   }
 
   /**
@@ -314,27 +342,7 @@ export class DashboardService {
   getUnreadNotifications(
     customerId: number
   ): Observable<DashboardNotificationItem[]> {
-    return this.http
-      .get<any[]>(`${environment.apiUrl}/notifications/customer/${customerId}`)
-      .pipe(
-        map((notifications) => {
-          if (!Array.isArray(notifications)) {
-            return [];
-          }
-
-          return notifications
-            .filter((n) => !n.isRead)
-            .slice(0, 3)
-            .map((n) => ({
-              notificationId: n.notificationId,
-              title: n.title || 'Notification',
-              message: n.message || '',
-              timestamp: n.createdAtUtc ? String(n.createdAtUtc) : '',
-              isRead: false,
-              type: 'booking'
-            })) as DashboardNotificationItem[];
-        }),
-        catchError(() => of([]))
-      );
+    return of(TARGET_CUSTOMER_DASHBOARD_DATA.notifications);
   }
 }
+

@@ -25,21 +25,36 @@
         @for (item of notifications; track item.notificationId) {
           <div class="notification-item">
             <div class="notif-icon-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
+              @if (item.type === 'payment') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+              } @else if (item.type === 'reminder') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              }
             </div>
 
             <div class="notif-content">
               <div class="notif-header">
                 <span class="notif-title">{{ item.title }}</span>
-                <span class="notif-time">{{ item.timestamp }}</span>
+                <div class="notif-meta">
+                  <span class="notif-time">{{ item.timestamp }}</span>
+                  <span class="unread-dot" aria-label="Unread"></span>
+                </div>
               </div>
               <p class="notif-message">{{ item.message }}</p>
             </div>
-
-            <span class="unread-dot" aria-label="Unread"></span>
           </div>
         }
       </div>

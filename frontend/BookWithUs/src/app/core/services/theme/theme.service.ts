@@ -21,10 +21,6 @@ export class ThemeService {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
       if (savedTheme === 'dark') {
         this.setTheme(true);
-      } else if (savedTheme === 'light') {
-        this.setTheme(false);
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        this.setTheme(true);
       } else {
         this.setTheme(false);
       }

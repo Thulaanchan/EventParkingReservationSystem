@@ -51,9 +51,10 @@ export const apiInterceptor: HttpInterceptorFn = (
         req.url.includes('/api/auth/logout');
 
       const hasRefreshToken = !!authSessionService.getRefreshToken();
+      const isDemoToken = authSessionService.getToken() === 'demo-token-leo-thas';
 
       // Attempt token refresh on 401 Unauthorized for standard API requests
-      if (error.status === 401 && !isAuthEndpoint && hasRefreshToken) {
+      if (error.status === 401 && !isAuthEndpoint && hasRefreshToken && !isDemoToken) {
         if (!isRefreshing) {
           isRefreshing = true;
           refreshTokenSubject.next(null);

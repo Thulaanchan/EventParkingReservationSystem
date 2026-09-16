@@ -219,8 +219,8 @@
 
 /* Discover More Card (screen-07) */
 .discover-more-card {
-  background-color: #f8fafc;
-  border: 1.5px dashed #cbd5e1;
+  background-color: #f8f7ff;
+  border: 1.5px dashed #c7d2fe;
   border-radius: 1rem;
   padding: 1.75rem 1.25rem;
   display: flex;
@@ -277,4 +277,45 @@
 
 .browse-events-btn:hover {
   background-color: #4338ca;
+}
+
+.favorite-btn.is-wishlisted {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+:host-context(.dark-theme) .section-title {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .event-card {
+  background-color: #161824;
+  border-color: #262938;
+}
+
+:host-context(.dark-theme) .event-title,
+:host-context(.dark-theme) .price-val {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .meta-row,
+:host-context(.dark-theme) .price-prefix {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .price-action-row {
+  border-top-color: #262938;
+}
+
+:host-context(.dark-theme) .discover-more-card {
+  background-color: #161824;
+  border-color: #4338ca;
+}
+
+:host-context(.dark-theme) .discover-card-title {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .discover-card-sub {
+  color: #94a3b8;
 }
