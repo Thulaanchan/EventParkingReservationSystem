@@ -34,8 +34,8 @@
 }
 
 .box-purple {
-  background-color: #ede9fe;
-  color: #4f46e5;
+  background-color: #4f46e5;
+  color: #ffffff;
 }
 
 .card-icon-box svg {
@@ -80,8 +80,8 @@
 }
 
 .booking-poster {
-  width: 5rem;
-  height: 6rem;
+  width: 5.5rem;
+  height: 5.5rem;
   border-radius: 0.5rem;
   overflow: hidden;
   background-color: #f1f5f9;
@@ -240,4 +240,31 @@
 .arrow-icon {
   width: 0.875rem;
   height: 0.875rem;
+}
+
+:host-context(.dark-theme) .dash-card {
+  background-color: #161824;
+  border-color: #262938;
+}
+
+:host-context(.dark-theme) .card-title,
+:host-context(.dark-theme) .event-name {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .detail-line {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .dash-card-footer {
+  border-top-color: #262938;
+}
+
+:host-context(.dark-theme) .badge-gray {
+  background-color: #1e202e;
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .active-count-preview {
+  background-color: #1e202e;
 }

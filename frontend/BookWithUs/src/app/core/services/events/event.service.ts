@@ -90,6 +90,8 @@ export class EventService {
 
     if (request.poster instanceof File) {
       formData.append('Poster', request.poster, request.poster.name);
+    } else if (request.posterUrl && request.posterUrl.trim()) {
+      formData.append('PosterUrl', request.posterUrl.trim());
     }
 
     return formData;

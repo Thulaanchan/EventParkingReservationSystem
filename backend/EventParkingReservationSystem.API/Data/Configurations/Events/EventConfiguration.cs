@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Data.Seed.Events;
+using EventParkingReservationSystem.API.Data.Seed.Events;
 using EventParkingReservationSystem.API.Models.Entities.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -32,7 +32,7 @@ public sealed class EventConfiguration
             .HasMaxLength(100);
 
         builder.Property(x => x.PosterUrl)
-            .HasMaxLength(500);
+            .HasMaxLength(1000);
 
         // =====================================================
         // EVENT ↔ VENUE

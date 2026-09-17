@@ -73,7 +73,7 @@
           </div>
 
           <div class="status-pill-row">
-            <span class="status-pill badge-confirmed">{{ booking.bookingStatus }}</span>
+            <span class="status-pill badge-confirmed">{{ booking.bookingStatus === '1' ? 'Confirmed' : (booking.bookingStatus || 'Confirmed') }}</span>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DashboardUpcomingBooking } from '../../../../core/models/dashboards/customer-dashboard.model';
@@ -6,7 +6,7 @@ import { DashboardUpcomingBooking } from '../../../../core/models/dashboards/cus
 @Component({
   selector: 'app-upcoming-booking-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './upcoming-booking-card.component.html',
   styleUrl: './upcoming-booking-card.component.css'
 })

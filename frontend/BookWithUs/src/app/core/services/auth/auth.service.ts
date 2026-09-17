@@ -104,9 +104,41 @@ export class AuthService {
   }
 
   /**
-   * Clears active authentication session.
+   * Refreshes active JWT access token using rotated refresh token.
    */
-  logout(): void {
+  refreshToken(): Observable<LoginResponse> {
+    const currentRefreshToken = this.sessionService.getRefreshToken();
+    if (!currentRefreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    return this.http
+      .post<LoginResponse>(`${this.baseUrl}/refresh`, { refreshToken: currentRefreshToken })
+      .pipe(
+        tap((response) => {
+          this.sessionService.updateTokens(
+            response.token,
+            response.expiresAt,
+            response.refreshToken,
+            response.refreshTokenExpiresAt
+          );
+        })
+      );
+  }
+
+  /**
+   * Clears active authentication session and revokes server-side refresh token.
+   */
+  logout(callApi = true): void {
+    const currentRefreshToken = this.sessionService.getRefreshToken();
+    if (callApi && currentRefreshToken) {
+      this.http
+        .post<{ message: string }>(`${this.baseUrl}/logout`, { refreshToken: currentRefreshToken })
+        .subscribe({
+          next: () => {},
+          error: () => {} // Non-blocking revocation
+        });
+    }
     this.sessionService.clearSession();
   }
 

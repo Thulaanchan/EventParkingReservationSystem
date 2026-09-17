@@ -108,3 +108,25 @@
   color: #4f46e5;
   transform: translateX(2px);
 }
+
+:host-context(.dark-theme) .section-title {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .action-card {
+  background-color: #161824;
+  border-color: #262938;
+}
+
+:host-context(.dark-theme) .action-heading {
+  color: #f8fafc;
+}
+
+:host-context(.dark-theme) .action-desc {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .action-icon-box {
+  background-color: #262938;
+  color: #818cf8;
+}

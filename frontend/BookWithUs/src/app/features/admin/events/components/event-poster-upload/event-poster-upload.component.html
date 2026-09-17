@@ -16,73 +16,179 @@
     </div>
   </div>
 
-  <!-- Hidden File Input -->
-  <input
-    #fileInput
-    id="eventPosterFileInput"
-    type="file"
-    class="visually-hidden-input"
-    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-    [disabled]="disabled"
-    (change)="onFileInputChange($event)"
-    aria-label="Upload event poster image"
-  />
-
-  <!-- Upload Area (Drop Zone) -->
-  <div
-    class="upload-dropzone"
-    [class.is-dragover]="isDragging"
-    [class.has-preview]="!!activePreviewUrl"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave($event)"
-    (drop)="onDrop($event)"
-    (click)="openFileDialog()"
-    (keydown.enter)="openFileDialog()"
-    (keydown.space)="openFileDialog()"
-    tabindex="0"
-    role="button"
-    aria-label="Upload event poster: Drag and drop an image here or browse from your device"
-  >
-    <div class="dropzone-icon-box" aria-hidden="true">
-      <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-        <polyline points="21 15 16 10 5 21"></polyline>
+  <!-- Mode Selector Tabs -->
+  <div class="poster-mode-tabs" role="tablist" aria-label="Poster source selection">
+    <button
+      type="button"
+      role="tab"
+      id="tabUploadFile"
+      class="mode-tab-btn"
+      [class.is-active]="activeMode === 'file'"
+      [attr.aria-selected]="activeMode === 'file'"
+      aria-controls="panelUploadFile"
+      (click)="setMode('file')"
+      [disabled]="disabled"
+    >
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
       </svg>
-    </div>
-
-    <div class="dropzone-text-group">
-      <strong class="dropzone-headline">Upload Event Poster</strong>
-      <span class="dropzone-subtext">Drag and drop an image here, or browse from your device.</span>
-    </div>
+      <span>Upload Image File</span>
+    </button>
 
     <button
       type="button"
-      class="btn-choose-image"
+      role="tab"
+      id="tabImageUrl"
+      class="mode-tab-btn"
+      [class.is-active]="activeMode === 'url'"
+      [attr.aria-selected]="activeMode === 'url'"
+      aria-controls="panelImageUrl"
+      (click)="setMode('url')"
       [disabled]="disabled"
-      (click)="$event.stopPropagation(); openFileDialog()"
     >
-      Choose Image
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+      <span>Image URL</span>
     </button>
-
-    <span class="dropzone-helper-text">
-      JPG, JPEG, PNG or WebP &bull; Maximum 5 MB
-    </span>
   </div>
 
-  <!-- Validation Error Alert -->
-  @if (errorMessage) {
-    <div class="poster-validation-alert" role="alert">
-      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ errorMessage }}</span>
+  <!-- MODE 1: Upload Image File Panel -->
+  @if (activeMode === 'file') {
+    <div id="panelUploadFile" role="tabpanel" aria-labelledby="tabUploadFile" class="tab-panel">
+      <!-- Hidden File Input -->
+      <input
+        #fileInput
+        id="eventPosterFileInput"
+        type="file"
+        class="visually-hidden-input"
+        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+        [disabled]="disabled"
+        (change)="onFileInputChange($event)"
+        aria-label="Upload event poster image"
+      />
+
+      <!-- Upload Area (Drop Zone) -->
+      <div
+        class="upload-dropzone"
+        [class.is-dragover]="isDragging"
+        [class.has-preview]="!!objectUrl"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        (click)="openFileDialog()"
+        (keydown.enter)="openFileDialog()"
+        (keydown.space)="openFileDialog()"
+        tabindex="0"
+        role="button"
+        aria-label="Upload event poster: Drag and drop an image here or browse from your device"
+      >
+        <div class="dropzone-icon-box" aria-hidden="true">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </div>
+
+        <div class="dropzone-text-group">
+          <strong class="dropzone-headline">Upload Event Poster</strong>
+          <span class="dropzone-subtext">Drag and drop an image here, or browse from your device.</span>
+        </div>
+
+        <button
+          type="button"
+          class="btn-choose-image"
+          [disabled]="disabled"
+          (click)="$event.stopPropagation(); openFileDialog()"
+        >
+          Choose Image
+        </button>
+
+        <span class="dropzone-helper-text">
+          JPG, JPEG, PNG or WebP &bull; Maximum 5 MB
+        </span>
+      </div>
+
+      <!-- File Validation Error Alert -->
+      @if (fileErrorMessage) {
+        <div class="poster-validation-alert" role="alert">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ fileErrorMessage }}</span>
+        </div>
+      }
     </div>
   }
 
-  <!-- Active Preview Card (Selected File or Existing Server Poster) -->
+  <!-- MODE 2: Image URL Panel -->
+  @if (activeMode === 'url') {
+    <div id="panelImageUrl" role="tabpanel" aria-labelledby="tabImageUrl" class="tab-panel">
+      <div class="url-input-card">
+        <label for="eventPosterUrlInput" class="url-input-label">
+          Direct Image URL
+        </label>
+        <div class="url-input-wrapper" [class.has-error]="!!urlErrorMessage">
+          <div class="url-icon-box" aria-hidden="true">
+            <svg class="url-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <input
+            id="eventPosterUrlInput"
+            type="url"
+            class="url-input-field"
+            placeholder="https://example.com/event-image.jpg"
+            [ngModel]="urlInput"
+            (ngModelChange)="onUrlInputChange($event)"
+            [disabled]="disabled"
+            autocomplete="off"
+            aria-describedby="urlFeedback"
+          />
+          @if (urlInput) {
+            <button
+              type="button"
+              class="btn-clear-url"
+              (click)="clearUrl()"
+              [disabled]="disabled"
+              aria-label="Clear poster URL"
+            >
+              <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          }
+        </div>
+
+        <!-- URL Feedback / Error Alert -->
+        @if (urlErrorMessage) {
+          <div id="urlFeedback" class="poster-validation-alert" role="alert">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ urlErrorMessage }}</span>
+          </div>
+        } @else {
+          <span class="url-helper-text">
+            Provide a direct public image link (HTTPS recommended). The image preview will appear below automatically.
+          </span>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Active Preview Card (Selected File, Entered URL, or Existing Server Poster) -->
   @if (activePreviewUrl) {
     <div class="poster-preview-card">
       <div class="preview-media-container">
@@ -103,34 +209,52 @@
         </div>
 
         <div class="preview-actions">
-          <button
-            type="button"
-            class="btn-preview-action action-replace"
-            (click)="openFileDialog()"
-            [disabled]="disabled"
-          >
-            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-            <span>Replace Image</span>
-          </button>
-
-          @if (selectedFile) {
+          @if (activeMode === 'file') {
             <button
               type="button"
-              class="btn-preview-action action-remove"
-              (click)="clearSelection()"
+              class="btn-preview-action action-replace"
+              (click)="openFileDialog()"
               [disabled]="disabled"
-              [attr.aria-label]="currentPosterUrl ? 'Cancel replacement and keep existing poster' : 'Remove selected poster'"
             >
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
               </svg>
-              <span>{{ currentPosterUrl ? 'Cancel Replacement' : 'Remove' }}</span>
+              <span>Replace Image</span>
             </button>
+
+            @if (selectedFile) {
+              <button
+                type="button"
+                class="btn-preview-action action-remove"
+                (click)="clearFileSelection()"
+                [disabled]="disabled"
+                [attr.aria-label]="currentPosterUrl ? 'Cancel replacement and keep existing poster' : 'Remove selected poster'"
+              >
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>{{ currentPosterUrl ? 'Cancel Replacement' : 'Remove' }}</span>
+              </button>
+            }
+          } @else {
+            @if (confirmedUrl) {
+              <button
+                type="button"
+                class="btn-preview-action action-remove"
+                (click)="clearUrl()"
+                [disabled]="disabled"
+                aria-label="Remove poster URL"
+              >
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Remove URL</span>
+              </button>
+            }
           }
         </div>
       </div>

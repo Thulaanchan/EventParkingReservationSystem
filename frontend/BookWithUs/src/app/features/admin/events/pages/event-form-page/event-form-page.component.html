@@ -12,13 +12,13 @@
     <div class="header-titles">
       <h1 class="page-title">{{ isEditMode ? 'Edit Event' : 'Create Event' }}</h1>
       <p class="page-subtitle">
-        {{ isEditMode ? 'Edit and update BookWithUs event details.' : 'Create and configure a new BookWithUs event.' }}
+        {{ isEditMode ? 'Edit and update EventFlow event details.' : 'Create and configure a new EventFlow event.' }}
       </p>
     </div>
   </header>
 
   <!-- Mutually exclusive Page States -->
-  @if (loading) {
+  @if (isEditMode && loading) {
     <div class="page-loading-state" role="status" aria-live="polite">
       <div class="spinner"></div>
       <span class="loading-text">Loading event details...</span>

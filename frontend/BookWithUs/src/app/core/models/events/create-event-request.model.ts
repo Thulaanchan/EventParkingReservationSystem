@@ -10,4 +10,5 @@ export interface CreateEventRequest {
   capacity: number;
   stageLayout?: string | null;
   poster?: File | null;
+  posterUrl?: string | null;
 }

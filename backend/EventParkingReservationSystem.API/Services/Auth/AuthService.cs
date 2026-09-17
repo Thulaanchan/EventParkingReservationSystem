@@ -9,6 +9,8 @@ using EventParkingReservationSystem.API.Models.DTOs.Customers;
 using EventParkingReservationSystem.API.Models.Entities.Customers;
 using Microsoft.AspNetCore.Identity;
 using EventParkingReservationSystem.API.Common.Constants;
+using EventParkingReservationSystem.API.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventParkingReservationSystem.API.Services.Auth;
 
@@ -22,6 +24,7 @@ public class AuthService : IAuthService
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly ApplicationDbContext _dbContext;
 
     public AuthService(
         ICustomerService customerService,
@@ -29,7 +32,8 @@ public class AuthService : IAuthService
         IPasswordHasher<Customer> passwordHasher,
         IJwtTokenService jwtTokenService,
         IEmailService emailService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ApplicationDbContext dbContext)
     {
         _customerService = customerService;
         _customerRepository = customerRepository;
@@ -37,6 +41,7 @@ public class AuthService : IAuthService
         _jwtTokenService = jwtTokenService;
         _emailService = emailService;
         _configuration = configuration;
+        _dbContext = dbContext;
     }
 
     public async Task<CustomerDto> RegisterAsync(
@@ -164,6 +169,22 @@ public class AuthService : IAuthService
             ? AppRoles.Administrator
             : AppRoles.Customer;
 
+        // Ensure database identity for hardcoded demo entities if not already tracked
+        if (customer.CustomerId <= 0)
+        {
+            var dbCustomer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == customer.Email);
+            if (dbCustomer == null)
+            {
+                customer.PasswordHash = _passwordHasher.HashPassword(customer, request.Password);
+                _dbContext.Customers.Add(customer);
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                customer = dbCustomer;
+            }
+        }
+
         var tokenResult =
             _jwtTokenService.GenerateToken(
                 customer.CustomerId,
@@ -172,14 +193,49 @@ public class AuthService : IAuthService
                 role,
                 request.RememberMe);
 
+        var isAdmin = role == AppRoles.Administrator;
+        DateTime refreshExpiry;
+        if (isAdmin)
+        {
+            var adminDays = _configuration.GetValue<int>("Jwt:AdminRefreshTokenExpirationDays");
+            refreshExpiry = DateTime.UtcNow.AddDays(adminDays > 0 ? adminDays : 1);
+        }
+        else if (request.RememberMe)
+        {
+            var rememberDays = _configuration.GetValue<int>("Jwt:RememberMeRefreshTokenExpirationDays");
+            refreshExpiry = DateTime.UtcNow.AddDays(rememberDays > 0 ? rememberDays : 30);
+        }
+        else
+        {
+            var customerDays = _configuration.GetValue<int>("Jwt:CustomerRefreshTokenExpirationDays");
+            refreshExpiry = DateTime.UtcNow.AddDays(customerDays > 0 ? customerDays : 7);
+        }
+
+        var rawRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var refreshTokenHash = HashToken(rawRefreshToken);
+
+        var refreshTokenEntity = new RefreshToken
+        {
+            CustomerId = customer.CustomerId,
+            TokenHash = refreshTokenHash,
+            ExpiresAtUtc = refreshExpiry,
+            CreatedAtUtc = DateTime.UtcNow
+        };
+
+        _dbContext.RefreshTokens.Add(refreshTokenEntity);
+        await _dbContext.SaveChangesAsync();
+
         return new AuthResponseDto
         {
             Token = tokenResult.Token,
             ExpiresAt = tokenResult.ExpiresAtUtc,
+            RefreshToken = rawRefreshToken,
+            RefreshTokenExpiresAt = refreshExpiry,
             UserId = customer.CustomerId,
             DisplayName = GetDisplayName(customer),
             Email = customer.Email,
-            Role = role
+            Role = role,
+            RememberMe = request.RememberMe
         };
     }
 
@@ -352,6 +408,152 @@ public class AuthService : IAuthService
         customer.UpdatedAt = DateTime.UtcNow;
 
         await _customerRepository.UpdateAsync(customer);
+
+        return true;
+    }
+
+    public async Task<AuthResponseDto> RefreshTokenAsync(
+        RefreshTokenRequestDto request,
+        string? ipAddress = null)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            throw new UnauthorizedAccessException("Refresh token is required.");
+        }
+
+        var tokenHash = HashToken(request.RefreshToken);
+
+        var existingToken = await _dbContext.RefreshTokens
+            .Include(r => r.Customer)
+            .FirstOrDefaultAsync(r => r.TokenHash == tokenHash);
+
+        if (existingToken is null)
+        {
+            throw new UnauthorizedAccessException("Invalid refresh token.");
+        }
+
+        // Token Reuse Detection
+        // If a revoked token is presented, compromise is suspected. Revoke all active tokens for this customer.
+        if (existingToken.IsRevoked)
+        {
+            var compromisedCustomerTokens = await _dbContext.RefreshTokens
+                .Where(r => r.CustomerId == existingToken.CustomerId && r.RevokedAtUtc == null && r.ExpiresAtUtc > DateTime.UtcNow)
+                .ToListAsync();
+
+            foreach (var token in compromisedCustomerTokens)
+            {
+                token.RevokedAtUtc = DateTime.UtcNow;
+                token.RevokedByIp = ipAddress;
+                token.ReasonRevoked = "Revoked due to attempted reuse of already revoked token";
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            throw new UnauthorizedAccessException("Invalid or revoked session. Please sign in again.");
+        }
+
+        if (existingToken.IsExpired)
+        {
+            throw new UnauthorizedAccessException("Session has expired. Please sign in again.");
+        }
+
+        var customer = existingToken.Customer;
+        if (customer is null || !customer.IsActive)
+        {
+            throw new UnauthorizedAccessException("Account is not active or not found.");
+        }
+
+        var role = (customer.Email.Equals("adminmonkeys@gmail.com", StringComparison.OrdinalIgnoreCase) ||
+                    customer.Email.StartsWith("admin", StringComparison.OrdinalIgnoreCase) ||
+                    customer.Email.Equals("admin@bookwithus.com", StringComparison.OrdinalIgnoreCase))
+            ? AppRoles.Administrator
+            : AppRoles.Customer;
+
+        var isAdmin = role == AppRoles.Administrator;
+        var originalLifespan = existingToken.ExpiresAtUtc - existingToken.CreatedAtUtc;
+        var isRememberMe = !isAdmin && originalLifespan.TotalDays > 10;
+
+        DateTime newRefreshExpiry;
+        if (isAdmin)
+        {
+            var adminDays = _configuration.GetValue<int>("Jwt:AdminRefreshTokenExpirationDays");
+            newRefreshExpiry = DateTime.UtcNow.AddDays(adminDays > 0 ? adminDays : 1);
+        }
+        else if (isRememberMe)
+        {
+            var rememberDays = _configuration.GetValue<int>("Jwt:RememberMeRefreshTokenExpirationDays");
+            newRefreshExpiry = DateTime.UtcNow.AddDays(rememberDays > 0 ? rememberDays : 30);
+        }
+        else
+        {
+            var customerDays = _configuration.GetValue<int>("Jwt:CustomerRefreshTokenExpirationDays");
+            newRefreshExpiry = DateTime.UtcNow.AddDays(customerDays > 0 ? customerDays : 7);
+        }
+
+        // Generate rotated refresh token
+        var newRawRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var newTokenHash = HashToken(newRawRefreshToken);
+
+        // Revoke the old token (rotation)
+        existingToken.RevokedAtUtc = DateTime.UtcNow;
+        existingToken.RevokedByIp = ipAddress;
+        existingToken.ReplacedByTokenHash = newTokenHash;
+        existingToken.ReasonRevoked = "Rotated to new refresh token";
+
+        var newRefreshToken = new RefreshToken
+        {
+            CustomerId = customer.CustomerId,
+            TokenHash = newTokenHash,
+            ExpiresAtUtc = newRefreshExpiry,
+            CreatedAtUtc = DateTime.UtcNow,
+            CreatedByIp = ipAddress
+        };
+
+        _dbContext.RefreshTokens.Add(newRefreshToken);
+        await _dbContext.SaveChangesAsync();
+
+        var tokenResult = _jwtTokenService.GenerateToken(
+            customer.CustomerId,
+            customer.Email,
+            GetDisplayName(customer),
+            role,
+            isRememberMe);
+
+        return new AuthResponseDto
+        {
+            Token = tokenResult.Token,
+            ExpiresAt = tokenResult.ExpiresAtUtc,
+            RefreshToken = newRawRefreshToken,
+            RefreshTokenExpiresAt = newRefreshExpiry,
+            UserId = customer.CustomerId,
+            DisplayName = GetDisplayName(customer),
+            Email = customer.Email,
+            Role = role,
+            RememberMe = isRememberMe
+        };
+    }
+
+    public async Task<bool> RevokeRefreshTokenAsync(
+        LogoutRequestDto request,
+        string? ipAddress = null)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return true;
+        }
+
+        var tokenHash = HashToken(request.RefreshToken);
+
+        var existingToken = await _dbContext.RefreshTokens
+            .FirstOrDefaultAsync(r => r.TokenHash == tokenHash);
+
+        if (existingToken is not null && !existingToken.IsRevoked)
+        {
+            existingToken.RevokedAtUtc = DateTime.UtcNow;
+            existingToken.RevokedByIp = ipAddress;
+            existingToken.ReasonRevoked = "User signed out";
+            await _dbContext.SaveChangesAsync();
+        }
 
         return true;
     }

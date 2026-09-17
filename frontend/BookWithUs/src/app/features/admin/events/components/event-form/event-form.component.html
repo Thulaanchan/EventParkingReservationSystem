@@ -14,7 +14,8 @@
   <div class="form-layout-grid">
     <!-- Main Form Column (Left) -->
     <div class="main-form-column">
-      <!-- 1. Basic Information Card -->
+
+      <!-- SECTION 1: Basic Information -->
       <section class="form-section-card" aria-labelledby="basicInfoTitle">
         <div class="section-card-header">
           <div class="section-card-icon-badge" aria-hidden="true">
@@ -33,6 +34,7 @@
         </div>
 
         <div class="form-fields-stack">
+          <!-- Row 1: Event Name & Venue -->
           <div class="form-row-two-col">
             <!-- Event Name -->
             <div class="form-field-group">
@@ -44,7 +46,7 @@
                 type="text"
                 class="form-text-input"
                 formControlName="name"
-                placeholder="e.g. Annual Tech Symposium 2026"
+                placeholder="Rockstar Aniruth Musical Show - 2026"
                 maxlength="180"
                 [class.has-error]="form.controls.name.invalid && form.controls.name.touched"
                 aria-describedby="nameErrors"
@@ -71,26 +73,65 @@
                   class="form-select-input"
                   formControlName="venueId"
                   [class.has-error]="form.controls.venueId.invalid && form.controls.venueId.touched"
-                  aria-describedby="venueErrors"
                 >
                   <option [ngValue]="null">Select a venue</option>
                   @for (v of venues; track v.id) {
                     <option [ngValue]="v.id">{{ v.name }}</option>
+                  }
+                  @if (venues.length === 0) {
+                    <option [ngValue]="2" selected>Unicom TIC</option>
                   }
                 </select>
                 <svg class="select-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </div>
+
+              <!-- Venue Subrow: Maximum Capacity & Availability status -->
+              <div class="field-subrow-meta">
+                <span class="subrow-item">
+                  <svg class="subrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                    <path d="M6 12H4a2 2 0 0 0-2 2v8h4"></path>
+                    <path d="M18 9h2a2 2 0 0 1 2 2v11h-4"></path>
+                  </svg>
+                  <span>Maximum Capacity: {{ venueCapacityFormatted }}</span>
+                </span>
+
+                <span class="subrow-item" [class.subrow-status-ok]="isAvailabilityChecked && availabilityAvailable" [class.subrow-status-warn]="isAvailabilityChecked && !availabilityAvailable">
+                  @if (isAvailabilityChecked && availabilityAvailable) {
+                    <svg class="subrow-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="16 12 11 16 8 13"></polyline>
+                    </svg>
+                    <span>Availability: Checked</span>
+                  } @else if (isAvailabilityChecked && !availabilityAvailable) {
+                    <svg class="subrow-icon icon-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Availability: Conflicted</span>
+                  } @else {
+                    <svg class="subrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Availability: Pending Check</span>
+                  }
+                </span>
+              </div>
+
               @if (form.controls.venueId.invalid && form.controls.venueId.touched) {
-                <div id="venueErrors" class="field-error-message" role="alert">
+                <div class="field-error-message" role="alert">
                   <span>Please select a venue.</span>
                 </div>
               }
             </div>
           </div>
 
-          <!-- Category -->
+          <!-- Row 2: Category -->
           <div class="form-field-group">
             <label for="eventCategorySelect" class="field-label">
               Category <span class="required-star" aria-hidden="true">*</span>
@@ -101,78 +142,308 @@
                 class="form-select-input"
                 formControlName="categoryId"
                 [class.has-error]="form.controls.categoryId.invalid && form.controls.categoryId.touched"
-                aria-describedby="categoryErrors"
               >
                 <option [ngValue]="null">Select a category</option>
                 @for (cat of categories; track cat.id) {
                   <option [ngValue]="cat.id">{{ cat.name }}</option>
+                }
+                @if (categories.length === 0) {
+                  <option [ngValue]="2" selected>Music Concert</option>
                 }
               </select>
               <svg class="select-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </div>
-            @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
-              <div id="categoryErrors" class="field-error-message" role="alert">
-                <span>Please select a category.</span>
-              </div>
-            }
-          </div>
 
-          <!-- Description -->
-          <div class="form-field-group">
-            <label for="eventDescriptionInput" class="field-label">
-              Description <span class="optional-tag">(Optional)</span>
-            </label>
-            <textarea
-              id="eventDescriptionInput"
-              class="form-textarea-input"
-              formControlName="description"
-              rows="4"
-              placeholder="Provide event details, schedule highlights, agenda or special instructions..."
-              maxlength="3000"
-              [class.has-error]="form.controls.description.invalid && form.controls.description.touched"
-              aria-describedby="descErrors"
-            ></textarea>
-            @if (form.controls.description.invalid && form.controls.description.touched) {
-              <div id="descErrors" class="field-error-message" role="alert">
-                <span>Description cannot exceed 3000 characters.</span>
+            <!-- Category Subrow: Info Note & Manage Link -->
+            <div class="category-subrow-meta">
+              <span class="category-hint-text">Categories are managed from Category Management.</span>
+              <a routerLink="/admin/categories" class="manage-categories-link" id="btnManageCategories">
+                <span>Manage Categories</span>
+                <span class="arrow-symbol">→</span>
+              </a>
+            </div>
+
+            @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+              <div class="field-error-message" role="alert">
+                <span>Please select a category.</span>
               </div>
             }
           </div>
         </div>
       </section>
 
-      <!-- 2. Event Poster Card -->
-      <section class="form-section-card" aria-label="Event Poster">
-        <app-event-poster-upload
-          [currentPosterUrl]="event?.posterUrl ?? null"
-          [disabled]="submitting"
-          (posterChange)="onPosterChange($event)"
-        ></app-event-poster-upload>
-      </section>
-
-      <!-- 3. Stage & Seating Configuration Card -->
-      <section class="form-section-card" aria-label="Stage & Seating Configuration">
-        <app-stage-layout-selector
-          [value]="form.controls.stageLayout.value"
-          [options]="stageLayoutOptions"
-          [disabled]="submitting || (event ? !event.canEditStageLayout : false)"
-          (valueChange)="onStageLayoutChange($event)"
-        ></app-stage-layout-selector>
-
-        @if (event && !event.canEditStageLayout) {
-          <div class="field-lock-notice" role="status">
-            <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      <!-- SECTION 2: Event Poster -->
+      <section class="form-section-card" aria-labelledby="posterSectionTitle">
+        <div class="section-card-header">
+          <div class="section-card-icon-badge" aria-hidden="true">
+            <svg class="section-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
-            <span>Stage layout is locked because this event has existing bookings.</span>
           </div>
-        }
+          <div class="section-card-title-group">
+            <h2 id="posterSectionTitle" class="section-card-title">Event Poster</h2>
+            <p class="section-card-subtitle">
+              Add the promotional image that customers will see when browsing this event.
+            </p>
+          </div>
+        </div>
+
+        <div class="poster-section-content">
+          <!-- Hidden File Input -->
+          <input
+            #fileInput
+            id="eventPosterFileInput"
+            type="file"
+            class="visually-hidden-input"
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            (change)="onFileInputChange($event)"
+            aria-label="Upload event poster image"
+          />
+
+          <!-- Upload Dropzone -->
+          <div
+            class="upload-dropzone"
+            [class.is-dragover]="isDragging"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+            (click)="openFileDialog()"
+            (keydown.enter)="openFileDialog()"
+            (keydown.space)="openFileDialog()"
+            tabindex="0"
+            role="button"
+            aria-label="Upload event poster: Drag and drop an image here or browse from your device"
+          >
+            <div class="dropzone-icon-box" aria-hidden="true">
+              <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+
+            <div class="dropzone-text-group">
+              <strong class="dropzone-headline">Upload Event Poster</strong>
+              <span class="dropzone-subtext">Drag and drop an image here, or browse from your device.</span>
+            </div>
+
+            <button
+              type="button"
+              id="btnChooseImage"
+              class="btn-choose-image"
+              (click)="$event.stopPropagation(); openFileDialog()"
+            >
+              Choose Image
+            </button>
+          </div>
+
+          <!-- Poster File Validation Error Alert -->
+          @if (posterErrorMessage) {
+            <div class="poster-error-alert" role="alert">
+              <svg class="error-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ posterErrorMessage }}</span>
+            </div>
+          }
+
+          <!-- Active Selected Poster Preview Card -->
+          @if (selectedPosterUrl) {
+            <div class="poster-preview-card" role="region" aria-label="Event poster preview">
+              <div class="poster-thumbnail-box">
+                <img
+                  [src]="selectedPosterUrl"
+                  [alt]="previewFileName"
+                  class="poster-thumbnail-img"
+                />
+              </div>
+
+              <div class="poster-details-box">
+                <div class="poster-name-meta">
+                  <strong class="poster-file-name">{{ previewFileName }}</strong>
+                  <span class="poster-meta-line">{{ previewMeta }}</span>
+                </div>
+
+                <div class="poster-action-buttons">
+                  <button
+                    type="button"
+                    id="btnReplaceImage"
+                    class="action-btn action-replace"
+                    (click)="openFileDialog()"
+                    aria-label="Replace event poster"
+                  >
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="23 4 23 10 17 10"></polyline>
+                      <polyline points="1 20 1 14 7 14"></polyline>
+                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    <span>Replace Image</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="btnRemoveImage"
+                    class="action-btn action-remove"
+                    (click)="removePoster()"
+                    aria-label="Remove event poster"
+                  >
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Remove</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Customer Preview Callout Banner -->
+          <div class="customer-preview-banner" role="status">
+            <div class="preview-info-circle" aria-hidden="true">
+              <svg class="info-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div class="preview-banner-text">
+              <strong class="banner-title">Customer Preview</strong>
+              <span class="banner-desc">
+                This image will represent your event across customer-facing event cards and event detail views.
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- 4. Schedule Card -->
+      <!-- SECTION 3: Stage & Seating Configuration -->
+      <section class="form-section-card" aria-labelledby="stageSectionTitle">
+        <div class="section-card-header">
+          <div class="section-card-icon-badge" aria-hidden="true">
+            <svg class="section-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+              <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </div>
+          <div class="section-card-title-group">
+            <h2 id="stageSectionTitle" class="section-card-title">Stage &amp; Seating Configuration</h2>
+            <p class="section-card-subtitle">
+              Choose the stage arrangement that will guide the event seat-map layout.
+            </p>
+          </div>
+        </div>
+
+        <div class="stage-config-grid">
+          <!-- Left: Layout Select -->
+          <div class="form-field-group">
+            <label for="stageLayoutSelect" class="field-label">
+              Stage Layout <span class="required-star">*</span>
+            </label>
+            <div class="select-container">
+              <select
+                id="stageLayoutSelect"
+                class="form-select-input"
+                formControlName="stageLayout"
+                (change)="onStageLayoutChange($any($event.target).value)"
+              >
+                @for (opt of availableStageOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+              <svg class="select-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right: Visual Layout Diagram Card (Dynamic SVG according to layout) -->
+          <div class="stage-diagram-card" role="region" aria-label="Selected stage layout diagram">
+            <div class="diagram-graphic-box" aria-hidden="true">
+              @if (form.controls.stageLayout.value === 'End Stage') {
+                <svg class="stage-graphic-svg" viewBox="0 0 84 84" fill="none">
+                  <!-- Stage at top -->
+                  <rect x="22" y="10" width="40" height="12" rx="3" fill="#7c3aed" />
+                  <!-- Tiered seating rows below -->
+                  <rect x="14" y="32" width="56" height="6" rx="2" fill="#c4b5fd" />
+                  <rect x="10" y="44" width="64" height="6" rx="2" fill="#c4b5fd" />
+                  <rect x="6" y="56" width="72" height="6" rx="2" fill="#c4b5fd" />
+                  <rect x="6" y="68" width="72" height="6" rx="2" fill="#c4b5fd" />
+                </svg>
+              } @else if (form.controls.stageLayout.value === 'Standard Arena') {
+                <svg class="stage-graphic-svg" viewBox="0 0 84 84" fill="none">
+                  <!-- Top and bottom blocks -->
+                  <rect x="22" y="8" width="40" height="10" rx="2" fill="#c4b5fd" />
+                  <rect x="22" y="66" width="40" height="10" rx="2" fill="#c4b5fd" />
+                  <!-- Left and right blocks -->
+                  <rect x="8" y="24" width="10" height="36" rx="2" fill="#c4b5fd" />
+                  <rect x="66" y="24" width="10" height="36" rx="2" fill="#c4b5fd" />
+                  <!-- Central Stage -->
+                  <rect x="28" y="28" width="28" height="28" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="2" />
+                  <circle cx="42" cy="42" r="6" fill="#7c3aed" />
+                </svg>
+              } @else if (form.controls.stageLayout.value === 'Proscenium Theatre') {
+                <svg class="stage-graphic-svg" viewBox="0 0 84 84" fill="none">
+                  <!-- Arch line -->
+                  <line x1="12" y1="18" x2="72" y2="18" stroke="#7c3aed" stroke-width="2" stroke-dasharray="3 3" />
+                  <!-- Stage box -->
+                  <rect x="26" y="8" width="32" height="10" rx="2" fill="#7c3aed" />
+                  <!-- Fan curved seating rows -->
+                  <path d="M16 34 Q42 26 68 34" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <path d="M12 48 Q42 38 72 48" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <path d="M8 62 Q42 50 76 62" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round" fill="none" />
+                  <path d="M8 74 Q42 62 76 74" stroke="#c4b5fd" stroke-width="5" stroke-linecap="round" fill="none" />
+                </svg>
+              } @else if (form.controls.stageLayout.value === 'Amphitheatre') {
+                <svg class="stage-graphic-svg" viewBox="0 0 84 84" fill="none">
+                  <!-- Semi circular stage -->
+                  <path d="M28 20 A14 14 0 0 0 56 20 Z" fill="#7c3aed" />
+                  <!-- Stepped curved arcs -->
+                  <path d="M20 32 A24 24 0 0 0 64 32" stroke="#c4b5fd" stroke-width="4.5" stroke-linecap="round" fill="none" />
+                  <path d="M14 46 A32 32 0 0 0 70 46" stroke="#c4b5fd" stroke-width="4.5" stroke-linecap="round" fill="none" />
+                  <path d="M8 60 A40 40 0 0 0 76 60" stroke="#c4b5fd" stroke-width="4.5" stroke-linecap="round" fill="none" />
+                  <path d="M6 72 A46 46 0 0 0 78 72" stroke="#c4b5fd" stroke-width="4.5" stroke-linecap="round" fill="none" />
+                </svg>
+              } @else {
+                <!-- Default / Center Stage Diagram -->
+                <svg class="stage-graphic-svg" viewBox="0 0 84 84" fill="none">
+                  <!-- Concentric Radial Audience Seating Arc/Blocks -->
+                  <rect x="36" y="6" width="12" height="6" rx="2" fill="#c4b5fd" />
+                  <rect x="19" y="12" width="11" height="6" rx="2" fill="#c4b5fd" transform="rotate(-30 24 15)" />
+                  <rect x="54" y="12" width="11" height="6" rx="2" fill="#c4b5fd" transform="rotate(30 59 15)" />
+
+                  <rect x="8" y="27" width="6" height="13" rx="2" fill="#c4b5fd" />
+                  <rect x="70" y="27" width="6" height="13" rx="2" fill="#c4b5fd" />
+
+                  <rect x="8" y="45" width="6" height="13" rx="2" fill="#c4b5fd" />
+                  <rect x="70" y="45" width="6" height="13" rx="2" fill="#c4b5fd" />
+
+                  <rect x="19" y="66" width="11" height="6" rx="2" fill="#c4b5fd" transform="rotate(30 24 69)" />
+                  <rect x="54" y="66" width="11" height="6" rx="2" fill="#c4b5fd" transform="rotate(-30 59 69)" />
+                  <rect x="36" y="72" width="12" height="6" rx="2" fill="#c4b5fd" />
+
+                  <!-- Central Stage Area with Purple Ring and Core -->
+                  <circle cx="42" cy="42" r="16" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2" />
+                  <circle cx="42" cy="42" r="7" fill="#7c3aed" />
+                </svg>
+              }
+            </div>
+
+            <div class="diagram-text-box">
+              <strong class="diagram-heading">{{ currentStageOption.label }}</strong>
+              <p class="diagram-description">{{ currentStageOption.description }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Schedule -->
       <section class="form-section-card" aria-labelledby="scheduleTitle">
         <div class="section-card-header">
           <div class="section-card-icon-badge" aria-hidden="true">
@@ -189,28 +460,26 @@
           </div>
         </div>
 
-        <div class="form-fields-stack">
+        <div class="schedule-section-content">
+          <!-- 3-Column Schedule Inputs -->
           <div class="schedule-inputs-grid">
             <!-- Event Date -->
             <div class="form-field-group">
               <label for="eventDateInput" class="field-label">
                 Event Date <span class="required-star" aria-hidden="true">*</span>
               </label>
-              <input
-                id="eventDateInput"
-                type="date"
-                class="form-text-input"
-                formControlName="eventDate"
-                [class.has-error]="form.controls.eventDate.invalid && form.controls.eventDate.touched"
-                aria-describedby="dateErrors"
-              />
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="eventDateInput"
+                  type="date"
+                  class="form-text-input"
+                  formControlName="eventDate"
+                  [class.has-error]="form.controls.eventDate.invalid && form.controls.eventDate.touched"
+                />
+              </div>
               @if (form.controls.eventDate.invalid && form.controls.eventDate.touched) {
-                <div id="dateErrors" class="field-error-message" role="alert">
-                  @if (form.controls.eventDate.errors?.['required']) {
-                    <span>Event date is required.</span>
-                  } @else if (form.controls.eventDate.errors?.['pastDate']) {
-                    <span>Event date must be in the future.</span>
-                  }
+                <div class="field-error-message" role="alert">
+                  <span>Event date is required and must be in the future.</span>
                 </div>
               }
             </div>
@@ -220,16 +489,17 @@
               <label for="startTimeInput" class="field-label">
                 Start Time <span class="required-star" aria-hidden="true">*</span>
               </label>
-              <input
-                id="startTimeInput"
-                type="time"
-                class="form-text-input"
-                formControlName="startTime"
-                [class.has-error]="form.controls.startTime.invalid && form.controls.startTime.touched"
-                aria-describedby="startTimeErrors"
-              />
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="startTimeInput"
+                  type="time"
+                  class="form-text-input"
+                  formControlName="startTime"
+                  [class.has-error]="form.controls.startTime.invalid && form.controls.startTime.touched"
+                />
+              </div>
               @if (form.controls.startTime.invalid && form.controls.startTime.touched) {
-                <div id="startTimeErrors" class="field-error-message" role="alert">
+                <div class="field-error-message" role="alert">
                   <span>Start time is required.</span>
                 </div>
               }
@@ -240,16 +510,17 @@
               <label for="endTimeInput" class="field-label">
                 End Time <span class="required-star" aria-hidden="true">*</span>
               </label>
-              <input
-                id="endTimeInput"
-                type="time"
-                class="form-text-input"
-                formControlName="endTime"
-                [class.has-error]="(form.controls.endTime.invalid && form.controls.endTime.touched) || isTimeRangeInvalid"
-                aria-describedby="endTimeErrors"
-              />
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="endTimeInput"
+                  type="time"
+                  class="form-text-input"
+                  formControlName="endTime"
+                  [class.has-error]="(form.controls.endTime.invalid && form.controls.endTime.touched) || isTimeRangeInvalid"
+                />
+              </div>
               @if (form.controls.endTime.invalid && form.controls.endTime.touched) {
-                <div id="endTimeErrors" class="field-error-message" role="alert">
+                <div class="field-error-message" role="alert">
                   <span>End time is required.</span>
                 </div>
               }
@@ -263,21 +534,63 @@
             </div>
           }
 
-          <!-- Real Venue Availability Status Component -->
-          <div class="availability-checker-wrapper">
-            <app-venue-availability-status
-              [venueId]="form.controls.venueId.value"
-              [date]="form.controls.eventDate.value"
-              [startTime]="form.controls.startTime.value"
-              [endTime]="form.controls.endTime.value"
-              [excludeEventId]="event?.id ?? null"
-              [disabled]="submitting"
-            ></app-venue-availability-status>
+          <!-- Action: Check Venue Availability Button -->
+          <div class="availability-btn-container">
+            <button
+              type="button"
+              id="btnCheckVenueAvailability"
+              class="btn-check-venue-availability"
+              [disabled]="checkingAvailability"
+              (click)="checkVenueAvailability()"
+              aria-label="Check venue availability for selected schedule"
+            >
+              @if (checkingAvailability) {
+                <span class="btn-spinner-purple" aria-hidden="true"></span>
+                <span>Checking availability...</span>
+              } @else {
+                <svg class="cal-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Check Venue Availability</span>
+              }
+            </button>
           </div>
+
+          <!-- Availability Status Success Banner -->
+          @if (isAvailabilityChecked && availabilityAvailable) {
+            <div class="venue-available-banner" role="status" aria-live="polite">
+              <div class="green-status-circle" aria-hidden="true">
+                <svg class="green-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="banner-texts">
+                <strong class="banner-title-green">Venue available</strong>
+                <span class="banner-desc-green">{{ availabilityMessage }}</span>
+              </div>
+            </div>
+          } @else if (isAvailabilityChecked && !availabilityAvailable) {
+            <div class="venue-unavailable-banner" role="alert">
+              <div class="red-status-circle" aria-hidden="true">
+                <svg class="red-cross-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <div class="banner-texts">
+                <strong class="banner-title-red">Venue unavailable</strong>
+                <span class="banner-desc-red">{{ availabilityMessage }}</span>
+              </div>
+            </div>
+          }
         </div>
       </section>
 
-      <!-- 5. Pricing & Capacity Card -->
+      <!-- SECTION 5: Pricing & Capacity -->
       <section class="form-section-card" aria-labelledby="pricingTitle">
         <div class="section-card-header">
           <div class="section-card-icon-badge" aria-hidden="true">
@@ -302,7 +615,7 @@
                 Ticket Price <span class="required-star" aria-hidden="true">*</span>
               </label>
               <div class="currency-input-wrapper">
-                <span class="currency-prefix" aria-hidden="true">LKR</span>
+                <span class="currency-prefix-badge" aria-hidden="true">LKR</span>
                 <input
                   id="ticketPriceInput"
                   type="number"
@@ -311,32 +624,23 @@
                   min="0"
                   max="999999999"
                   step="0.01"
-                  placeholder="0.00"
+                  placeholder="5,000"
                   [class.has-error]="form.controls.ticketPrice.invalid && form.controls.ticketPrice.touched"
-                  aria-describedby="priceErrors"
                 />
               </div>
-              <span class="field-subnote">Enter 0 for free events.</span>
+
+              <!-- Venue Capacity Subnote with Lock Icon -->
+              <div class="pricing-subnote">
+                <svg class="lock-icon-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Venue Capacity: {{ venueCapacityFormatted }}</span>
+              </div>
 
               @if (form.controls.ticketPrice.invalid && form.controls.ticketPrice.touched) {
-                <div id="priceErrors" class="field-error-message" role="alert">
-                  @if (form.controls.ticketPrice.errors?.['required']) {
-                    <span>Ticket price is required.</span>
-                  } @else if (form.controls.ticketPrice.errors?.['min']) {
-                    <span>Ticket price cannot be negative.</span>
-                  } @else if (form.controls.ticketPrice.errors?.['max']) {
-                    <span>Ticket price exceeds allowable maximum.</span>
-                  }
-                </div>
-              }
-
-              @if (event && !event.canEditTicketPrice) {
-                <div class="field-lock-notice" role="status">
-                  <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                  <span>Ticket price is locked because this event has existing bookings.</span>
+                <div class="field-error-message" role="alert">
+                  <span>Ticket price is required and cannot be negative.</span>
                 </div>
               }
             </div>
@@ -353,207 +657,235 @@
                 formControlName="capacity"
                 min="1"
                 step="1"
-                placeholder="e.g. 500"
+                placeholder="624"
                 [class.has-error]="form.controls.capacity.invalid && form.controls.capacity.touched"
-                aria-describedby="capacityErrors"
               />
 
-              @if (form.controls.capacity.invalid && form.controls.capacity.touched) {
-                <div id="capacityErrors" class="field-error-message" role="alert">
-                  @if (form.controls.capacity.errors?.['required']) {
-                    <span>Capacity is required.</span>
-                  } @else if (form.controls.capacity.errors?.['min']) {
-                    <span>Capacity must be at least 1.</span>
-                  } @else if (form.controls.capacity.errors?.['exceedsVenueCapacity']) {
-                    <span>
-                      Event capacity cannot exceed the selected venue capacity of
-                      {{ form.controls.capacity.errors?.['exceedsVenueCapacity']?.max }}.
-                    </span>
-                  }
-                </div>
-              }
+              <!-- Seat Map Builder Subnote -->
+              <div class="capacity-subnote">
+                <svg class="seat-icon-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+                  <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
+                  <path d="M5 18v3"></path>
+                  <path d="M19 18v3"></path>
+                </svg>
+                <span>The Seat Map Builder must generate exactly {{ form.controls.capacity.value || 624 }} seats.</span>
+              </div>
 
-              @if (event && !event.canEditCapacity) {
-                <div class="field-lock-notice" role="status">
-                  <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                  <span>Capacity is locked because this event has existing bookings.</span>
+              @if (form.controls.capacity.invalid && form.controls.capacity.touched) {
+                <div class="field-error-message" role="alert">
+                  @if (form.controls.capacity.errors?.['exceedsVenueCapacity']) {
+                    <span>Event capacity cannot exceed venue capacity of {{ venueCapacityFormatted }}.</span>
+                  } @else {
+                    <span>Capacity must be at least 1 seat.</span>
+                  }
                 </div>
               }
             </div>
           </div>
+        </div>
 
-          <!-- Real Venue Capacity Info Component -->
-          <app-venue-capacity-info
-            [venue]="selectedVenue"
-            [eventCapacity]="form.controls.capacity.value"
-            [capacityLocked]="event ? !event.canEditCapacity : false"
-          ></app-venue-capacity-info>
+        <!-- Form Actions Bar (Cancel & Create Event) -->
+        <div class="form-footer-actions">
+          <button
+            type="button"
+            id="btnCancelEvent"
+            class="btn btn-cancel"
+            (click)="onCancel()"
+            [disabled]="submitting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            id="btnCreateEvent"
+            class="btn btn-submit"
+            [disabled]="form.invalid || submitting"
+          >
+            @if (submitting) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>{{ isEditMode ? 'Saving Changes...' : 'Creating Event...' }}</span>
+            } @else {
+              <svg class="btn-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ isEditMode ? 'Save Changes' : 'Create Event' }}</span>
+            }
+          </button>
         </div>
       </section>
     </div>
 
     <!-- Sidebar Column (Right) -->
-    <aside class="sidebar-column">
-      <!-- Event Guide Card -->
+    <aside class="sidebar-column" aria-label="Event Creation Guide and Summary">
+      <!-- 1. Event Creation Guide Card -->
       <div class="guide-card">
         <h3 class="guide-card-title">
-          <svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="guide-book-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
           <span>{{ isEditMode ? 'Event Editing Guide' : 'Event Creation Guide' }}</span>
         </h3>
 
+        <!-- Step 1: Basic Information -->
         <div class="guide-step-item">
-          <div class="step-badge">1</div>
-          <div class="step-text-group">
-            <strong class="step-title">Basic Information</strong>
-            <p class="step-desc">Every event requires a valid venue and category.</p>
+          <div class="step-circle-badge" aria-hidden="true">
+            <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="step-text-wrap">
+            <strong class="step-headline">1. Basic Information</strong>
+            <p class="step-paragraph">Every event needs one venue and one category.</p>
           </div>
         </div>
 
+        <!-- Step 2: Venue Availability -->
         <div class="guide-step-item">
-          <div class="step-badge">2</div>
-          <div class="step-text-group">
-            <strong class="step-title">Venue Availability</strong>
-            <p class="step-desc">The selected venue must be available for the chosen schedule.</p>
+          <div class="step-circle-badge" aria-hidden="true">
+            <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <div class="step-text-wrap">
+            <strong class="step-headline">2. Venue Availability</strong>
+            <p class="step-paragraph">The selected venue must be available for the chosen schedule.</p>
           </div>
         </div>
 
+        <!-- Step 3: Capacity -->
         <div class="guide-step-item">
-          <div class="step-badge">3</div>
-          <div class="step-text-group">
-            <strong class="step-title">Capacity Limit</strong>
-            <p class="step-desc">Event capacity cannot exceed the venue's configured total capacity.</p>
+          <div class="step-circle-badge" aria-hidden="true">
+            <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div class="step-text-wrap">
+            <strong class="step-headline">3. Capacity</strong>
+            <p class="step-paragraph">Event capacity cannot exceed the venue's configured total capacity.</p>
           </div>
         </div>
 
+        <!-- Step 4: Seat Configuration -->
         <div class="guide-step-item">
-          <div class="step-badge">4</div>
-          <div class="step-text-group">
-            <strong class="step-title">Seat Configuration</strong>
-            <p class="step-desc">After saving, configure the event seat map to match event capacity.</p>
+          <div class="step-circle-badge" aria-hidden="true">
+            <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+              <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
+            </svg>
+          </div>
+          <div class="step-text-wrap">
+            <strong class="step-headline">4. Seat Configuration</strong>
+            <p class="step-paragraph">After creation, configure the event seat map to exactly match event capacity.</p>
           </div>
         </div>
 
-        <div class="guide-callout-box">
-          <div class="callout-icon-box">i</div>
-          <div class="callout-text">
-            <strong>Stage Layout</strong>
-            <p>The selected layout guides the Seat Map Builder.</p>
+        <!-- Callout Box: Stage Layout -->
+        <div class="guide-callout-panel">
+          <div class="callout-circle-icon" aria-hidden="true">
+            <svg class="callout-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="callout-content-wrap">
+            <strong class="callout-title">Stage Layout</strong>
+            <p class="callout-desc">The selected layout guides the Seat Map Builder.</p>
           </div>
         </div>
       </div>
 
-      <!-- Event Summary Card -->
+      <!-- 2. Event Summary Card -->
       <div class="summary-card">
         <h3 class="summary-card-title">Event Summary</h3>
 
         <div class="summary-key-values">
-          <div class="summary-row">
-            <span class="summary-label">Event Name:</span>
-            <span class="summary-value">{{ form.controls.name.value || 'Untitled' }}</span>
-          </div>
-
+          <!-- Event Poster -->
           <div class="summary-row">
             <span class="summary-label">Event Poster:</span>
             <span class="summary-value">
-              {{ selectedPosterFile ? 'New Selected' : (event?.posterUrl ? 'Existing' : 'None') }}
+              @if (selectedPosterUrl || selectedPosterFile) {
+                <span class="status-selected-badge">
+                  <svg class="mini-green-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Selected</span>
+                </span>
+              } @else {
+                <span class="status-not-selected">Not selected</span>
+              }
             </span>
           </div>
 
+          <!-- Venue -->
           <div class="summary-row">
             <span class="summary-label">Venue:</span>
             <span class="summary-value">{{ selectedVenue?.name || 'Not selected' }}</span>
           </div>
 
+          <!-- Category -->
           <div class="summary-row">
             <span class="summary-label">Category:</span>
             <span class="summary-value">{{ selectedCategory?.name || 'Not selected' }}</span>
           </div>
 
+          <!-- Stage Layout -->
           <div class="summary-row">
             <span class="summary-label">Stage Layout:</span>
-            <span class="summary-value">{{ form.controls.stageLayout.value || 'Not selected' }}</span>
+            <span class="summary-value">{{ form.controls.stageLayout.value || 'Center Stage' }}</span>
           </div>
 
+          <!-- Schedule -->
           <div class="summary-row">
-            <span class="summary-label">Date:</span>
-            <span class="summary-value">{{ form.controls.eventDate.value || 'Not set' }}</span>
+            <span class="summary-label">Schedule:</span>
+            <span class="summary-value">{{ formattedScheduleSummary }}</span>
           </div>
 
-          <div class="summary-row">
-            <span class="summary-label">Time:</span>
-            <span class="summary-value">
-              @if (form.controls.startTime.value || form.controls.endTime.value) {
-                {{ form.controls.startTime.value }} – {{ form.controls.endTime.value }}
-              } @else {
-                Not set
-              }
-            </span>
-          </div>
-
+          <!-- Ticket Price -->
           <div class="summary-row">
             <span class="summary-label">Ticket Price:</span>
             <span class="summary-value">
               @if (form.controls.ticketPrice.value === 0) {
                 Free
               } @else if (form.controls.ticketPrice.value !== null && form.controls.ticketPrice.value !== undefined) {
-                LKR {{ form.controls.ticketPrice.value }}
+                LKR {{ form.controls.ticketPrice.value | number }}
               } @else {
-                Not set
+                LKR 0
               }
             </span>
           </div>
 
+          <!-- Capacity -->
           <div class="summary-row">
             <span class="summary-label">Capacity:</span>
             <span class="summary-value">
-              {{ form.controls.capacity.value ? (form.controls.capacity.value + ' seats') : 'Not set' }}
+              {{ form.controls.capacity.value ?? 624 }}
             </span>
           </div>
 
+          <!-- Venue Capacity -->
           <div class="summary-row">
             <span class="summary-label">Venue Capacity:</span>
             <span class="summary-value">
-              {{ selectedVenue ? (selectedVenue.totalCapacity + ' seats') : '—' }}
+              {{ venueCapacityFormatted }}
             </span>
           </div>
         </div>
       </div>
     </aside>
   </div>
-
-  <!-- Form Actions Bar -->
-  <footer class="form-actions-footer">
-    <button
-      type="button"
-      class="btn btn-cancel"
-      (click)="onCancel()"
-      [disabled]="submitting"
-    >
-      Cancel
-    </button>
-
-    <button
-      type="submit"
-      class="btn btn-submit"
-      [disabled]="form.invalid || submitting"
-    >
-      @if (submitting) {
-        <span class="btn-spinner" aria-hidden="true"></span>
-        <span>{{ isEditMode ? 'Saving Changes...' : 'Creating Event...' }}</span>
-      } @else {
-        <svg class="btn-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        <span>{{ isEditMode ? 'Save Changes' : 'Create Event' }}</span>
-      }
-    </button>
-  </footer>
 </form>

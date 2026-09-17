@@ -23,14 +23,22 @@
     @if (payment) {
       <div class="payment-preview">
         <!-- Breakdown Rows -->
+        <!-- Breakdown Rows -->
         <div class="breakdown-list">
           <div class="breakdown-row">
-            <span class="breakdown-label">Ticket Total</span>
+            <div class="label-with-icon">
+              <div class="ticket-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                </svg>
+              </div>
+              <span class="breakdown-label">Ticket Total</span>
+            </div>
             <span class="breakdown-val">{{ payment.ticketTotal | currency:'LKR ':'symbol':'1.0-0' }}</span>
           </div>
 
           @if (payment.parkingFee > 0) {
-            <div class="breakdown-row">
+            <div class="breakdown-row parking-sub-row">
               <span class="breakdown-label">Parking</span>
               <span class="breakdown-val">{{ payment.parkingFee | currency:'LKR ':'symbol':'1.0-0' }}</span>
             </div>
@@ -53,7 +61,7 @@
           </div>
           <div class="method-text">
             <span class="method-label">Payment Method</span>
-            <span class="method-val">{{ payment.paymentMethod }}</span>
+            <span class="method-val">{{ (payment.paymentMethod === '1' || payment.paymentMethod === 'Card') ? 'Simulated Card Payment' : (payment.paymentMethod || 'Simulated Card Payment') }}</span>
           </div>
         </div>
       </div>
@@ -68,7 +76,7 @@
         <p class="preview-text">
           You have <strong>{{ count }}</strong> completed payment{{ count > 1 ? 's' : '' }} in the last 30 days.
         </p>
-        <a routerLink="/payments" class="quick-link">View payment history</a>
+        <a routerLink="/payments/history" class="quick-link">View payment history</a>
       </div>
     } @else {
       <div class="empty-state">
@@ -84,7 +92,7 @@
 
   <!-- Card Footer -->
   <div class="dash-card-footer">
-    <a routerLink="/payments" class="footer-link">
+    <a routerLink="/payments/history" class="footer-link">
       <span>View Payment History</span>
       <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="5" y1="12" x2="19" y2="12"></line>

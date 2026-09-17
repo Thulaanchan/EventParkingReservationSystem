@@ -14,10 +14,10 @@ export class WelcomeBannerComponent {
 
   get greetingName(): string {
     if (!this.displayName) {
-      return 'there';
+      return 'Leo';
     }
     const trimmed = this.displayName.trim();
-    const firstWord = trimmed.split(' ')[0];
-    return firstWord || 'there';
+    const firstWord = trimmed.split(/\s+/)[0];
+    return firstWord ? (firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase()) : 'Leo';
   }
 }
