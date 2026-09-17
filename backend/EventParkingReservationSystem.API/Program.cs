@@ -432,25 +432,57 @@ if (app.Environment.IsDevelopment())
 
     app.Lifetime.ApplicationStarted.Register(() =>
     {
-        // If not launched by Visual Studio (which already handles launchBrowser from launchSettings.json)
-        var launchedByVs = Environment.GetEnvironmentVariable("VISUALSTUDIO_VERSION") != null
-            || Environment.GetEnvironmentVariable("VSAPPIDDIR") != null;
-
-        if (!launchedByVs)
+        try
         {
+            var frontendUrl = app.Configuration["Frontend:BaseUrl"] ?? "http://localhost:4200/";
+            if (!frontendUrl.EndsWith("/"))
+            {
+                frontendUrl += "/";
+            }
+
+            // Check if frontend server is already responding on port 4200
+            var isFrontendRunning = false;
             try
             {
-                var frontendUrl = app.Configuration["Frontend:BaseUrl"] ?? "http://localhost:4200";
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                using var tcp = new System.Net.Sockets.TcpClient();
+                var asyncResult = tcp.BeginConnect("127.0.0.1", 4200, null, null);
+                isFrontendRunning = asyncResult.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(500));
+                if (isFrontendRunning)
                 {
-                    FileName = frontendUrl,
-                    UseShellExecute = true
-                });
+                    tcp.EndConnect(asyncResult);
+                }
             }
             catch
             {
-                // Silently ignore if running in a headless or non-desktop environment
+                isFrontendRunning = false;
             }
+
+            // If not running, launch 'npm start' in the frontend directory
+            if (!isFrontendRunning)
+            {
+                var frontendDir = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "..", "frontend", "BookWithUs"));
+                if (Directory.Exists(frontendDir))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = "/c start \"BookWithUs Frontend (Angular)\" cmd /k \"npm start\"",
+                        WorkingDirectory = frontendDir,
+                        UseShellExecute = true
+                    });
+                }
+            }
+
+            // Launch browser to frontend URL
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = frontendUrl,
+                UseShellExecute = true
+            });
+        }
+        catch
+        {
+            // Silently ignore if running in a headless or non-desktop environment
         }
     });
 }

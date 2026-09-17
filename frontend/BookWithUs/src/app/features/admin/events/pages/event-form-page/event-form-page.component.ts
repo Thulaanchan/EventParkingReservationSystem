@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   OnInit,
@@ -36,6 +37,7 @@ export class EventFormPageComponent implements OnInit {
   private readonly venueService = inject(VenueService);
   private readonly categoryService = inject(CategoryService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   eventId: number | null = null;
   event: EventDetails | null = null;
@@ -47,6 +49,26 @@ export class EventFormPageComponent implements OnInit {
       value: 'Center Stage',
       label: 'Center Stage',
       description: 'Stage positioned centrally with audience seating arranged around it.'
+    },
+    {
+      value: 'End Stage',
+      label: 'End Stage',
+      description: 'Stage positioned at the end of the venue with tiered audience seating facing forward.'
+    },
+    {
+      value: 'Standard Arena',
+      label: 'Standard Arena',
+      description: 'Central performance area surrounded by full multi-tiered stadium seating.'
+    },
+    {
+      value: 'Proscenium Theatre',
+      label: 'Proscenium Theatre',
+      description: 'Traditional theatrical stage arch with stalls and balcony seating.'
+    },
+    {
+      value: 'Amphitheatre',
+      label: 'Amphitheatre',
+      description: 'Open semi-circular seating curving around a focal stage.'
     }
   ];
 
@@ -91,10 +113,12 @@ export class EventFormPageComponent implements OnInit {
             this.categories = categories;
             this.event = event;
             this.loading = false;
+            this.cdr.markForCheck();
           },
           error: (err: unknown) => {
             this.loading = false;
             this.handleLoadError(err);
+            this.cdr.markForCheck();
           }
         });
     } else {
@@ -109,10 +133,12 @@ export class EventFormPageComponent implements OnInit {
             this.categories = categories;
             this.event = null;
             this.loading = false;
+            this.cdr.markForCheck();
           },
           error: (err: unknown) => {
             this.loading = false;
             this.handleLoadError(err);
+            this.cdr.markForCheck();
           }
         });
     }
