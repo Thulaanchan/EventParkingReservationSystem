@@ -119,6 +119,7 @@
         <div class="table-container-card">
           <app-admin-event-table
             [events]="events"
+            [totalCount]="totalCount"
             [loading]="loading"
             (viewEvent)="onViewEvent($event)"
             (editEvent)="onEditEvent($event)"
@@ -131,7 +132,7 @@
           @if (!loading && events.length > 0) {
             <div class="pagination-footer">
               <span class="pagination-count">
-                Showing {{ paginationStart }}–{{ paginationEnd }} of {{ totalCount }} events
+                Showing {{ paginationStart }}-{{ paginationEnd }} of {{ totalCount }} events
               </span>
 
               <nav class="pagination-controls" aria-label="Event list pagination">

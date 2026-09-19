@@ -238,6 +238,47 @@
 }
 
 
+/* Schedule Validated Banner (Matching Image 2) */
+.schedule-validated-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+}
+
+.schedule-icon-box {
+  color: #059669;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.schedule-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.schedule-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.schedule-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.schedule-text {
+  font-size: 0.8125rem;
+  color: #047857;
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Booking Lock Warning */
 .booking-lock-banner {
   display: flex;

@@ -13,8 +13,13 @@ import { AuthService } from '../services/auth/auth.service';
 import { ErrorHandlerService } from '../services/errors/error-handler.service';
 import { LoadingService } from '../services/loading/loading.service';
 
+interface RefreshState {
+  token: string | null;
+  failed: boolean;
+}
+
 let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+const refreshStateSubject = new BehaviorSubject<RefreshState | null>(null);
 
 export const apiInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -57,12 +62,12 @@ export const apiInterceptor: HttpInterceptorFn = (
       if (error.status === 401 && !isAuthEndpoint && hasRefreshToken && !isDemoToken) {
         if (!isRefreshing) {
           isRefreshing = true;
-          refreshTokenSubject.next(null);
+          refreshStateSubject.next(null);
 
           return authService.refreshToken().pipe(
             switchMap((response) => {
               isRefreshing = false;
-              refreshTokenSubject.next(response.token);
+              refreshStateSubject.next({ token: response.token, failed: false });
 
               return next(
                 req.clone({
@@ -74,7 +79,7 @@ export const apiInterceptor: HttpInterceptorFn = (
             }),
             catchError((refreshError) => {
               isRefreshing = false;
-              refreshTokenSubject.next(null);
+              refreshStateSubject.next({ token: null, failed: true });
               authService.logout(false);
               router.navigate(['/auth/login'], {
                 queryParams: { reason: 'session_expired' }
@@ -84,15 +89,18 @@ export const apiInterceptor: HttpInterceptorFn = (
             })
           );
         } else {
-          // Refresh is in-flight: wait for new token and replay
-          return refreshTokenSubject.pipe(
-            filter((newToken): newToken is string => newToken !== null),
+          // Refresh is in-flight: wait for new token or immediate error if refresh failed
+          return refreshStateSubject.pipe(
+            filter((state): state is RefreshState => state !== null),
             take(1),
-            switchMap((newToken) => {
+            switchMap((state) => {
+              if (state.failed || !state.token) {
+                return throwError(() => errorHandler.handleError(error));
+              }
               return next(
                 req.clone({
                   setHeaders: {
-                    Authorization: `Bearer ${newToken}`
+                    Authorization: `Bearer ${state.token}`
                   }
                 })
               );

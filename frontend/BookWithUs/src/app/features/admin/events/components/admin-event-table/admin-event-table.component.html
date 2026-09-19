@@ -4,7 +4,7 @@
     <div class="table-title-group">
       <h2 class="table-title">Events</h2>
       <span class="event-count-badge">
-        {{ events.length }} {{ events.length === 1 ? 'total event' : 'total events' }}
+        {{ totalCount || events.length }} {{ (totalCount || events.length) === 1 ? 'total event' : 'total events' }}
       </span>
     </div>
   </div>
@@ -78,15 +78,15 @@
               <!-- Date & Time -->
               <td class="td-datetime">
                 <div class="datetime-cell">
-                  <span class="date-text">{{ event.eventDate | date:'mediumDate' }}</span>
-                  <span class="time-text">• {{ event.startTime }}{{ event.endTime ? ' - ' + event.endTime : '' }}</span>
+                  <span class="date-text">{{ formatDate(event.eventDate) }}</span>
+                  <span class="time-text">• {{ formatTime(event.startTime) }}</span>
                 </div>
               </td>
 
               <!-- Ticket Price -->
               <td class="td-price">
                 <span class="price-text">
-                  {{ event.ticketPrice === 0 ? 'Free' : ('LKR ' + (event.ticketPrice | number:'1.2-2')) }}
+                  {{ formatPrice(event.ticketPrice) }}
                 </span>
               </td>
 

@@ -60,17 +60,27 @@
     </svg>
   </div>
 
-  <!-- Date Input -->
-  <div class="date-input-wrapper">
-    <label for="adminEventDateInput" class="visually-hidden">Filter by date</label>
-    <input
-      type="date"
-      id="adminEventDateInput"
-      class="filter-date-input"
-      [ngModel]="date"
-      (ngModelChange)="onDateChange($event)"
+  <!-- Date Select (Matching Image 2 All Dates) -->
+  <div class="select-wrapper">
+    <label for="adminEventDateSelect" class="visually-hidden">Filter by date</label>
+    <select
+      id="adminEventDateSelect"
+      class="filter-select"
+      [ngModel]="selectedDateOption"
+      (ngModelChange)="onDateOptionChange($event)"
       aria-label="Filter events by date"
-    />
+    >
+      <option value="all">All Dates</option>
+      <option value="today">Today</option>
+      <option value="tomorrow">Tomorrow</option>
+      <option value="this-week">This Week</option>
+      <option value="this-month">This Month</option>
+      <option value="upcoming">Upcoming</option>
+      <option value="past">Past Events</option>
+    </select>
+    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
   </div>
 
   <!-- Clear Filters Button -->

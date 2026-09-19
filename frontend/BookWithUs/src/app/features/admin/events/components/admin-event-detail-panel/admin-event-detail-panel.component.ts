@@ -33,6 +33,28 @@ export class AdminEventDetailPanelComponent implements OnChanges {
 
   imageError = false;
 
+  formatTime(timeStr?: string | null): string {
+    if (!timeStr) return '';
+    if (timeStr.includes('AM') || timeStr.includes('PM')) {
+      return timeStr;
+    }
+    const parts = timeStr.split(':');
+    if (parts.length >= 2) {
+      let hours = parseInt(parts[0], 10);
+      const mins = parts[1];
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${String(hours).padStart(2, '0')}:${mins} ${ampm}`;
+    }
+    return timeStr;
+  }
+
+  formatPrice(price?: number | null): string {
+    if (price === undefined || price === null) return '—';
+    if (price === 0) return 'Free';
+    return 'LKR ' + Math.round(price).toLocaleString('en-US');
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['event']) {
       this.imageError = false;

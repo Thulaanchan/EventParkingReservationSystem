@@ -32,6 +32,7 @@ export class AdminEventFilterComponent implements OnChanges {
   venue: number | null = null;
   category: number | null = null;
   date = '';
+  selectedDateOption = 'all';
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && this.filter) {
@@ -45,6 +46,7 @@ export class AdminEventFilterComponent implements OnChanges {
           ? Number(this.filter.category)
           : null;
       this.date = this.filter.date ?? '';
+      this.selectedDateOption = this.filter.date || 'all';
     }
   }
 
@@ -63,8 +65,15 @@ export class AdminEventFilterComponent implements OnChanges {
     this.emitChange();
   }
 
+  onDateOptionChange(value: string): void {
+    this.selectedDateOption = value;
+    this.date = value === 'all' ? '' : value;
+    this.emitChange();
+  }
+
   onDateChange(value: string): void {
     this.date = value;
+    this.selectedDateOption = value || 'all';
     this.emitChange();
   }
 
@@ -73,6 +82,7 @@ export class AdminEventFilterComponent implements OnChanges {
     this.venue = null;
     this.category = null;
     this.date = '';
+    this.selectedDateOption = 'all';
     this.clearFilters.emit();
     this.emitChange();
   }

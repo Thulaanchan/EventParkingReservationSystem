@@ -6,18 +6,19 @@ import {
   Input,
   Output
 } from '@angular/core';
-import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { EventSummary } from '../../../../../core/models/events/event-summary.model';
 
 @Component({
   selector: 'app-admin-event-table',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe],
+  imports: [CommonModule, DecimalPipe],
   templateUrl: './admin-event-table.component.html',
   styleUrl: './admin-event-table.component.css'
 })
 export class AdminEventTableComponent {
   @Input() events: EventSummary[] = [];
+  @Input() totalCount = 0;
   @Input() loading = false;
 
   @Output() viewEvent = new EventEmitter<EventSummary>();
@@ -27,6 +28,41 @@ export class AdminEventTableComponent {
   @Output() manageParking = new EventEmitter<EventSummary>();
 
   activeMenuEventId: number | null = null;
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`);
+      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      const month = months[d.getMonth()];
+      const day = String(d.getDate()).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${month} ${day}, ${year}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  formatTime(timeStr: string): string {
+    if (!timeStr) return '';
+    if (timeStr.includes('AM') || timeStr.includes('PM')) {
+      return timeStr;
+    }
+    const parts = timeStr.split(':');
+    if (parts.length >= 2) {
+      let hours = parseInt(parts[0], 10);
+      const mins = parts[1];
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${String(hours).padStart(2, '0')}:${mins} ${ampm}`;
+    }
+    return timeStr;
+  }
+
+  formatPrice(price: number): string {
+    if (!price || price === 0) return 'Free';
+    return 'LKR ' + Math.round(price).toLocaleString('en-US');
+  }
 
   constructor(private readonly elementRef: ElementRef) {}
 
