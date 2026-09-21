@@ -8,6 +8,8 @@ import { EventSeatCategory } from '../../models/seats/event-seat-category.model'
 import { ReserveSeatsRequest } from '../../models/seats/reserve-seats-request.model';
 import { CreateSeatRequest } from '../../models/seats/create-seat-request.model';
 import { UpdateSeatRequest } from '../../models/seats/update-seat-request.model';
+import { CreateEventSeatCategoryRequest } from '../../models/seats/create-event-seat-category-request.model';
+import { CreateSeatSectionRequest } from '../../models/seats/create-seat-section-request.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -87,5 +89,21 @@ export class SeatService {
    */
   getEventSeatSections(eventId: number): Observable<SeatSection[]> {
     return this.http.get<SeatSection[]>(`${this.baseUrl}/events/${eventId}/seat-layout/sections`);
+  }
+
+  /**
+   * Creates a new seat category for an event.
+   * POST /api/events/{eventId}/seat-layout/categories
+   */
+  createEventSeatCategory(eventId: number, request: CreateEventSeatCategoryRequest): Observable<EventSeatCategory> {
+    return this.http.post<EventSeatCategory>(`${this.baseUrl}/events/${eventId}/seat-layout/categories`, request);
+  }
+
+  /**
+   * Creates a new seat section for an event.
+   * POST /api/events/{eventId}/seat-layout/sections
+   */
+  createSeatSection(eventId: number, request: CreateSeatSectionRequest): Observable<SeatSection> {
+    return this.http.post<SeatSection>(`${this.baseUrl}/events/${eventId}/seat-layout/sections`, request);
   }
 }

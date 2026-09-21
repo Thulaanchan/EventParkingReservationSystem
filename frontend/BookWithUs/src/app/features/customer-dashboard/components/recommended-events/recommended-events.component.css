@@ -18,6 +18,18 @@
   margin: 0;
 }
 
+.title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.section-subtitle {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+}
+
 .view-all-link {
   display: inline-flex;
   align-items: center;
@@ -74,11 +86,35 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
 }
 
+.event-card.is-new-event {
+  border-color: #a5b4fc;
+  box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.12);
+}
+
 .poster-container {
   position: relative;
   width: 100%;
   height: 9rem;
   background-color: #f1f5f9;
+}
+
+.card-badge {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.badge-upcoming {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
 }
 
 .poster-image {
@@ -318,4 +354,12 @@
 
 :host-context(.dark-theme) .discover-card-sub {
   color: #94a3b8;
+}
+
+:host-context(.dark-theme) .section-subtitle {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .event-card.is-new-event {
+  border-color: #6366f1;
 }

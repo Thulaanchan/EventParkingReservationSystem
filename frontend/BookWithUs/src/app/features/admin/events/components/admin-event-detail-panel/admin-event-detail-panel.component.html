@@ -205,6 +205,30 @@
           </svg>
         </button>
 
+        <!-- View Bookings Link Card -->
+        <button
+          type="button"
+          class="action-nav-card"
+          (click)="onViewBookings()"
+          [attr.aria-label]="'View bookings for ' + event.name"
+        >
+          <div class="action-nav-icon-box">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <div class="action-nav-text">
+            <strong class="action-nav-title">View Bookings</strong>
+            <span class="action-nav-subtext">Inspect customer reservations and tickets</span>
+          </div>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
         <!-- Delete Action & Safeguard Note -->
         <button
           type="button"

@@ -29,6 +29,7 @@ export class AdminEventDetailPanelComponent implements OnChanges {
   @Output() editEvent = new EventEmitter<EventDetails>();
   @Output() manageSeats = new EventEmitter<EventDetails>();
   @Output() manageParking = new EventEmitter<EventDetails>();
+  @Output() viewBookings = new EventEmitter<EventDetails>();
   @Output() deleteEvent = new EventEmitter<EventDetails>();
 
   imageError = false;
@@ -115,6 +116,12 @@ export class AdminEventDetailPanelComponent implements OnChanges {
   onManageParking(): void {
     if (this.event) {
       this.manageParking.emit(this.event);
+    }
+  }
+
+  onViewBookings(): void {
+    if (this.event) {
+      this.viewBookings.emit(this.event);
     }
   }
 

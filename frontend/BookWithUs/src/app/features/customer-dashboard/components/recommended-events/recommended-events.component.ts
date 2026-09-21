@@ -13,6 +13,8 @@ import { DashboardRecommendedEvent } from '../../../../core/models/dashboards/cu
 export class RecommendedEventsComponent implements OnInit {
   @Input() events: DashboardRecommendedEvent[] = [];
   @Input() isLoading = false;
+  @Input() sectionTitle = 'Upcoming Events';
+  @Input() subtitle?: string;
 
   wishlistedIds = new Set<number>();
 

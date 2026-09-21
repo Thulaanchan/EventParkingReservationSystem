@@ -1,0 +1,462 @@
+<div class="event-overview-page">
+  <!-- Top Navigation & Breadcrumb -->
+  <header class="page-header">
+    <a routerLink="/admin/events" class="back-link" aria-label="Back to Event Management">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Event Management</span>
+    </a>
+
+    <!-- Event Lifecycle Workflow Indicator -->
+    <nav class="flow-stepper" aria-label="Event management workflow steps">
+      <div class="step-item active" aria-current="step">
+        <span class="step-number">1</span>
+        <span class="step-label">Overview</span>
+      </div>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/events', eventId, 'seats']" class="step-item clickable">
+        <span class="step-number">2</span>
+        <span class="step-label">Seats</span>
+      </a>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/events', eventId, 'parking']" class="step-item clickable">
+        <span class="step-number">3</span>
+        <span class="step-label">Parking</span>
+      </a>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/bookings']" [queryParams]="{ eventId: eventId }" class="step-item clickable">
+        <span class="step-number">4</span>
+        <span class="step-label">Bookings</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="page-loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading event overview...</span>
+    </div>
+  } @else if (loadError) {
+    <!-- Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box" aria-hidden="true">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="error-content">
+        <h2 class="error-title">Failed to load event</h2>
+        <p class="error-message">{{ loadError }}</p>
+        <div class="error-actions">
+          <button type="button" class="btn btn-retry" (click)="loadEventOverview()">
+            Try Again
+          </button>
+          <a routerLink="/admin/events" class="btn btn-back">
+            Back to Events
+          </a>
+        </div>
+      </div>
+    </div>
+  } @else if (event) {
+    <!-- Event Banner & Identity -->
+    <section class="event-hero-card">
+      <div class="hero-main">
+        <div class="hero-poster-box">
+          @if (resolvedPosterUrl) {
+            <img
+              [src]="resolvedPosterUrl"
+              [alt]="event.name + ' poster'"
+              class="hero-poster"
+              (error)="onImageError()"
+            />
+          } @else {
+            <div class="hero-poster-fallback">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="poster-icon">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+          }
+        </div>
+
+        <div class="hero-info">
+          <div class="hero-badge-row">
+            <span class="badge-category">{{ event.categoryName }}</span>
+            @if (isUpcoming()) {
+              <span class="status-badge status-upcoming">Upcoming</span>
+            } @else {
+              <span class="status-badge status-past">Past</span>
+            }
+          </div>
+
+          <h1 class="hero-title">{{ event.name }}</h1>
+
+          <div class="hero-meta-grid">
+            <div class="meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ event.eventDate | date:'fullDate' }}</span>
+            </div>
+            <div class="meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ formatTime(event.startTime) }} @if (event.endTime) { - {{ formatTime(event.endTime) }} }</span>
+            </div>
+            <div class="meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{{ event.venueName }} ({{ event.venueAddress || 'Main Hall' }})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button type="button" class="btn-edit-hero" (click)="onEdit()" aria-label="Edit Event">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Edit Event</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Venue Schedule & Safeguard Alerts -->
+    <section class="alerts-section">
+      <div class="schedule-validated-banner" role="status">
+        <div class="schedule-icon-box">
+          <svg class="schedule-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+        </div>
+        <div class="schedule-details">
+          <strong class="schedule-title">Venue Schedule Validated</strong>
+          <p class="schedule-text">No overlapping events scheduled at {{ event.venueName }} for this time slot.</p>
+        </div>
+      </div>
+
+      @if (hasActiveBookings) {
+        <div class="booking-lock-banner" role="alert">
+          <div class="warning-icon-box">
+            <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="lock-details">
+            <strong class="lock-title">Event Has Active Bookings ({{ bookingCount }})</strong>
+            <p class="lock-explanation">
+              Capacity, ticket prices, and confirmed seat/parking assignments are protected to safeguard customer reservations.
+            </p>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- Key Metrics Stats Grid -->
+    <section class="stats-overview-grid">
+      <!-- Seat Capacity Card -->
+      <div class="overview-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-category">Seating & Capacity</span>
+          <span class="stat-badge badge-purple">{{ occupancyPercentage }}% Sold</span>
+        </div>
+        <div class="stat-main-number">{{ totalSeats | number }}</div>
+        <div class="stat-sub-grid">
+          <div class="sub-metric">
+            <span class="sub-label">Booked</span>
+            <span class="sub-val text-booked">{{ bookedSeats | number }}</span>
+          </div>
+          <div class="sub-metric">
+            <span class="sub-label">Available</span>
+            <span class="sub-val text-available">{{ availableSeats | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parking Capacity Card -->
+      <div class="overview-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-category">Parking Facility</span>
+          <span class="stat-badge badge-blue">{{ parkingZones.length }} Zones</span>
+        </div>
+        <div class="stat-main-number">{{ totalParkingSlots | number }}</div>
+        <div class="stat-sub-grid">
+          <div class="sub-metric">
+            <span class="sub-label">Available</span>
+            <span class="sub-val text-available">{{ availableParkingSlots | number }}</span>
+          </div>
+          <div class="sub-metric">
+            <span class="sub-label">Reserved</span>
+            <span class="sub-val text-reserved">{{ reservedParkingSlots | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bookings & Revenue Card -->
+      <div class="overview-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-category">Reservation Orders</span>
+          <span class="stat-badge badge-green">Live Status</span>
+        </div>
+        <div class="stat-main-number">{{ bookingCount | number }}</div>
+        <div class="stat-sub-grid">
+          <div class="sub-metric">
+            <span class="sub-label">Ticket Base</span>
+            <span class="sub-val">{{ formatPrice(event.ticketPrice) }}</span>
+          </div>
+          <div class="sub-metric">
+            <span class="sub-label">Stage Plan</span>
+            <span class="sub-val">{{ event.stageLayout || 'Standard' }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Layout: Details + Action Hub -->
+    <div class="overview-main-layout">
+      <!-- Left Column: Event Details Table -->
+      <section class="details-panel-card">
+        <h2 class="panel-section-title">Event Specifications</h2>
+
+        <div class="attribute-rows">
+          <div class="attr-row">
+            <span class="attr-name">Event Name:</span>
+            <span class="attr-value font-semibold">{{ event.name }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Venue:</span>
+            <span class="attr-value">{{ event.venueName }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Venue Address:</span>
+            <span class="attr-value">{{ event.venueAddress || 'Main Campus / Arena' }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Category:</span>
+            <span class="attr-value">{{ event.categoryName }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Event Date:</span>
+            <span class="attr-value">{{ event.eventDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Start & End Time:</span>
+            <span class="attr-value">{{ formatTime(event.startTime) }} @if (event.endTime) { - {{ formatTime(event.endTime) }} }</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Base Ticket Price:</span>
+            <span class="attr-value font-semibold text-purple">{{ formatPrice(event.ticketPrice) }}</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Total Capacity:</span>
+            <span class="attr-value">{{ totalSeats | number }} attendees</span>
+          </div>
+          <div class="attr-row">
+            <span class="attr-name">Stage Layout:</span>
+            <span class="attr-value">{{ event.stageLayout || 'Center Stage Arena' }}</span>
+          </div>
+          @if (event.description) {
+            <div class="attr-row full-description">
+              <span class="attr-name">Description:</span>
+              <p class="attr-desc-text">{{ event.description }}</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Right Column: Navigation & Action Hub -->
+      <section class="actions-panel-card">
+        <h2 class="panel-section-title">Event Management Hub</h2>
+        <p class="panel-section-desc">Manage seat configurations, parking slots, and reservation orders.</p>
+
+        <div class="actions-flow-list">
+          <!-- Manage Seats Link Card -->
+          <button
+            type="button"
+            class="action-flow-card"
+            (click)="onManageSeats()"
+            [attr.aria-label]="'Manage seats for ' + event.name"
+          >
+            <div class="flow-icon-box icon-purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+                <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </div>
+            <div class="flow-text">
+              <strong class="flow-title">Manage Seats</strong>
+              <span class="flow-subtext">Configure categories, sections, seat map & pricing</span>
+            </div>
+            <svg class="flow-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- Manage Parking Link Card -->
+          <button
+            type="button"
+            class="action-flow-card"
+            (click)="onManageParking()"
+            [attr.aria-label]="'Manage parking for ' + event.name"
+          >
+            <div class="flow-icon-box icon-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <div class="flow-text">
+              <strong class="flow-title">Manage Parking</strong>
+              <span class="flow-subtext">Configure parking zones, slot layouts, fees & vehicles</span>
+            </div>
+            <svg class="flow-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- View Bookings Link Card -->
+          <button
+            type="button"
+            class="action-flow-card"
+            (click)="onViewBookings()"
+            [attr.aria-label]="'View bookings for ' + event.name"
+          >
+            <div class="flow-icon-box icon-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </div>
+            <div class="flow-text">
+              <strong class="flow-title">View Bookings</strong>
+              <span class="flow-subtext">Inspect {{ bookingCount }} customer bookings and attendee passes</span>
+            </div>
+            <span class="booking-count-chip">{{ bookingCount }}</span>
+            <svg class="flow-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Danger Zone: Delete Event -->
+        <div class="danger-zone">
+          <button
+            type="button"
+            class="btn-delete-event"
+            (click)="onPromptDelete()"
+            [disabled]="!canDeleteEvent"
+            [title]="canDeleteEvent ? 'Delete event' : 'Active bookings prevent deletion of this event'"
+          >
+            <svg class="delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Delete Event</span>
+          </button>
+
+          @if (!canDeleteEvent) {
+            <p class="danger-note">
+              This event has {{ bookingCount }} active booking(s) and cannot be deleted.
+            </p>
+          }
+        </div>
+      </section>
+    </div>
+  }
+
+  <!-- Delete Confirmation Modal Dialog -->
+  @if (showDeleteModal && event) {
+    <div class="modal-backdrop" (click)="onCancelDelete()" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-warning-badge">
+            <svg class="modal-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="modal-header-text">
+            <h3 id="deleteModalTitle" class="modal-title">Delete Event</h3>
+            <p class="modal-subtitle">Confirm event cancellation and removal</p>
+          </div>
+          <button
+            type="button"
+            class="modal-btn-close"
+            (click)="onCancelDelete()"
+            [disabled]="deleting"
+            aria-label="Close modal"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-confirm-text">
+            Are you sure you want to delete <strong>{{ event.name }}</strong>?
+          </p>
+          <p class="modal-subtext">
+            This action is permanent and cannot be undone. Only events without active attendee bookings can be deleted.
+          </p>
+
+          @if (deleteError) {
+            <div class="modal-alert-error" role="alert">
+              <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>{{ deleteError }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-modal-cancel"
+            (click)="onCancelDelete()"
+            [disabled]="deleting"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-modal-delete"
+            (click)="onConfirmDelete()"
+            [disabled]="deleting"
+          >
+            @if (deleting) {
+              <span class="btn-spinner"></span>
+              <span>Deleting...</span>
+            } @else {
+              <span>Delete Event</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -12,13 +12,110 @@
   box-sizing: border-box;
 }
 
+/* Event Context Navigation */
+.event-context-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s ease;
+}
+
+.back-link:hover {
+  color: #111827;
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.flow-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: all 0.15s ease;
+}
+
+.step-item.clickable:hover {
+  color: #7c3aed;
+  background-color: #f5f3ff;
+}
+
+.step-item.active {
+  color: #7c3aed;
+  background-color: #ede9fe;
+}
+
+.step-number {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.step-item.active .step-number {
+  background-color: #7c3aed;
+  color: #ffffff;
+}
+
+.step-divider {
+  width: 16px;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
 /* Page Header */
 .page-header {
   margin-bottom: 2rem;
 }
 
 .header-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .header-badge {
@@ -32,6 +129,16 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: 1px solid #bfdbfe;
+}
+
+.event-context-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background-color: #f5f3ff;
+  color: #7c3aed;
+  font-size: 0.8125rem;
+  border: 1px solid #ddd6fe;
 }
 
 .page-title {

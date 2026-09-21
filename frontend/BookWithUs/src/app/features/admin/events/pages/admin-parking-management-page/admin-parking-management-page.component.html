@@ -1,0 +1,513 @@
+<div class="parking-management-page">
+  <!-- Top Navigation & Flow Header -->
+  <header class="page-header">
+    <a [routerLink]="['/admin/events', eventId, 'seats']" class="back-link" aria-label="Back to Manage Seats">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Manage Seats</span>
+    </a>
+
+    <!-- Workflow Stepper -->
+    <nav class="flow-stepper" aria-label="Event management workflow steps">
+      <a [routerLink]="['/admin/events', eventId]" class="step-item clickable">
+        <span class="step-number">1</span>
+        <span class="step-label">Overview</span>
+      </a>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/events', eventId, 'seats']" class="step-item clickable">
+        <span class="step-number">2</span>
+        <span class="step-label">Seats</span>
+      </a>
+      <div class="step-divider"></div>
+      <div class="step-item active" aria-current="step">
+        <span class="step-number">3</span>
+        <span class="step-label">Parking</span>
+      </div>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/bookings']" [queryParams]="{ eventId: eventId }" class="step-item clickable">
+        <span class="step-number">4</span>
+        <span class="step-label">Bookings</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- Title & Action Bar -->
+  <div class="title-action-bar">
+    <div class="title-group">
+      <h1 class="page-title">Parking Facility Management</h1>
+      @if (event) {
+        <p class="page-subtitle">Configure parking zones, rates, and slot layouts for <strong>{{ event.name }}</strong>.</p>
+      }
+    </div>
+
+    <div class="action-btn-group">
+      <button type="button" class="btn btn-secondary" (click)="openAddZoneModal()">
+        + Add Zone
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="openAddSlotModal()" [disabled]="zones.length === 0">
+        + Add Slots
+      </button>
+      <a [routerLink]="['/admin/bookings']" [queryParams]="{ eventId: eventId }" class="btn btn-primary btn-proceed">
+        <span>View Event Bookings</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Toast Banners -->
+  @if (actionMessage) {
+    <div class="toast-banner toast-success" role="status">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>{{ actionMessage }}</span>
+    </div>
+  }
+
+  @if (actionError) {
+    <div class="toast-banner toast-error" role="alert">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ actionError }}</span>
+      <button type="button" class="btn-dismiss" (click)="actionError = null">&times;</button>
+    </div>
+  }
+
+  <!-- Booking Safeguards Warning -->
+  @if (hasActiveBookings) {
+    <div class="safeguard-banner" role="alert">
+      <div class="safeguard-icon-box">
+        <svg class="safeguard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="safeguard-content">
+        <strong class="safeguard-title">Active Parking Reservations Safeguarded</strong>
+        <p class="safeguard-desc">
+          This event has {{ reservedSlotsCount }} reserved parking slot(s). Reserved vehicle slots cannot be removed to protect confirmed reservations.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="page-loading-state" role="status">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading parking facility configuration...</span>
+    </div>
+  } @else if (loadError) {
+    <!-- Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="error-title">Failed to load parking</h2>
+      <p class="error-message">{{ loadError }}</p>
+      <button type="button" class="btn btn-primary" (click)="loadParkingData()">Try Again</button>
+    </div>
+  } @else {
+    <!-- Stats Cards Grid -->
+    <section class="parking-stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total Parking Slots</span>
+        <div class="stat-val">{{ totalSlotsCount | number }}</div>
+        <span class="stat-sub">{{ zones.length }} active zone(s)</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Available Slots</span>
+        <div class="stat-val text-green">{{ availableSlotsCount | number }}</div>
+        <span class="stat-sub">Available for attendees</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Reserved Slots</span>
+        <div class="stat-val text-blue">{{ reservedSlotsCount | number }}</div>
+        <span class="stat-sub">{{ occupancyRate }}% facility occupancy</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Parking Zones</span>
+        <div class="stat-val text-purple">{{ zones.length }}</div>
+        <span class="stat-sub">Vehicle classifications</span>
+      </div>
+    </section>
+
+    <!-- Zones Breakdown Section -->
+    @if (zones.length > 0) {
+      <section class="zones-panel">
+        <h2 class="section-title">Configured Parking Zones</h2>
+        <div class="zones-grid">
+          @for (zone of zones; track zone.id) {
+            <div class="zone-card">
+              <div class="zone-header">
+                <span class="zone-name">{{ zone.name }}</span>
+                <span class="zone-vehicle-tag">{{ zone.vehicleType }}</span>
+              </div>
+              <div class="zone-fee">LKR {{ zone.fee | number }} / vehicle</div>
+              <div class="zone-meta">
+                <span>{{ zone.slotCount || 0 }} slots assigned</span>
+                <span class="zone-online" [class.online]="zone.isOnlineBookable">
+                  {{ zone.isOnlineBookable ? 'Online Booking Enabled' : 'On-Site Only' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Empty State: No parking configured yet -->
+    @if (slots.length === 0) {
+      <section class="empty-layout-card">
+        <div class="empty-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="empty-svg">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <h3 class="empty-title">No Parking Configuration Yet</h3>
+        <p class="empty-desc">
+          This event has no parking zones or slots defined. You can quickly generate a standard parking facility or create custom zones and slot prefixes.
+        </p>
+        <div class="empty-actions">
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            (click)="onGenerateDefaultParking()"
+            [disabled]="submitting"
+          >
+            @if (submitting) {
+              <span class="btn-spinner"></span>
+              <span>Creating Parking...</span>
+            } @else {
+              <span>Auto-Generate Standard Parking Facility (12 Slots)</span>
+            }
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="openAddZoneModal()">
+            + Create Custom Zone
+          </button>
+        </div>
+      </section>
+    } @else {
+      <!-- Parking Slot Grid & Visual Representation -->
+      <section class="slot-map-section">
+        <div class="map-controls-bar">
+          <!-- Zone Filter -->
+          <div class="filter-group">
+            <label for="zoneFilter" class="filter-label">Zone:</label>
+            <select
+              id="zoneFilter"
+              class="form-select"
+              [(ngModel)]="activeZoneFilter"
+              aria-label="Filter parking slots by zone"
+            >
+              <option value="ALL">All Zones ({{ slots.length }})</option>
+              @for (z of zones; track z.id) {
+                <option [value]="z.id">{{ z.name }} ({{ z.vehicleType }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="filter-group">
+            <label for="parkingStatusFilter" class="filter-label">Status:</label>
+            <select
+              id="parkingStatusFilter"
+              class="form-select"
+              [(ngModel)]="activeStatusFilter"
+              aria-label="Filter parking slots by status"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="Available">Available Only</option>
+              <option value="Reserved">Reserved Only</option>
+            </select>
+          </div>
+
+          <!-- Legend -->
+          <div class="map-legend">
+            <div class="legend-item">
+              <span class="legend-swatch swatch-available"></span>
+              <span>Available</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-reserved"></span>
+              <span>Reserved</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Slot Grid -->
+        <div class="slot-grid">
+          @for (slot of filteredSlots; track slot.id) {
+            <button
+              type="button"
+              class="slot-pill"
+              [class.slot-available]="slot.status === 'Available'"
+              [class.slot-reserved]="slot.status === 'Occupied' || slot.status === 'Held'"
+              [class.slot-selected]="selectedSlot?.id === slot.id"
+              (click)="onSelectSlot(slot)"
+              [attr.aria-label]="'Parking slot ' + slot.slotCode + ' (' + slot.status + ')'"
+            >
+              <span class="slot-code">{{ slot.slotCode }}</span>
+              <span class="slot-vehicle">{{ slot.vehicleType }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Selected Slot Inspection Detail Card -->
+        @if (selectedSlot) {
+          <div class="selected-slot-card">
+            <div class="slot-detail-header">
+              <div class="slot-detail-title">
+                <span class="detail-tag">Parking Slot Inspector</span>
+                <h3 class="slot-code-headline">{{ selectedSlot.slotCode }}</h3>
+              </div>
+              <button type="button" class="btn-close" (click)="selectedSlot = null">&times;</button>
+            </div>
+
+            <div class="slot-attributes-grid">
+              <div class="attr-box">
+                <span class="attr-k">Zone:</span>
+                <span class="attr-v">{{ selectedSlot.zoneName }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Vehicle Type:</span>
+                <span class="attr-v">{{ selectedSlot.vehicleType }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Parking Fee:</span>
+                <span class="attr-v font-bold text-blue">LKR {{ selectedSlot.fee | number }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Status:</span>
+                <span
+                  class="status-pill"
+                  [class.pill-available]="selectedSlot.status === 'Available'"
+                  [class.pill-reserved]="selectedSlot.status === 'Occupied' || selectedSlot.status === 'Held'"
+                >
+                  {{ selectedSlot.status }}
+                </span>
+              </div>
+            </div>
+
+            <div class="slot-detail-actions">
+              @if (selectedSlot.status === 'Available') {
+                <button
+                  type="button"
+                  class="btn btn-delete-slot"
+                  (click)="onPromptDeleteSlot(selectedSlot, $event)"
+                >
+                  Delete This Slot
+                </button>
+              } @else {
+                <span class="locked-note">
+                  This parking slot is reserved and cannot be removed.
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- Bottom Navigation Toolbar -->
+    <div class="page-footer-nav">
+      <a [routerLink]="['/admin/events', eventId, 'seats']" class="btn btn-secondary">
+        ← Back to Manage Seats
+      </a>
+      <a [routerLink]="['/admin/bookings']" [queryParams]="{ eventId: eventId }" class="btn btn-primary btn-proceed">
+        <span>View Event Bookings →</span>
+      </a>
+    </div>
+  }
+
+  <!-- Modal 1: Add Zone Modal -->
+  @if (showZoneModal) {
+    <div class="modal-backdrop" (click)="showZoneModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Create Parking Zone</h3>
+          <button type="button" class="modal-close" (click)="showZoneModal = false">&times;</button>
+        </div>
+        <form (ngSubmit)="onSaveZone()" class="modal-form">
+          <div class="form-field">
+            <label for="zoneName" class="field-label">Zone Name *</label>
+            <input
+              id="zoneName"
+              type="text"
+              class="field-input"
+              [(ngModel)]="newZone.name"
+              name="zoneName"
+              placeholder="e.g. VIP Front Courtyard"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="zoneType" class="field-label">Vehicle Type *</label>
+              <select
+                id="zoneType"
+                class="field-input"
+                [(ngModel)]="newZone.vehicleType"
+                name="zoneType"
+                required
+              >
+                @for (vt of vehicleTypesList; track vt.value) {
+                  <option [value]="vt.value">{{ vt.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="zoneFee" class="field-label">Parking Fee (LKR) *</label>
+              <input
+                id="zoneFee"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newZone.fee"
+                name="zoneFee"
+                min="0"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-checkbox-row">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="newZone.isOnlineBookable"
+                name="zoneOnline"
+              />
+              <span>Online Bookable by Customers</span>
+            </label>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showZoneModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting || !newZone.name">
+              {{ submitting ? 'Saving...' : 'Save Zone' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal 2: Add Slots Modal -->
+  @if (showSlotModal) {
+    <div class="modal-backdrop" (click)="showSlotModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Add Parking Slots</h3>
+          <button type="button" class="modal-close" (click)="showSlotModal = false">&times;</button>
+        </div>
+        <form (ngSubmit)="onSaveSlots()" class="modal-form">
+          <div class="form-field">
+            <label for="slotZone" class="field-label">Target Parking Zone *</label>
+            <select
+              id="slotZone"
+              class="field-input"
+              [(ngModel)]="newSlot.zoneId"
+              name="slotZone"
+              required
+            >
+              @for (z of zones; track z.id) {
+                <option [value]="z.id">{{ z.name }} ({{ z.vehicleType }} - LKR {{ z.fee }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="slotPrefix" class="field-label">Code Prefix *</label>
+              <input
+                id="slotPrefix"
+                type="text"
+                class="field-input"
+                [(ngModel)]="newSlot.prefix"
+                name="slotPrefix"
+                placeholder="e.g. VIP or C"
+                maxlength="6"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="slotStart" class="field-label">Start Number</label>
+              <input
+                id="slotStart"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newSlot.startNumber"
+                name="slotStart"
+                min="1"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="slotCount" class="field-label">Quantity</label>
+              <input
+                id="slotCount"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newSlot.count"
+                name="slotCount"
+                min="1"
+                max="50"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showSlotModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting || !newSlot.prefix">
+              {{ submitting ? 'Adding Slots...' : 'Add Slots' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal 3: Delete Slot Modal -->
+  @if (showDeleteModal && slotToDelete) {
+    <div class="modal-backdrop" (click)="showDeleteModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Parking Slot</h3>
+          <button type="button" class="modal-close" (click)="showDeleteModal = false">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete parking slot <strong>{{ slotToDelete.slotCode }}</strong>?</p>
+          <p class="modal-note">This slot is currently Available. Deleting it will remove it from future customer parking selection.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showDeleteModal = false">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="onConfirmDeleteSlot()" [disabled]="submitting">
+            {{ submitting ? 'Deleting...' : 'Delete Slot' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

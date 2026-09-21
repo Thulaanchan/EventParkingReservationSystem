@@ -15,6 +15,7 @@ import {
   DashboardRecommendedEvent,
   DashboardUpcomingBooking
 } from '../../models/dashboards/customer-dashboard.model';
+import { EventService } from '../events/event.service';
 
 export interface AdminDashboardData {
   summary: AdminDashboardSummary;
@@ -216,6 +217,7 @@ export const TARGET_CUSTOMER_DASHBOARD_DATA = {
 })
 export class DashboardService {
   private readonly http = inject(HttpClient);
+  private readonly eventService = inject(EventService);
   private readonly adminBaseUrl = `${environment.apiUrl}/admin/dashboard`;
   private readonly customerBaseUrl = `${environment.apiUrl}/customer/dashboard`;
 
@@ -320,11 +322,92 @@ export class DashboardService {
   }
 
   /**
-   * Retrieves recommended events for customer discovery.
-   * Backend endpoint: GET /api/events?pageSize=3
+   * Retrieves upcoming and recommended events for customer dashboard discovery.
+   * Dynamically includes newly created events first.
    */
   getRecommendedEvents(): Observable<DashboardRecommendedEvent[]> {
-    return of(TARGET_CUSTOMER_DASHBOARD_DATA.recommendedEvents);
+    return this.eventService.getEvents({ pageSize: 12, includePast: false }).pipe(
+      map((res) => {
+        const items = res?.items || [];
+        if (!items || items.length === 0) {
+          return this.getFallbackRecommendedEvents();
+        }
+
+        return items.slice(0, 8).map((item) => {
+          const isCustom = item.id > 1000000000;
+          return {
+            id: item.id,
+            name: item.name,
+            category: (item.categoryName || 'General').toUpperCase(),
+            venueName: item.venueName || 'Main Venue',
+            eventDate: this.formatDisplayDate(item.eventDate),
+            startTime: this.formatDisplayTime(item.startTime),
+            priceFrom: Number(item.ticketPrice) || 1000,
+            posterUrl: item.posterUrl || 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=600&q=80',
+            isNew: isCustom,
+            badgeText: isCustom ? 'Upcoming' : undefined
+          };
+        });
+      }),
+      catchError(() => of(this.getFallbackRecommendedEvents()))
+    );
+  }
+
+  private getFallbackRecommendedEvents(): DashboardRecommendedEvent[] {
+    const local = this.eventService.getLocalEvents();
+    if (local && local.length > 0) {
+      return local.slice(0, 8).map((item) => {
+        const isCustom = item.id > 1000000000;
+        return {
+          id: item.id,
+          name: item.name,
+          category: (item.categoryName || 'General').toUpperCase(),
+          venueName: item.venueName || 'Main Venue',
+          eventDate: this.formatDisplayDate(item.eventDate),
+          startTime: this.formatDisplayTime(item.startTime),
+          priceFrom: Number(item.ticketPrice) || 1000,
+          posterUrl: item.posterUrl || 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=600&q=80',
+          isNew: isCustom,
+          badgeText: isCustom ? 'Upcoming' : undefined
+        };
+      });
+    }
+    return TARGET_CUSTOMER_DASHBOARD_DATA.recommendedEvents;
+  }
+
+  private formatDisplayDate(rawDate?: string): string {
+    if (!rawDate) return '';
+    if (rawDate.includes(' ') && !rawDate.includes('-')) {
+      return rawDate;
+    }
+    const d = new Date(rawDate);
+    if (!isNaN(d.getTime())) {
+      const day = d.getDate().toString().padStart(2, '0');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+    return rawDate;
+  }
+
+  private formatDisplayTime(rawTime?: string): string {
+    if (!rawTime) return '';
+    if (/am|pm/i.test(rawTime)) {
+      return rawTime;
+    }
+    const parts = rawTime.split(':');
+    if (parts.length >= 2) {
+      let hour = parseInt(parts[0], 10);
+      const minutes = parts[1];
+      if (!isNaN(hour)) {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12;
+        if (hour === 0) hour = 12;
+        return `${hour}:${minutes} ${period}`;
+      }
+    }
+    return rawTime;
   }
 
   /**

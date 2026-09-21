@@ -56,4 +56,6 @@ export interface DashboardRecommendedEvent {
   startTime?: string | null;
   priceFrom: number;
   posterUrl?: string | null;
+  isNew?: boolean;
+  badgeText?: string;
 }

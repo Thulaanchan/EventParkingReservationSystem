@@ -220,10 +220,12 @@
             ></app-unread-notification-card>
           </div>
 
-          <!-- 3. Recommended for You Section (screen-07) -->
+          <!-- 3. Upcoming & Recommended Events Section (screen-07) -->
           @if (recommendedEvents().length > 0) {
             <app-recommended-events
               [events]="recommendedEvents()"
+              sectionTitle="Upcoming Events"
+              subtitle="Browse upcoming concerts, expos, and shows available for instant reservation"
             ></app-recommended-events>
           }
 

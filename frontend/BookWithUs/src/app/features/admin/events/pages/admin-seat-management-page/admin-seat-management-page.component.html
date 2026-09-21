@@ -1,0 +1,593 @@
+<div class="seat-management-page">
+  <!-- Top Navigation & Flow Header -->
+  <header class="page-header">
+    <a [routerLink]="['/admin/events', eventId]" class="back-link" aria-label="Back to Event Overview">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Event Overview</span>
+    </a>
+
+    <!-- Workflow Stepper -->
+    <nav class="flow-stepper" aria-label="Event management workflow steps">
+      <a [routerLink]="['/admin/events', eventId]" class="step-item clickable">
+        <span class="step-number">1</span>
+        <span class="step-label">Overview</span>
+      </a>
+      <div class="step-divider"></div>
+      <div class="step-item active" aria-current="step">
+        <span class="step-number">2</span>
+        <span class="step-label">Seats</span>
+      </div>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/events', eventId, 'parking']" class="step-item clickable">
+        <span class="step-number">3</span>
+        <span class="step-label">Parking</span>
+      </a>
+      <div class="step-divider"></div>
+      <a [routerLink]="['/admin/bookings']" [queryParams]="{ eventId: eventId }" class="step-item clickable">
+        <span class="step-number">4</span>
+        <span class="step-label">Bookings</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- Title & Primary Actions Header -->
+  <div class="title-action-bar">
+    <div class="title-group">
+      <h1 class="page-title">Seat Layout Management</h1>
+      @if (event) {
+        <p class="page-subtitle">Configure seat categories, sections, and layout for <strong>{{ event.name }}</strong> ({{ event.venueName }}).</p>
+      }
+    </div>
+
+    <div class="action-btn-group">
+      <button type="button" class="btn btn-secondary" (click)="openAddCategoryModal()">
+        + Add Category
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="openAddSectionModal()" [disabled]="categories.length === 0">
+        + Add Section
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="openAddSeatModal()" [disabled]="sections.length === 0">
+        + Add Seats
+      </button>
+      <a [routerLink]="['/admin/events', eventId, 'parking']" class="btn btn-primary btn-proceed">
+        <span>Proceed to Parking</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Action Feedback Banners -->
+  @if (actionMessage) {
+    <div class="toast-banner toast-success" role="status">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>{{ actionMessage }}</span>
+    </div>
+  }
+
+  @if (actionError) {
+    <div class="toast-banner toast-error" role="alert">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ actionError }}</span>
+      <button type="button" class="btn-dismiss" (click)="actionError = null">&times;</button>
+    </div>
+  }
+
+  <!-- Booking Safeguards Warning -->
+  @if (hasActiveBookings) {
+    <div class="safeguard-banner" role="alert">
+      <div class="safeguard-icon-box">
+        <svg class="safeguard-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="safeguard-content">
+        <strong class="safeguard-title">Active Booking Safeguards Enforced</strong>
+        <p class="safeguard-desc">
+          This event has {{ bookedSeatsCount }} reserved or held seats. Confirmed seats cannot be removed or renumbered to safeguard attendee purchases.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="page-loading-state" role="status">
+      <div class="spinner"></div>
+      <span class="loading-text">Loading seating configuration...</span>
+    </div>
+  } @else if (loadError) {
+    <!-- Error State -->
+    <div class="page-error-state" role="alert">
+      <div class="error-icon-box">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="error-title">Failed to load seats</h2>
+      <p class="error-message">{{ loadError }}</p>
+      <button type="button" class="btn btn-primary" (click)="loadSeatData()">Try Again</button>
+    </div>
+  } @else {
+    <!-- Stats Cards Grid -->
+    <section class="seat-stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total Seats</span>
+        <div class="stat-val">{{ totalSeatsCount | number }}</div>
+        <span class="stat-sub">{{ sections.length }} section(s) defined</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Available Seats</span>
+        <div class="stat-val text-green">{{ availableSeatsCount | number }}</div>
+        <span class="stat-sub">Ready for booking</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Booked / Held</span>
+        <div class="stat-val text-amber">{{ bookedSeatsCount | number }}</div>
+        <span class="stat-sub">{{ occupancyRate }}% capacity occupied</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Categories</span>
+        <div class="stat-val text-purple">{{ categories.length }}</div>
+        <span class="stat-sub">Pricing tiers</span>
+      </div>
+    </section>
+
+    <!-- Categories Breakdown Panel -->
+    @if (categories.length > 0) {
+      <section class="categories-panel">
+        <h2 class="section-title">Seat Categories & Pricing</h2>
+        <div class="categories-row">
+          @for (cat of categories; track cat.id) {
+            <div class="category-chip">
+              <div class="cat-header">
+                <span class="cat-code">{{ cat.code }}</span>
+                <span class="cat-name">{{ cat.name }}</span>
+              </div>
+              <div class="cat-price">LKR {{ cat.adultPrice | number }}</div>
+              <span class="cat-public" [class.bookable]="cat.isPubliclyBookable">
+                {{ cat.isPubliclyBookable ? 'Publicly Bookable' : 'Private/Reserved' }}
+              </span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Empty State: When no seats configured yet -->
+    @if (seats.length === 0) {
+      <section class="empty-layout-card">
+        <div class="empty-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="empty-svg">
+            <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9Z"></path>
+            <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </div>
+        <h3 class="empty-title">No Seat Layout Configured Yet</h3>
+        <p class="empty-desc">
+          This event has no seating categories or seats populated. You can quickly initialize a standard arena layout or define custom categories and sections.
+        </p>
+        <div class="empty-actions">
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            (click)="onGenerateDefaultLayout()"
+            [disabled]="submitting"
+          >
+            @if (submitting) {
+              <span class="btn-spinner"></span>
+              <span>Creating Layout...</span>
+            } @else {
+              <span>Auto-Generate Standard Arena Layout (24 Seats)</span>
+            }
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="openAddCategoryModal()">
+            + Create Custom Category
+          </button>
+        </div>
+      </section>
+    } @else {
+      <!-- Seat Map Layout & Visual Grid -->
+      <section class="seat-map-section">
+        <!-- Filter and Legend Bar -->
+        <div class="map-controls-bar">
+          <!-- Section Filter -->
+          <div class="filter-group">
+            <label for="sectionFilter" class="filter-label">Section:</label>
+            <select
+              id="sectionFilter"
+              class="form-select"
+              [(ngModel)]="activeSectionFilter"
+              aria-label="Filter seats by section"
+            >
+              <option value="ALL">All Sections ({{ seats.length }})</option>
+              @for (sec of sections; track sec.id) {
+                <option [value]="sec.code">{{ sec.name }} ({{ sec.code }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="filter-group">
+            <label for="statusFilter" class="filter-label">Status:</label>
+            <select
+              id="statusFilter"
+              class="form-select"
+              [(ngModel)]="activeStatusFilter"
+              aria-label="Filter seats by status"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="Available">Available Only</option>
+              <option value="Booked">Booked Only</option>
+              <option value="Held">Held Only</option>
+            </select>
+          </div>
+
+          <!-- Legend -->
+          <div class="map-legend">
+            <div class="legend-item">
+              <span class="legend-swatch swatch-available"></span>
+              <span>Available</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-booked"></span>
+              <span>Booked</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-held"></span>
+              <span>Held</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage Representation -->
+        <div class="stage-indicator">
+          <div class="stage-bar">
+            <span>PERFORMANCE STAGE / PODIUM</span>
+          </div>
+        </div>
+
+        <!-- Visual Seat Grid -->
+        <div class="seat-grid-container">
+          <div class="seat-grid">
+            @for (seat of filteredSeats; track seat.id) {
+              <button
+                type="button"
+                class="seat-pill"
+                [class.seat-available]="seat.status === 'Available'"
+                [class.seat-booked]="seat.status === 'Booked'"
+                [class.seat-held]="seat.status === 'Held'"
+                [class.seat-selected]="selectedSeat?.id === seat.id"
+                (click)="onSelectSeat(seat)"
+                [attr.aria-label]="'Seat ' + seat.seatCode + ' (' + seat.status + ')'"
+              >
+                <span class="seat-code">{{ seat.seatCode }}</span>
+                <span class="seat-sub-tag">{{ seat.sectionCode }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Selected Seat Inspection Detail Card -->
+        @if (selectedSeat) {
+          <div class="selected-seat-card">
+            <div class="seat-detail-header">
+              <div class="seat-detail-title">
+                <span class="detail-tag">Seat Inspector</span>
+                <h3 class="seat-code-headline">{{ selectedSeat.seatCode }}</h3>
+              </div>
+              <button type="button" class="btn-close" (click)="selectedSeat = null">&times;</button>
+            </div>
+
+            <div class="seat-attributes-grid">
+              <div class="attr-box">
+                <span class="attr-k">Section:</span>
+                <span class="attr-v">{{ selectedSeat.sectionName }} ({{ selectedSeat.sectionCode }})</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Row:</span>
+                <span class="attr-v">{{ selectedSeat.rowLabel }} - #{{ selectedSeat.number }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Category:</span>
+                <span class="attr-v">{{ selectedSeat.categoryName }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Adult Price:</span>
+                <span class="attr-v font-bold text-purple">LKR {{ selectedSeat.adultPrice | number }}</span>
+              </div>
+              <div class="attr-box">
+                <span class="attr-k">Status:</span>
+                <span
+                  class="status-pill"
+                  [class.pill-available]="selectedSeat.status === 'Available'"
+                  [class.pill-booked]="selectedSeat.status === 'Booked'"
+                  [class.pill-held]="selectedSeat.status === 'Held'"
+                >
+                  {{ selectedSeat.status }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Seat Actions -->
+            <div class="seat-detail-actions">
+              @if (selectedSeat.status === 'Available') {
+                <button
+                  type="button"
+                  class="btn btn-delete-seat"
+                  (click)="onPromptDeleteSeat(selectedSeat, $event)"
+                >
+                  Delete This Seat
+                </button>
+              } @else {
+                <span class="locked-note">
+                  This seat is {{ selectedSeat.status }} and cannot be removed.
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- Bottom Navigation Toolbar -->
+    <div class="page-footer-nav">
+      <a [routerLink]="['/admin/events', eventId]" class="btn btn-secondary">
+        ← Back to Event Overview
+      </a>
+      <a [routerLink]="['/admin/events', eventId, 'parking']" class="btn btn-primary btn-proceed">
+        <span>Proceed to Parking Configuration →</span>
+      </a>
+    </div>
+  }
+
+  <!-- Modal 1: Add Category Modal -->
+  @if (showCategoryModal) {
+    <div class="modal-backdrop" (click)="showCategoryModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Create Seat Category</h3>
+          <button type="button" class="modal-close" (click)="showCategoryModal = false">&times;</button>
+        </div>
+        <form (ngSubmit)="onSaveCategory()" class="modal-form">
+          <div class="form-field">
+            <label for="catName" class="field-label">Category Name *</label>
+            <input
+              id="catName"
+              type="text"
+              class="field-input"
+              [(ngModel)]="newCategory.name"
+              name="catName"
+              placeholder="e.g. VIP Front Row"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="catCode" class="field-label">Code *</label>
+              <input
+                id="catCode"
+                type="text"
+                class="field-input"
+                [(ngModel)]="newCategory.code"
+                name="catCode"
+                placeholder="e.g. VIP"
+                maxlength="10"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="catPrice" class="field-label">Adult Price (LKR) *</label>
+              <input
+                id="catPrice"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newCategory.adultPrice"
+                name="catPrice"
+                min="0"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-checkbox-row">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="newCategory.isPubliclyBookable"
+                name="catPublic"
+              />
+              <span>Publicly Bookable by Attendees</span>
+            </label>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showCategoryModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting || !newCategory.name || !newCategory.code">
+              {{ submitting ? 'Saving...' : 'Save Category' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal 2: Add Section Modal -->
+  @if (showSectionModal) {
+    <div class="modal-backdrop" (click)="showSectionModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Create Seat Section</h3>
+          <button type="button" class="modal-close" (click)="showSectionModal = false">&times;</button>
+        </div>
+        <form (ngSubmit)="onSaveSection()" class="modal-form">
+          <div class="form-field">
+            <label for="secCategory" class="field-label">Seat Category *</label>
+            <select
+              id="secCategory"
+              class="field-input"
+              [(ngModel)]="newSection.eventSeatCategoryId"
+              name="secCat"
+              required
+            >
+              @for (cat of categories; track cat.id) {
+                <option [value]="cat.id">{{ cat.name }} ({{ cat.code }} - LKR {{ cat.adultPrice }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="secName" class="field-label">Section Name *</label>
+            <input
+              id="secName"
+              type="text"
+              class="field-input"
+              [(ngModel)]="newSection.name"
+              name="secName"
+              placeholder="e.g. North Balcony"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="secCode" class="field-label">Section Code *</label>
+            <input
+              id="secCode"
+              type="text"
+              class="field-input"
+              [(ngModel)]="newSection.code"
+              name="secCode"
+              placeholder="e.g. SEC-B"
+              maxlength="20"
+              required
+            />
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showSectionModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting || !newSection.name || !newSection.code">
+              {{ submitting ? 'Saving...' : 'Save Section' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal 3: Add Seats Modal -->
+  @if (showSeatModal) {
+    <div class="modal-backdrop" (click)="showSeatModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Add Seats to Section</h3>
+          <button type="button" class="modal-close" (click)="showSeatModal = false">&times;</button>
+        </div>
+        <form (ngSubmit)="onSaveSeats()" class="modal-form">
+          <div class="form-field">
+            <label for="seatSection" class="field-label">Target Section *</label>
+            <select
+              id="seatSection"
+              class="field-input"
+              [(ngModel)]="newSeat.sectionId"
+              name="seatSec"
+              required
+            >
+              @for (sec of sections; track sec.id) {
+                <option [value]="sec.id">{{ sec.name }} ({{ sec.code }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="seatRow" class="field-label">Row Label *</label>
+              <input
+                id="seatRow"
+                type="text"
+                class="field-input"
+                [(ngModel)]="newSeat.rowLabel"
+                name="seatRow"
+                placeholder="e.g. A"
+                maxlength="5"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="seatStart" class="field-label">Start Number</label>
+              <input
+                id="seatStart"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newSeat.startNumber"
+                name="seatStart"
+                min="1"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label for="seatCount" class="field-label">Quantity to Add</label>
+              <input
+                id="seatCount"
+                type="number"
+                class="field-input"
+                [(ngModel)]="newSeat.count"
+                name="seatCount"
+                min="1"
+                max="50"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="showSeatModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="submitting || !newSeat.rowLabel">
+              {{ submitting ? 'Adding Seats...' : 'Add Seats' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal 4: Delete Seat Modal -->
+  @if (showDeleteModal && seatToDelete) {
+    <div class="modal-backdrop" (click)="showDeleteModal = false" role="dialog" aria-modal="true">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Delete Seat</h3>
+          <button type="button" class="modal-close" (click)="showDeleteModal = false">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete seat <strong>{{ seatToDelete.seatCode }}</strong>?</p>
+          <p class="modal-note">This seat is currently Available. Deleting it will remove it from future customer seat bookings.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showDeleteModal = false">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="onConfirmDeleteSeat()" [disabled]="submitting">
+            {{ submitting ? 'Deleting...' : 'Delete Seat' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

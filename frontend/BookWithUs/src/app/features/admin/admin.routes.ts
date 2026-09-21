@@ -46,6 +46,30 @@ export const ADMIN_ROUTES: Routes = [
         title: 'Edit Event - BookWithUs'
       },
       {
+        path: 'events/:id/seats',
+        loadComponent: () =>
+          import('./events/pages/admin-seat-management-page/admin-seat-management-page.component').then(
+            (m) => m.AdminSeatManagementPageComponent
+          ),
+        title: 'Manage Seats - BookWithUs'
+      },
+      {
+        path: 'events/:id/parking',
+        loadComponent: () =>
+          import('./events/pages/admin-parking-management-page/admin-parking-management-page.component').then(
+            (m) => m.AdminParkingManagementPageComponent
+          ),
+        title: 'Manage Parking - BookWithUs'
+      },
+      {
+        path: 'events/:id',
+        loadComponent: () =>
+          import('./events/pages/event-overview-page/event-overview-page.component').then(
+            (m) => m.EventOverviewPageComponent
+          ),
+        title: 'Event Overview - BookWithUs'
+      },
+      {
         path: 'venues',
         loadComponent: () =>
           import('./venues/pages/venue-management-page/venue-management-page.component').then(

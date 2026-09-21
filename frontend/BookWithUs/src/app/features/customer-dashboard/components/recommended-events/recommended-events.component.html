@@ -1,7 +1,12 @@
 <div class="recommended-section">
   <!-- Section Header -->
   <div class="section-header">
-    <h2 class="section-title">Recommended for You</h2>
+    <div class="title-group">
+      <h2 class="section-title">{{ sectionTitle }}</h2>
+      @if (subtitle) {
+        <p class="section-subtitle">{{ subtitle }}</p>
+      }
+    </div>
     <a routerLink="/events" class="view-all-link">
       <span>View All Events</span>
       <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -14,9 +19,12 @@
   <!-- Events Grid -->
   <div class="events-grid">
     @for (event of events; track event.id) {
-      <div class="event-card">
+      <div class="event-card" [class.is-new-event]="event.isNew">
         <!-- Event Poster -->
         <div class="poster-container">
+          @if (event.badgeText || event.isNew) {
+            <span class="card-badge badge-upcoming">{{ event.badgeText || 'Upcoming' }}</span>
+          }
           @if (event.posterUrl) {
             <img [src]="event.posterUrl" [alt]="event.name" class="poster-image" />
           } @else {

@@ -26,6 +26,7 @@ export class AdminEventTableComponent {
   @Output() deleteEvent = new EventEmitter<EventSummary>();
   @Output() manageSeats = new EventEmitter<EventSummary>();
   @Output() manageParking = new EventEmitter<EventSummary>();
+  @Output() viewBookings = new EventEmitter<EventSummary>();
 
   activeMenuEventId: number | null = null;
 
@@ -112,6 +113,11 @@ export class AdminEventTableComponent {
   onManageParking(event: EventSummary): void {
     this.closeMenu();
     this.manageParking.emit(event);
+  }
+
+  onViewBookings(event: EventSummary): void {
+    this.closeMenu();
+    this.viewBookings.emit(event);
   }
 
   isUpcoming(event: EventSummary): boolean {

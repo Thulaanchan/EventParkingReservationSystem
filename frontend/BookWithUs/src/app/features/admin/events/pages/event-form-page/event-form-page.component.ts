@@ -157,9 +157,10 @@ export class EventFormPageComponent implements OnInit {
         .updateEvent(this.eventId, request as UpdateEventRequest)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: () => {
+          next: (updatedEvent) => {
             this.submitting = false;
-            this.router.navigate(['/admin/events']);
+            const targetId = updatedEvent?.id || this.eventId;
+            this.router.navigate(['/admin/events', targetId]);
           },
           error: (err: unknown) => {
             this.submitting = false;
@@ -171,9 +172,14 @@ export class EventFormPageComponent implements OnInit {
         .createEvent(request as CreateEventRequest)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: () => {
+          next: (createdEvent) => {
             this.submitting = false;
-            this.router.navigate(['/admin/events']);
+            const newId = createdEvent?.id;
+            if (newId) {
+              this.router.navigate(['/admin/events', newId]);
+            } else {
+              this.router.navigate(['/admin/events']);
+            }
           },
           error: (err: unknown) => {
             this.submitting = false;
@@ -184,7 +190,11 @@ export class EventFormPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/admin/events']);
+    if (this.isEditMode && this.eventId) {
+      this.router.navigate(['/admin/events', this.eventId]);
+    } else {
+      this.router.navigate(['/admin/events']);
+    }
   }
 
   private handleLoadError(err: unknown): void {

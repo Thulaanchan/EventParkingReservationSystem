@@ -22,6 +22,7 @@ import {
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { AuthSessionService } from '../../../../core/services/auth/auth-session.service';
 import { DashboardService } from '../../../../core/services/dashboards/dashboard.service';
+import { EventService } from '../../../../core/services/events/event.service';
 import { ThemeService } from '../../../../core/services/theme/theme.service';
 import { ParkingSummaryCardComponent } from '../../components/parking-summary-card/parking-summary-card.component';
 import { QuickActionsComponent } from '../../components/quick-actions/quick-actions.component';
@@ -52,6 +53,7 @@ export type DashboardViewState = 'loading' | 'error' | 'empty' | 'data';
 })
 export class CustomerDashboardPageComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
+  private readonly eventService = inject(EventService);
   readonly authService = inject(AuthService);
   private readonly authSessionService = inject(AuthSessionService);
   readonly themeService = inject(ThemeService);
@@ -94,6 +96,19 @@ export class CustomerDashboardPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+
+    this.eventService.eventsChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.viewState() === 'data') {
+          this.dashboardService
+            .getRecommendedEvents()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((events) => {
+              this.recommendedEvents.set(events);
+            });
+        }
+      });
   }
 
   toggleUserMenu(e?: Event): void {

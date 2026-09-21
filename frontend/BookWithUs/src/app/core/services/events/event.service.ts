@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { EventSummary } from '../../models/events/event-summary.model';
 import { EventDetails } from '../../models/events/event-details.model';
@@ -9,6 +9,10 @@ import { CreateEventRequest } from '../../models/events/create-event-request.mod
 import { UpdateEventRequest } from '../../models/events/update-event-request.model';
 import { PagedResult } from '../../models/common/paged-result.model';
 import { TARGET_ADMIN_EVENTS } from '../../constants/target-events.constant';
+import { DEFAULT_ADMIN_VENUES } from '../venues/venue.service';
+import { DEFAULT_ADMIN_CATEGORIES } from '../categories/category.service';
+
+const CUSTOM_EVENTS_STORAGE_KEY = 'eventflow_custom_events';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +21,48 @@ export class EventService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/events`;
 
+  readonly eventsChanged$ = new BehaviorSubject<void>(void 0);
+
   // Local mutable cache so creations and deletions update smoothly
-  private localEvents: EventDetails[] = [...TARGET_ADMIN_EVENTS];
+  private localEvents: EventDetails[] = this.initEvents();
+
+  private initEvents(): EventDetails[] {
+    const saved = this.loadCustomEvents();
+    if (saved.length > 0) {
+      // Deduplicate by ID
+      const savedIds = new Set(saved.map((e) => e.id));
+      const filteredDefaults = TARGET_ADMIN_EVENTS.filter((e) => !savedIds.has(e.id));
+      return [...saved, ...filteredDefaults];
+    }
+    return [...TARGET_ADMIN_EVENTS];
+  }
+
+  private loadCustomEvents(): EventDetails[] {
+    try {
+      const raw = localStorage.getItem(CUSTOM_EVENTS_STORAGE_KEY);
+      if (raw) {
+        return JSON.parse(raw) as EventDetails[];
+      }
+    } catch {
+      // Ignore storage restrictions
+    }
+    return [];
+  }
+
+  private saveCustomEvents(): void {
+    try {
+      // Custom events are those created by user or having timestamp id
+      const defaultIds = new Set(TARGET_ADMIN_EVENTS.map((e) => e.id));
+      const customEvents = this.localEvents.filter((e) => !defaultIds.has(e.id) || e.id > 1000000000);
+      localStorage.setItem(CUSTOM_EVENTS_STORAGE_KEY, JSON.stringify(customEvents));
+    } catch {
+      // Ignore storage restrictions
+    }
+  }
+
+  getLocalEvents(): EventDetails[] {
+    return [...this.localEvents];
+  }
 
   getEvents(filter?: EventFilter): Observable<PagedResult<EventSummary>> {
     let params = new HttpParams();
@@ -76,7 +120,26 @@ export class EventService {
 
   createEvent(request: CreateEventRequest): Observable<EventDetails> {
     const formData = this.buildFormData(request);
+    const matchedVenue = DEFAULT_ADMIN_VENUES.find((v) => v.id === Number(request.venueId));
+    const matchedCategory = DEFAULT_ADMIN_CATEGORIES.find((c) => c.id === Number(request.categoryId));
+    const venueName = matchedVenue?.name || 'Main Venue';
+    const venueAddress = matchedVenue?.address || 'Colombo, Sri Lanka';
+    const categoryName = matchedCategory?.name || 'General';
+
     return this.http.post<EventDetails>(this.baseUrl, formData).pipe(
+      tap((res) => {
+        if (res) {
+          const detailedEvent: EventDetails = {
+            ...res,
+            venueName: res.venueName || venueName,
+            categoryName: res.categoryName || categoryName,
+            venueAddress: res.venueAddress || venueAddress
+          };
+          this.localEvents.unshift(detailedEvent);
+          this.saveCustomEvents();
+          this.eventsChanged$.next();
+        }
+      }),
       catchError(() => {
         const newEvent: EventDetails = {
           id: Math.floor(Date.now() / 1000),
@@ -88,9 +151,9 @@ export class EventService {
           ticketPrice: Number(request.ticketPrice),
           childDiscountPercent: 0,
           venueId: Number(request.venueId),
-          venueName: 'Unicom TIC, Jaffna',
+          venueName,
           categoryId: Number(request.categoryId),
-          categoryName: 'Music Concert',
+          categoryName,
           capacity: Number(request.capacity),
           totalSeats: Number(request.capacity),
           availableSeats: Number(request.capacity),
@@ -100,7 +163,7 @@ export class EventService {
           canDelete: true,
           description: request.description || null,
           stageLayout: request.stageLayout || 'General Layout',
-          venueAddress: 'Unicom TIC, Jaffna',
+          venueAddress,
           venueCapacity: Number(request.capacity),
           bookingCount: 0,
           canEditTicketPrice: true,
@@ -108,6 +171,8 @@ export class EventService {
           canEditStageLayout: true
         };
         this.localEvents.unshift(newEvent);
+        this.saveCustomEvents();
+        this.eventsChanged$.next();
         return of(newEvent);
       })
     );
@@ -115,7 +180,20 @@ export class EventService {
 
   updateEvent(id: number, request: UpdateEventRequest): Observable<EventDetails> {
     const formData = this.buildFormData(request);
+    const matchedVenue = DEFAULT_ADMIN_VENUES.find((v) => v.id === Number(request.venueId));
+    const matchedCategory = DEFAULT_ADMIN_CATEGORIES.find((c) => c.id === Number(request.categoryId));
+    const venueName = matchedVenue?.name;
+    const categoryName = matchedCategory?.name;
+
     return this.http.put<EventDetails>(`${this.baseUrl}/${id}`, formData).pipe(
+      tap((res) => {
+        const idx = this.localEvents.findIndex((e) => e.id === Number(id));
+        if (idx !== -1) {
+          this.localEvents[idx] = { ...this.localEvents[idx], ...res };
+          this.saveCustomEvents();
+          this.eventsChanged$.next();
+        }
+      }),
       catchError(() => {
         const idx = this.localEvents.findIndex((e) => e.id === Number(id));
         if (idx !== -1) {
@@ -125,7 +203,9 @@ export class EventService {
             name: request.name,
             description: request.description || current.description,
             venueId: Number(request.venueId),
+            venueName: venueName || current.venueName,
             categoryId: Number(request.categoryId),
+            categoryName: categoryName || current.categoryName,
             eventDate: request.eventDate,
             startTime: request.startTime,
             endTime: request.endTime,
@@ -134,6 +214,8 @@ export class EventService {
             stageLayout: request.stageLayout || current.stageLayout
           };
           this.localEvents[idx] = updated;
+          this.saveCustomEvents();
+          this.eventsChanged$.next();
           return of(updated);
         }
         return of(this.localEvents[0]);
@@ -143,8 +225,15 @@ export class EventService {
 
   deleteEvent(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
+      tap(() => {
+        this.localEvents = this.localEvents.filter((e) => e.id !== Number(id));
+        this.saveCustomEvents();
+        this.eventsChanged$.next();
+      }),
       catchError(() => {
         this.localEvents = this.localEvents.filter((e) => e.id !== Number(id));
+        this.saveCustomEvents();
+        this.eventsChanged$.next();
         return of(void 0);
       })
     );

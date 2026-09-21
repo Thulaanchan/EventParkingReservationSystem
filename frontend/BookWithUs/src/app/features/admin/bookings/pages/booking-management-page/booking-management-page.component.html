@@ -1,13 +1,58 @@
 <div class="admin-bookings-container">
+  <!-- Top Navigation & Flow Header (when eventId is present) -->
+  @if (selectedEventId()) {
+    <div class="event-context-nav">
+      <a [routerLink]="['/admin/events', selectedEventId()]" class="back-link" aria-label="Back to Event Overview">
+        <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Event Overview</span>
+      </a>
+
+      <!-- Workflow Stepper -->
+      <nav class="flow-stepper" aria-label="Event management workflow steps">
+        <a [routerLink]="['/admin/events', selectedEventId()]" class="step-item clickable">
+          <span class="step-number">1</span>
+          <span class="step-label">Overview</span>
+        </a>
+        <div class="step-divider"></div>
+        <a [routerLink]="['/admin/events', selectedEventId(), 'seats']" class="step-item clickable">
+          <span class="step-number">2</span>
+          <span class="step-label">Seats</span>
+        </a>
+        <div class="step-divider"></div>
+        <a [routerLink]="['/admin/events', selectedEventId(), 'parking']" class="step-item clickable">
+          <span class="step-number">3</span>
+          <span class="step-label">Parking</span>
+        </a>
+        <div class="step-divider"></div>
+        <div class="step-item active" aria-current="step">
+          <span class="step-number">4</span>
+          <span class="step-label">Bookings</span>
+        </div>
+      </nav>
+    </div>
+  }
+
   <!-- Page Header -->
   <header class="page-header">
     <div class="header-titles">
       <div class="header-badge-row">
         <span class="header-badge">Administration</span>
+        @if (selectedEventId()) {
+          <span class="event-context-badge">
+            Event Context: <strong>{{ selectedEventName() || ('Event #' + selectedEventId()) }}</strong>
+          </span>
+        }
       </div>
       <h1 class="page-title">Booking Management</h1>
       <p class="page-subtitle">
-        Inspect, monitor, and manage event reservations and attendee bookings.
+        @if (selectedEventId()) {
+          Inspect, monitor, and manage attendee bookings for <strong>{{ selectedEventName() || ('Event #' + selectedEventId()) }}</strong>.
+        } @else {
+          Inspect, monitor, and manage event reservations and attendee bookings.
+        }
       </p>
     </div>
   </header>

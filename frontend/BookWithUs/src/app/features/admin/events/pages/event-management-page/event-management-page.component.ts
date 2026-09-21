@@ -328,38 +328,20 @@ export class EventManagementPageComponent implements OnInit {
   }
 
   onManageSeats(event: EventSummary | EventDetails): void {
-    this.router.navigate(['/seats', event.id]);
+    this.router.navigate(['/admin/events', event.id, 'seats']);
   }
 
   onManageParking(event: EventSummary | EventDetails): void {
-    this.router.navigate(['/parking', event.id]);
+    this.router.navigate(['/admin/events', event.id, 'parking']);
   }
 
-  // View / Detail Panel flow
-  onViewEvent(event: EventSummary): void {
-    this.detailLoading = true;
-    this.detailError = null;
+  onViewBookings(event: EventSummary | EventDetails): void {
+    this.router.navigate(['/admin/bookings'], { queryParams: { eventId: event.id } });
+  }
 
-    this.eventService.getEvent(event.id).subscribe({
-      next: (details: EventDetails) => {
-        this.detailLoading = false;
-        this.selectedEventDetails = details;
-      },
-      error: () => {
-        this.detailLoading = false;
-        this.selectedEventDetails = {
-          ...event,
-          description: null,
-          stageLayout: 'General Layout',
-          venueAddress: event.venueName,
-          venueCapacity: event.capacity || 500,
-          bookingCount: event.bookedSeats || 0,
-          canEditTicketPrice: !event.hasBookings,
-          canEditCapacity: !event.hasBookings,
-          canEditStageLayout: !event.hasBookings
-        };
-      }
-    });
+  // View Event -> dedicated /admin/events/:id
+  onViewEvent(event: EventSummary | EventDetails): void {
+    this.router.navigate(['/admin/events', event.id]);
   }
 
   onCloseDetail(): void {

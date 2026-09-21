@@ -9,11 +9,13 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { of, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { BookingStatus } from '../../../../../core/models/bookings/booking-status.model';
 import { BookingSummary } from '../../../../../core/models/bookings/booking-summary.model';
 import { BookingService } from '../../../../../core/services/bookings/booking.service';
+import { EventService } from '../../../../../core/services/events/event.service';
 import { BookingAdminDetailPanelComponent } from '../../components/booking-admin-detail-panel/booking-admin-detail-panel.component';
 import {
   BookingAdminFilterComponent,
@@ -29,6 +31,7 @@ export type AdminBookingViewState = 'no-event-selected' | 'loading' | 'error' | 
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     BookingAdminStatsComponent,
     BookingAdminFilterComponent,
     BookingAdminTableComponent,
@@ -42,10 +45,13 @@ export class BookingManagementPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly bookingService = inject(BookingService);
+  private readonly eventService = inject(EventService);
   private sub?: Subscription;
+  private querySub?: Subscription;
 
-  // Selected event ID signal
+  // Selected event state
   readonly selectedEventId = signal<number | null>(null);
+  readonly selectedEventName = signal<string | null>(null);
 
   // Raw bookings loaded from backend for the selected event
   readonly rawBookings = signal<BookingSummary[]>([]);
@@ -127,18 +133,21 @@ export class BookingManagementPageComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    // Check optional query param for preselected event
-    const rawParam = this.route.snapshot.queryParamMap.get('eventId');
-    if (rawParam) {
-      const parsedId = parseInt(rawParam, 10);
-      if (!isNaN(parsedId) && parsedId > 0) {
-        this.onSelectEvent(parsedId);
+    // React to queryParamMap changes dynamically
+    this.querySub = this.route.queryParamMap.subscribe((params) => {
+      const rawParam = params.get('eventId');
+      if (rawParam) {
+        const parsedId = parseInt(rawParam, 10);
+        if (!isNaN(parsedId) && parsedId > 0) {
+          this.onSelectEvent(parsedId);
+        }
       }
-    }
+    });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.querySub?.unsubscribe();
   }
 
   onSelectEvent(eventId: number): void {
@@ -150,6 +159,15 @@ export class BookingManagementPageComponent implements OnInit, OnDestroy {
     this.rawBookings.set([]);
     this.activeStatusFilter.set('ALL');
     this.searchQuery.set('');
+
+    // Fetch event context/name
+    this.eventService
+      .getEvent(eventId)
+      .pipe(catchError(() => of(null)))
+      .subscribe((ev) => {
+        this.selectedEventName.set(ev ? ev.name : null);
+      });
+
     this.loadEventBookings(eventId);
   }
 

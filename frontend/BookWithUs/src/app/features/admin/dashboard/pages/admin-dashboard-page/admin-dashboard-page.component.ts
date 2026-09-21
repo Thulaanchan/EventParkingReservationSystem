@@ -119,8 +119,12 @@ export class AdminDashboardPageComponent implements OnInit {
 
   // --- Upcoming Event Actions ---
 
-  onViewUpcomingEvent(_event: UpcomingEvent): void {
-    this.router.navigate(['/admin/events']);
+  onViewUpcomingEvent(event: UpcomingEvent): void {
+    if (event?.eventId) {
+      this.router.navigate(['/admin/events', event.eventId]);
+    } else {
+      this.router.navigate(['/admin/events']);
+    }
   }
 
   onViewAllUpcomingEvents(): void {
