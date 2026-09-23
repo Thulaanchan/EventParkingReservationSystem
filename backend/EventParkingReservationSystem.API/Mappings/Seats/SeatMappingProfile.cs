@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Models.DTOs.Seats;
+using EventParkingReservationSystem.API.Models.DTOs.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Seats;
 
 namespace EventParkingReservationSystem.API.Mappings.Seats;
@@ -21,7 +21,9 @@ public static class SeatMappingProfile
             EventId = seat.EventId,
             SeatSectionId = seat.SeatSectionId,
 
-            SeatCode = BuildSeatCode(seat),
+            SeatCode = !string.IsNullOrWhiteSpace(seat.SeatCode)
+                ? seat.SeatCode
+                : BuildSeatCode(seat),
 
             RowLabel = seat.RowLabel,
             Number = seat.Number,
@@ -66,7 +68,9 @@ public static class SeatMappingProfile
         {
             Id = seat.Id,
 
-            SeatCode = BuildSeatCode(seat),
+            SeatCode = !string.IsNullOrWhiteSpace(seat.SeatCode)
+                ? seat.SeatCode
+                : BuildSeatCode(seat),
 
             RowLabel = seat.RowLabel,
             Number = seat.Number,

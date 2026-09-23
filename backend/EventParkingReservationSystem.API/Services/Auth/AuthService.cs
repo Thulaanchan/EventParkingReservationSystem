@@ -597,8 +597,14 @@ public class AuthService : IAuthService
         string providedToken,
         string storedTokenHash)
     {
+        if (string.IsNullOrWhiteSpace(providedToken) || string.IsNullOrWhiteSpace(storedTokenHash))
+        {
+            return false;
+        }
+
+        var normalizedToken = providedToken.Trim().Replace(" ", "+");
         var providedHash =
-            HashToken(providedToken);
+            HashToken(normalizedToken);
 
         var providedBytes =
             Encoding.UTF8.GetBytes(providedHash);

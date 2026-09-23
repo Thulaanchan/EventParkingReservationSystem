@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using EventParkingReservationSystem.API.Interfaces.Services.Parking;
 using EventParkingReservationSystem.API.Models.DTOs.Parking;
 using Microsoft.AspNetCore.Authorization;
@@ -44,12 +44,24 @@ public class ParkingSlotsController : ControllerBase
             int id,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _parkingService.GetByIdAsync(
-                id,
-                cancellationToken);
+        try
+        {
+            var result =
+                await _parkingService.GetByIdAsync(
+                    id,
+                    cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Parking slot not found",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -61,17 +73,47 @@ public class ParkingSlotsController : ControllerBase
             CreateParkingSlotRequest request,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _parkingService
-                .CreateSlotAsync(
-                    eventId,
-                    request,
-                    cancellationToken);
+        try
+        {
+            var result =
+                await _parkingService
+                    .CreateSlotAsync(
+                        eventId,
+                        request,
+                        cancellationToken);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = result.Id },
-            result);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = result.Id },
+                result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid parking slot request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Resource not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Parking slot conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -82,14 +124,44 @@ public class ParkingSlotsController : ControllerBase
             UpdateParkingSlotRequestDto request,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _parkingService
-                .UpdateSlotAsync(
-                    id,
-                    request,
-                    cancellationToken);
+        try
+        {
+            var result =
+                await _parkingService
+                    .UpdateSlotAsync(
+                        id,
+                        request,
+                        cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid parking slot request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Parking slot not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Parking slot conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -99,12 +171,33 @@ public class ParkingSlotsController : ControllerBase
             int id,
             CancellationToken cancellationToken)
     {
-        await _parkingService
-            .DeleteSlotAsync(
-                id,
-                cancellationToken);
+        try
+        {
+            await _parkingService
+                .DeleteSlotAsync(
+                    id,
+                    cancellationToken);
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Parking slot not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Parking slot conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Customer")]

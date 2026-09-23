@@ -146,6 +146,11 @@ export class AuthSessionService {
     }
 
     try {
+      if (window.localStorage.getItem('eventflow_logged_out') === 'true') {
+        this.applySession(null);
+        return;
+      }
+
       let rawSession = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (!rawSession) {
         rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);

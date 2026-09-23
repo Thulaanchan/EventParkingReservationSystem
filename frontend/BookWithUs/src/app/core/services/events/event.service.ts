@@ -96,10 +96,10 @@ export class EventService {
 
     return this.http.get<PagedResult<EventSummary>>(this.baseUrl, { params }).pipe(
       map((res) => {
-        if (res && res.items && res.items.length >= 24) {
+        if (res && res.items && res.items.length > 0) {
           return res;
         }
-        // If backend has fewer seeded items, provide the full target dataset
+        // If backend has no items, provide fallback
         return this.filterLocalEvents(filter);
       }),
       catchError(() => of(this.filterLocalEvents(filter)))

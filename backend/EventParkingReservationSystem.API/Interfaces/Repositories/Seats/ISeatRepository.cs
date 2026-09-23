@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Enums.Seats;
+using EventParkingReservationSystem.API.Enums.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Seats;
 
 namespace EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
@@ -22,6 +22,12 @@ public interface ISeatRepository
         int seatSectionId,
         string rowLabel,
         int number,
+        int? excludeSeatId = null,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> SeatCodeExistsAsync(
+        int eventId,
+        string seatCode,
         int? excludeSeatId = null,
         CancellationToken cancellationToken = default);
 

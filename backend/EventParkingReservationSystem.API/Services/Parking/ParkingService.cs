@@ -9,6 +9,7 @@ using EventParkingReservationSystem.API.Models.DTOs.Parking;
 using EventParkingReservationSystem.API.Models.Entities.Parking;
 using EventParkingReservationSystem.API.Models.Entities.ParkingReservations;
 using EventParkingReservationSystem.API.Validators.Parking;
+using EventParkingReservationSystem.API.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
@@ -139,12 +140,20 @@ public class ParkingService : IParkingService
                 request.PositionY
         };
 
-        await _slotRepository.AddAsync(
-            slot,
-            cancellationToken);
+        try
+        {
+            await _slotRepository.AddAsync(
+                slot,
+                cancellationToken);
 
-        await _slotRepository.SaveChangesAsync(
-            cancellationToken);
+            await _slotRepository.SaveChangesAsync(
+                cancellationToken);
+        }
+        catch (DbUpdateException ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
+        {
+            throw new InvalidOperationException(
+                "A parking slot with this code already exists for the event.", ex);
+        }
 
         var created =
             await _slotRepository.GetByIdAsync(
@@ -232,8 +241,16 @@ public class ParkingService : IParkingService
         slot.PositionY =
             request.PositionY;
 
-        await _slotRepository.SaveChangesAsync(
-            cancellationToken);
+        try
+        {
+            await _slotRepository.SaveChangesAsync(
+                cancellationToken);
+        }
+        catch (DbUpdateException ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
+        {
+            throw new InvalidOperationException(
+                "Another parking slot already uses this code.", ex);
+        }
 
         var updated =
             await _slotRepository.GetByIdAsync(

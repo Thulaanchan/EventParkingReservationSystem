@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Interfaces.Services.Parking;
+using EventParkingReservationSystem.API.Interfaces.Services.Parking;
 using EventParkingReservationSystem.API.Models.DTOs.Parking;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,16 +45,46 @@ public class ParkingZonesController : ControllerBase
             CreateParkingZoneRequest request,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _parkingZoneService
-                .CreateAsync(
-                    eventId,
-                    request,
-                    cancellationToken);
+        try
+        {
+            var result =
+                await _parkingZoneService
+                    .CreateAsync(
+                        eventId,
+                        request,
+                        cancellationToken);
 
-        return Created(
-            $"/api/parking-zones/{result.Id}",
-            result);
+            return Created(
+                $"/api/parking-zones/{result.Id}",
+                result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid parking zone request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Resource not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Parking zone conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -65,13 +95,43 @@ public class ParkingZonesController : ControllerBase
             UpdateParkingZoneRequest request,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _parkingZoneService
-                .UpdateAsync(
-                    id,
-                    request,
-                    cancellationToken);
+        try
+        {
+            var result =
+                await _parkingZoneService
+                    .UpdateAsync(
+                        id,
+                        request,
+                        cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid parking zone request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Parking zone not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Parking zone conflict",
+                Detail = ex.Message
+            });
+        }
     }
 }

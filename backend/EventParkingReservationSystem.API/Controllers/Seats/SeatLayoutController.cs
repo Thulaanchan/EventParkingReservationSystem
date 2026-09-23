@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
+using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
 using EventParkingReservationSystem.API.Models.DTOs.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Seats;
 using EventParkingReservationSystem.API.Validators.Seats;
@@ -93,7 +93,16 @@ public class SeatLayoutController : ControllerBase
 
         return Created(
             $"/api/events/{eventId}/seat-layout/categories/{category.Id}",
-            category);
+            new
+            {
+                category.Id,
+                category.EventId,
+                category.Name,
+                category.Code,
+                category.AdultPrice,
+                category.IsPubliclyBookable,
+                category.DisplayOrder
+            });
     }
 
     [HttpGet("sections")]
@@ -184,6 +193,16 @@ public class SeatLayoutController : ControllerBase
 
         return Created(
             $"/api/events/{eventId}/seat-layout/sections/{section.Id}",
-            section);
+            new SeatSectionDto
+            {
+                Id = section.Id,
+                EventId = section.EventId,
+                EventSeatCategoryId = section.EventSeatCategoryId,
+                Code = section.Code,
+                Name = section.Name,
+                CategoryName = category.Name,
+                DisplayOrder = section.DisplayOrder,
+                SeatCount = 0
+            });
     }
 }

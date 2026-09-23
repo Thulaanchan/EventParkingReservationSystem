@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   DestroyRef,
   OnInit,
@@ -55,6 +56,7 @@ export class EventManagementPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly filterSubject = new Subject<EventFilter>();
 
@@ -120,6 +122,7 @@ export class EventManagementPageComponent implements OnInit {
         this.totalEvents = summary?.totalEvents && summary.totalEvents > 0 ? summary.totalEvents : 24;
         this.totalBookings = summary?.totalBookings && summary.totalBookings > 0 ? summary.totalBookings : 1248;
         this.upcomingEvents = upcoming?.totalCount && upcoming.totalCount > 0 ? upcoming.totalCount : 18;
+        this.cdr.markForCheck();
       });
   }
 
@@ -165,6 +168,7 @@ export class EventManagementPageComponent implements OnInit {
             this.optionsError =
               'Unable to load category filter options. You can still search by venue, name, or date.';
           }
+          this.cdr.markForCheck();
         }
       });
   }
@@ -207,6 +211,7 @@ export class EventManagementPageComponent implements OnInit {
             catchError((err: unknown) => {
               this.loading = false;
               this.handleLoadError(err);
+              this.cdr.markForCheck();
               return of(null);
             })
           );
@@ -229,6 +234,7 @@ export class EventManagementPageComponent implements OnInit {
         } else {
           this.events = [];
         }
+        this.cdr.markForCheck();
       });
   }
 

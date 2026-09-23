@@ -204,7 +204,7 @@ this.hasEmailParam.set(true);
 if(token){
 
 this.resetPasswordForm.patchValue({
-token:token.trim()
+token:token.trim().replace(/ /g, '+')
 });
 
 this.hasTokenParam.set(true);
@@ -380,7 +380,7 @@ this.authService.resetPassword({
 
 email:value.email.trim(),
 
-token:value.token.trim(),
+token:(value.token || '').trim().replace(/ /g, '+'),
 
 newPassword:value.newPassword,
 

@@ -10,6 +10,7 @@ using EventParkingReservationSystem.API.Models.DTOs.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Bookings;
 using EventParkingReservationSystem.API.Models.Entities.Seats;
 using EventParkingReservationSystem.API.Validators.Seats;
+using EventParkingReservationSystem.API.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventParkingReservationSystem.API.Services.Seats;
@@ -115,10 +116,22 @@ public class SeatService : ISeatService
                 null,
                 cancellationToken);
 
-        if (exists)
+        var seatCode = GenerateSeatCode(
+            section.Code,
+            rowLabel,
+            request.Number);
+
+        var codeExists =
+            await _seatRepository.SeatCodeExistsAsync(
+                eventId,
+                seatCode,
+                null,
+                cancellationToken);
+
+        if (exists || codeExists)
         {
             throw new InvalidOperationException(
-                "A seat already exists at this position.");
+                "A seat with this code or position already exists for the event.");
         }
 
         var seat = new Seat
@@ -131,6 +144,8 @@ public class SeatService : ISeatService
             RowLabel = rowLabel,
 
             Number = request.Number,
+
+            SeatCode = seatCode,
 
             Status =
                 SeatStatus.Available,
@@ -145,12 +160,20 @@ public class SeatService : ISeatService
                 request.PositionY
         };
 
-        await _seatRepository.AddAsync(
-            seat,
-            cancellationToken);
+        try
+        {
+            await _seatRepository.AddAsync(
+                seat,
+                cancellationToken);
 
-        await _seatRepository.SaveChangesAsync(
-            cancellationToken);
+            await _seatRepository.SaveChangesAsync(
+                cancellationToken);
+        }
+        catch (DbUpdateException ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
+        {
+            throw new InvalidOperationException(
+                "A seat with this code or position already exists for the event.", ex);
+        }
 
         var created =
             await _seatRepository.GetByIdAsync(
@@ -218,10 +241,22 @@ public class SeatService : ISeatService
                 seat.Id,
                 cancellationToken);
 
-        if (positionExists)
+        var seatCode = GenerateSeatCode(
+            section.Code,
+            rowLabel,
+            request.Number);
+
+        var codeExists =
+            await _seatRepository.SeatCodeExistsAsync(
+                seat.EventId,
+                seatCode,
+                seat.Id,
+                cancellationToken);
+
+        if (positionExists || codeExists)
         {
             throw new InvalidOperationException(
-                "Another seat already exists at this position.");
+                "Another seat with this code or position already exists for the event.");
         }
 
         seat.SeatSectionId =
@@ -233,6 +268,8 @@ public class SeatService : ISeatService
         seat.Number =
             request.Number;
 
+        seat.SeatCode = seatCode;
+
         seat.DisplayOrder =
             request.DisplayOrder;
 
@@ -242,8 +279,16 @@ public class SeatService : ISeatService
         seat.PositionY =
             request.PositionY;
 
-        await _seatRepository.SaveChangesAsync(
-            cancellationToken);
+        try
+        {
+            await _seatRepository.SaveChangesAsync(
+                cancellationToken);
+        }
+        catch (DbUpdateException ex) when (DatabaseExceptionHelper.IsUniqueConstraintViolation(ex))
+        {
+            throw new InvalidOperationException(
+                "Another seat with this code or position already exists for the event.", ex);
+        }
 
         var updated =
             await _seatRepository.GetByIdAsync(
@@ -629,5 +674,24 @@ public class SeatService : ISeatService
                 SeatStatus.Booked,
                 SeatStatus.Available,
                 cancellationToken);
+    }
+
+    private static string GenerateSeatCode(
+        string sectionCode,
+        string rowLabel,
+        int number)
+    {
+        var cleanSection =
+            SeatValidator.NormalizeCode(sectionCode);
+        var cleanRow =
+            SeatValidator.NormalizeRowLabel(rowLabel);
+
+        if (cleanSection.EndsWith($"-{cleanRow}", StringComparison.OrdinalIgnoreCase) ||
+            cleanSection.Equals(cleanRow, StringComparison.OrdinalIgnoreCase))
+        {
+            return $"{cleanSection}-{number:D2}";
+        }
+
+        return $"{cleanSection}-{cleanRow}-{number:D2}";
     }
 }

@@ -1,4 +1,4 @@
-﻿using EventParkingReservationSystem.API.Data.Context;
+using EventParkingReservationSystem.API.Data.Context;
 using EventParkingReservationSystem.API.Enums.Seats;
 using EventParkingReservationSystem.API.Interfaces.Repositories.Seats;
 using EventParkingReservationSystem.API.Models.Entities.Seats;
@@ -75,6 +75,22 @@ public class SeatRepository : ISeatRepository
                     x.SeatSectionId == seatSectionId &&
                     x.RowLabel == rowLabel &&
                     x.Number == number &&
+                    (!excludeSeatId.HasValue ||
+                     x.Id != excludeSeatId.Value),
+                cancellationToken);
+    }
+
+    public async Task<bool> SeatCodeExistsAsync(
+        int eventId,
+        string seatCode,
+        int? excludeSeatId = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<Seat>()
+            .AnyAsync(
+                x =>
+                    x.EventId == eventId &&
+                    x.SeatCode == seatCode &&
                     (!excludeSeatId.HasValue ||
                      x.Id != excludeSeatId.Value),
                 cancellationToken);

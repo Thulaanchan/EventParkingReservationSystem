@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { EventDetails } from '../../../../core/models/events/event-details.model';
 
 @Component({
   selector: 'app-event-availability-summary',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule],
   templateUrl: './event-availability-summary.component.html',
   styleUrl: './event-availability-summary.component.css'
 })

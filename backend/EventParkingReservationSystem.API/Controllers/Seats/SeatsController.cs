@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using EventParkingReservationSystem.API.Interfaces.Services.Seats;
 using EventParkingReservationSystem.API.Models.DTOs.Seats;
 using Microsoft.AspNetCore.Authorization;
@@ -42,12 +42,24 @@ public class SeatsController : ControllerBase
             int id,
             CancellationToken cancellationToken)
     {
-        var seat =
-            await _seatService.GetByIdAsync(
-                id,
-                cancellationToken);
+        try
+        {
+            var seat =
+                await _seatService.GetByIdAsync(
+                    id,
+                    cancellationToken);
 
-        return Ok(seat);
+            return Ok(seat);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Seat not found",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -58,16 +70,46 @@ public class SeatsController : ControllerBase
             CreateSeatRequest request,
             CancellationToken cancellationToken)
     {
-        var seat =
-            await _seatService.CreateAsync(
-                eventId,
-                request,
-                cancellationToken);
+        try
+        {
+            var seat =
+                await _seatService.CreateAsync(
+                    eventId,
+                    request,
+                    cancellationToken);
 
-        return CreatedAtAction(
-            nameof(GetSeatById),
-            new { id = seat.Id },
-            seat);
+            return CreatedAtAction(
+                nameof(GetSeatById),
+                new { id = seat.Id },
+                seat);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid seat request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Resource not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Seat conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -78,13 +120,43 @@ public class SeatsController : ControllerBase
             UpdateSeatRequest request,
             CancellationToken cancellationToken)
     {
-        var result =
-            await _seatService.UpdateAsync(
-                id,
-                request,
-                cancellationToken);
+        try
+        {
+            var result =
+                await _seatService.UpdateAsync(
+                    id,
+                    request,
+                    cancellationToken);
 
-        return Ok(result);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid seat request",
+                Detail = ex.Message
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Seat not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Seat conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Administrator")]
@@ -94,11 +166,32 @@ public class SeatsController : ControllerBase
             int id,
             CancellationToken cancellationToken)
     {
-        await _seatService.DeleteAsync(
-            id,
-            cancellationToken);
+        try
+        {
+            await _seatService.DeleteAsync(
+                id,
+                cancellationToken);
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Status = 404,
+                Title = "Seat not found",
+                Detail = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new ProblemDetails
+            {
+                Status = 409,
+                Title = "Seat conflict",
+                Detail = ex.Message
+            });
+        }
     }
 
     [Authorize(Roles = "Customer")]
