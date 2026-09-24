@@ -330,7 +330,7 @@ export class DashboardService {
       map((res) => {
         const items = res?.items || [];
         if (!items || items.length === 0) {
-          return this.getFallbackRecommendedEvents();
+          return [];
         }
 
         return items.slice(0, 8).map((item) => {
@@ -349,30 +349,8 @@ export class DashboardService {
           };
         });
       }),
-      catchError(() => of(this.getFallbackRecommendedEvents()))
+      catchError(() => of([]))
     );
-  }
-
-  private getFallbackRecommendedEvents(): DashboardRecommendedEvent[] {
-    const local = this.eventService.getLocalEvents();
-    if (local && local.length > 0) {
-      return local.slice(0, 8).map((item) => {
-        const isCustom = item.id > 1000000000;
-        return {
-          id: item.id,
-          name: item.name,
-          category: (item.categoryName || 'General').toUpperCase(),
-          venueName: item.venueName || 'Main Venue',
-          eventDate: this.formatDisplayDate(item.eventDate),
-          startTime: this.formatDisplayTime(item.startTime),
-          priceFrom: Number(item.ticketPrice) || 1000,
-          posterUrl: item.posterUrl || 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=600&q=80',
-          isNew: isCustom,
-          badgeText: isCustom ? 'Upcoming' : undefined
-        };
-      });
-    }
-    return TARGET_CUSTOMER_DASHBOARD_DATA.recommendedEvents;
   }
 
   private formatDisplayDate(rawDate?: string): string {

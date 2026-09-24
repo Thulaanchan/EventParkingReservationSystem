@@ -152,6 +152,9 @@ export class PaymentCheckoutPageComponent implements OnDestroy {
       next: (result) => {
         this.isSubmitting.set(false);
         this.paymentResult.set(result);
+        this.router.navigate(['/payments/confirmation', id], {
+          state: { payment: result }
+        });
       },
       error: (err: unknown) => {
         this.isSubmitting.set(false);

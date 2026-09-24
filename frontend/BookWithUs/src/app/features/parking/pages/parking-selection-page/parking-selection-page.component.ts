@@ -112,7 +112,12 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
             params.get('eventId') ||
             this.route.parent?.snapshot.paramMap.get('id') ||
             this.route.parent?.snapshot.paramMap.get('eventId');
-          this.eventId = rawId ? parseInt(rawId, 10) : (currentEvent?.eventId || 2);
+          this.eventId = rawId ? parseInt(rawId, 10) : (currentEvent?.eventId || 0);
+
+          if (!this.eventId || this.eventId <= 0) {
+            this.router.navigate(['/events']);
+            return of({ slots: [], zones: [] });
+          }
 
           return forkJoin({
             slots: this.parkingService.getEventParkingSlots(this.eventId).pipe(
@@ -198,7 +203,11 @@ export class ParkingSelectionPageComponent implements OnInit, OnDestroy {
    * Back to seat selection
    */
   onBackToSeats(): void {
-    const id = this.eventId || this.bookingStateService.selectedEvent()?.eventId || 2;
-    this.router.navigate(['/events', id, 'seats']);
+    const id = this.eventId || this.bookingStateService.selectedEvent()?.eventId;
+    if (id) {
+      this.router.navigate(['/events', id, 'seats']);
+    } else {
+      this.router.navigate(['/events']);
+    }
   }
 }

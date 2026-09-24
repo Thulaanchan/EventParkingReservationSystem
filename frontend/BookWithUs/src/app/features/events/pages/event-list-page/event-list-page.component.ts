@@ -171,70 +171,10 @@ export class EventListPageComponent implements OnInit {
     }
   ];
 
-  // Curated Fallback Showcase Events (Specification Requirements 5 & 6)
-  readonly fallbackEvents: ExploreEventItem[] = [
-    {
-      id: 1,
-      name: 'Anirudh Live in Colombo 2026',
-      categoryName: 'MUSIC',
-      venueName: 'Sugathadasa Indoor Stadium, Colombo',
-      eventDate: '2026-09-12',
-      startTime: '8:00 PM',
-      endTime: '11:30 PM',
-      ticketPrice: 4500,
-      posterUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80',
-      totalSeats: 5000,
-      availableSeats: 480,
-      fallbackGradient: 'linear-gradient(135deg, #311042 0%, #4a044e 100%)'
-    },
-    {
-      id: 2,
-      name: 'Global Tech Summit 2024',
-      categoryName: 'CONFERENCE',
-      venueName: 'BMICH, Colombo',
-      eventDate: '2024-10-12',
-      startTime: '9:00 AM',
-      endTime: '5:00 PM',
-      ticketPrice: 7950,
-      posterUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80',
-      totalSeats: 1200,
-      availableSeats: 320,
-      fallbackGradient: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)'
-    },
-    {
-      id: 3,
-      name: 'Sri Lanka Build Expo 2024',
-      categoryName: 'EXPO',
-      venueName: 'Bandaranaike Memorial International Conference Hall',
-      eventDate: '2024-11-08',
-      startTime: '10:00 AM',
-      endTime: '6:00 PM',
-      ticketPrice: 1200,
-      posterUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80',
-      totalSeats: 3000,
-      availableSeats: 1450,
-      fallbackGradient: 'linear-gradient(135deg, #134e4a 0%, #111827 100%)'
-    },
-    {
-      id: 4,
-      name: 'A Midsummer Night\'s Dream',
-      categoryName: 'THEATRE',
-      venueName: 'Nelum Pokuna Theatre, Colombo',
-      eventDate: '2024-12-05',
-      startTime: '7:30 PM',
-      endTime: '10:00 PM',
-      ticketPrice: 2800,
-      posterUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=600&q=80',
-      totalSeats: 1500,
-      availableSeats: 210,
-      fallbackGradient: 'linear-gradient(135deg, #3b0764 0%, #000000 100%)'
-    }
-  ];
 
   ngOnInit(): void {
     this.initWishlist();
-    // Instant 0ms initial render so users never experience a blank loading screen
-    this.applyLocalFallbackFilter({});
+    this.loading = true;
     this.loadFilterOptions();
     this.setupFilterDebounce();
     this.setupRouteListener();
@@ -323,14 +263,14 @@ export class EventListPageComponent implements OnInit {
 
     forkJoin({
       venues: this.venueService.getVenues().pipe(
-        timeout(2500),
+        timeout(15000),
         catchError(() => {
           venuesFailed = true;
           return of([] as Venue[]);
         })
       ),
       categories: this.categoryService.getCategories().pipe(
-        timeout(2500),
+        timeout(15000),
         catchError(() => {
           categoriesFailed = true;
           return of([] as EventCategory[]);
@@ -342,27 +282,8 @@ export class EventListPageComponent implements OnInit {
         this.venues = venues;
         this.categories = categories;
 
-        // Fallback options if backend has no venues/categories
-        if (this.venues.length === 0) {
-          this.venues = [
-            { id: 1, name: 'Sugathadasa Indoor Stadium, Colombo', totalCapacity: 5000, address: 'Colombo 14', upcomingEventCount: 1 },
-            { id: 2, name: 'BMICH, Colombo', totalCapacity: 1500, address: 'Bauddhaloka Mawatha', upcomingEventCount: 2 },
-            { id: 3, name: 'Nelum Pokuna Theatre, Colombo', totalCapacity: 1288, address: 'Albert Crescent', upcomingEventCount: 1 }
-          ];
-        }
-
-        if (this.categories.length === 0) {
-          this.categories = [
-            { id: 1, name: 'Music', eventCount: 1 },
-            { id: 2, name: 'Conference', eventCount: 1 },
-            { id: 3, name: 'Expo', eventCount: 1 },
-            { id: 4, name: 'Theatre', eventCount: 1 }
-          ];
-        }
-
         if (venuesFailed && categoriesFailed) {
-          this.optionsError =
-            'Connected to offline showcase mode. Search by name, venue, or category.';
+          this.optionsError = 'Unable to load venue and category filter options from server.';
         }
       }
     });
@@ -405,7 +326,7 @@ export class EventListPageComponent implements OnInit {
           this.errorMessage = null;
 
           return this.eventService.getEvents(filter).pipe(
-            timeout(2500),
+            timeout(15000),
             catchError((err: unknown) => {
               this.loading = false;
               this.handleLoadError(err);
@@ -425,11 +346,18 @@ export class EventListPageComponent implements OnInit {
           this.totalPages = res.totalPages;
           this.hasBackendData = true;
           this.mapBackendEventsToDisplay(res.items);
+        } else if (res && res.items) {
+          this.backendEvents = [];
+          this.displayedEvents = [];
+          this.totalCount = 0;
+          this.totalPages = 1;
+          this.hasBackendData = true;
         } else {
           this.backendEvents = [];
+          this.displayedEvents = [];
+          this.totalCount = 0;
+          this.totalPages = 1;
           this.hasBackendData = false;
-          // Apply local filter against fallback showcase data
-          this.applyLocalFallbackFilter(this.currentFilter);
         }
       });
   }
@@ -445,11 +373,6 @@ export class EventListPageComponent implements OnInit {
       time: this.selectedTime || null
     };
 
-    // Instant local filter response so the user sees results immediately
-    if (!this.hasBackendData) {
-      this.applyLocalFallbackFilter(filter);
-    }
-
     this.filterSubject.next(filter);
   }
 
@@ -460,61 +383,10 @@ export class EventListPageComponent implements OnInit {
     this.selectedDate = '';
     this.selectedTime = '';
 
-    // Instant 0ms clear
-    this.applyLocalFallbackFilter({});
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {}
     });
-  }
-
-  private applyLocalFallbackFilter(filter: EventFilter): void {
-    let list = [...this.fallbackEvents];
-
-    if (filter.search && filter.search.trim()) {
-      const q = filter.search.trim().toLowerCase();
-      list = list.filter(e =>
-        e.name.toLowerCase().includes(q) ||
-        e.venueName.toLowerCase().includes(q) ||
-        e.categoryName.toLowerCase().includes(q)
-      );
-    }
-
-    if (filter.venue) {
-      const venueObj = this.venues.find(v => v.id === filter.venue);
-      if (venueObj) {
-        list = list.filter(e =>
-          e.venueName.toLowerCase().includes(venueObj.name.toLowerCase())
-        );
-      }
-    }
-
-    if (filter.category) {
-      const catObj = this.categories.find(c => c.id === filter.category);
-      if (catObj) {
-        list = list.filter(e =>
-          e.categoryName.toLowerCase().includes(catObj.name.toLowerCase())
-        );
-      }
-    }
-
-    if (filter.date) {
-      list = list.filter(e => e.eventDate.startsWith(filter.date!));
-    }
-
-    if (filter.time) {
-      // Matching morning / afternoon / evening or time string
-      const timeQ = filter.time.toLowerCase();
-      list = list.filter(e => e.startTime.toLowerCase().includes(timeQ));
-    }
-
-    this.displayedEvents = list.map(item => ({
-      ...item,
-      isWishlisted: this.wishlistIds.has(item.id)
-    }));
-    this.totalCount = this.displayedEvents.length;
-    this.totalPages = Math.ceil(this.totalCount / this.pageSize) || 1;
   }
 
   private mapBackendEventsToDisplay(items: EventSummary[]): void {
@@ -670,13 +542,27 @@ export class EventListPageComponent implements OnInit {
   }
 
   private handleLoadError(err: unknown): void {
+    this.hasBackendData = false;
+    this.displayedEvents = [];
+    this.backendEvents = [];
+    this.totalCount = 0;
+    this.totalPages = 1;
     if (err instanceof HttpErrorResponse) {
-      if (err.status >= 500 || err.status === 0) {
+      if (err.status === 0) {
         this.errorMessage =
-          'Running in offline mode. Curated showcase events are displayed.';
+          'Unable to connect to the backend server. Please verify the API is running.';
+      } else if (err.status >= 500) {
+        this.errorMessage =
+          'A server error occurred while retrieving events. Please try again.';
+      } else {
+        this.errorMessage =
+          err.error?.message ||
+          (typeof err.error === 'string' ? err.error : null) ||
+          'Failed to load events. Please try again.';
       }
+    } else {
+      this.errorMessage =
+        'Failed to load events. Please check your connection and try again.';
     }
-    // Fall back gracefully to showcase events
-    this.applyLocalFallbackFilter(this.currentFilter);
   }
 }

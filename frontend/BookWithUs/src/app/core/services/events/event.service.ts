@@ -94,28 +94,11 @@ export class EventService {
       }
     }
 
-    return this.http.get<PagedResult<EventSummary>>(this.baseUrl, { params }).pipe(
-      map((res) => {
-        if (res && res.items && res.items.length > 0) {
-          return res;
-        }
-        // If backend has no items, provide fallback
-        return this.filterLocalEvents(filter);
-      }),
-      catchError(() => of(this.filterLocalEvents(filter)))
-    );
+    return this.http.get<PagedResult<EventSummary>>(this.baseUrl, { params });
   }
 
   getEvent(id: number): Observable<EventDetails> {
-    return this.http.get<EventDetails>(`${this.baseUrl}/${id}`).pipe(
-      catchError(() => {
-        const found = this.localEvents.find((e) => e.id === Number(id));
-        if (found) {
-          return of(found);
-        }
-        return of(this.localEvents[0]);
-      })
-    );
+    return this.http.get<EventDetails>(`${this.baseUrl}/${id}`);
   }
 
   createEvent(request: CreateEventRequest): Observable<EventDetails> {
